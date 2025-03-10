@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { EmblaCarouselType } from "embla-carousel";
 
 const images = [
   {
@@ -33,7 +32,6 @@ const Carousel = () => {
     dragFree: false,
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -42,21 +40,10 @@ const Carousel = () => {
       setSelectedIndex(emblaApi.selectedScrollSnap());
     };
 
-    const onScroll = () => {
-      const scrollSnapList = emblaApi.scrollSnapList();
-      const scrollProgress = emblaApi.scrollProgress();
-      const currentIndex = emblaApi.selectedScrollSnap();
-      const currentProgress =
-        scrollProgress - currentIndex * (1 / (scrollSnapList.length - 1));
-      setProgress(currentProgress * 100);
-    };
-
     emblaApi.on("select", onSelect);
-    emblaApi.on("scroll", onScroll);
 
     return () => {
       emblaApi.off("select", onSelect);
-      emblaApi.off("scroll", onScroll);
     };
   }, [emblaApi]);
 

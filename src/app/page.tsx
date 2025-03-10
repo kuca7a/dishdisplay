@@ -4,8 +4,6 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "@/components/Navbar";
 import Carousel from "@/components/Carousel";
-import AnimatedStep from "@/components/AnimatedStep";
-import Image from "next/image";
 
 const LandingPage = () => {
   const { loginWithRedirect } = useAuth0();
@@ -60,7 +58,7 @@ const LandingPage = () => {
                     Create Your Account
                   </h3>
                   <p className="text-gray-600 font-['Fjalla_One']">
-                    Sign up for Dish Display and create your restaurant's
+                    Sign up for Dish Display and create your restaurant&apos;s
                     profile. Upload your menu items with high-quality photos.
                   </p>
                 </div>
@@ -74,8 +72,8 @@ const LandingPage = () => {
                     Get Your QR Code
                   </h3>
                   <p className="text-gray-600 font-['Fjalla_One']">
-                    We'll provide you with a unique QR code that links directly
-                    to your restaurant's menu on Dish Display.
+                    We&apos;ll provide you with a unique QR code that links
+                    directly to your restaurant&apos;s menu on Dish Display.
                   </p>
                 </div>
               </div>
@@ -140,7 +138,7 @@ const LandingPage = () => {
               </h3>
               <p className="text-gray-600 font-['Fjalla_One']">
                 Customers are more likely to order when they can see what
-                they're getting.
+                they&apos;re getting.
               </p>
             </div>
             <div className="text-center">
