@@ -53,7 +53,7 @@ const Navbar = () => {
             {!isAuthenticated ? (
               <button
                 onClick={() => loginWithRedirect()}
-                className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] hover:bg-gray-200 transition-colors hover:cursor-pointer"
+                className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] bg-white transition-colors hover:cursor-pointer"
               >
                 Log In
               </button>
@@ -64,7 +64,7 @@ const Navbar = () => {
                 </span>
                 <button
                   onClick={() => logout({ returnTo: window.location.origin })}
-                  className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] hover:bg-gray-200 transition-colors"
+                  className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] bg-white hover:cursor-pointer transition-colors"
                 >
                   Log Out
                 </button>

@@ -29,7 +29,7 @@ const LandingPage = () => {
               </p>
               <button
                 onClick={handleGetStarted}
-                className="bg-black text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-gray-800 transition-colors text-lg"
+                className="bg-black text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer hover:bg-gray-800 transition-colors text-lg w-full"
               >
                 Get Started Free
               </button>
@@ -203,7 +203,7 @@ const LandingPage = () => {
           </p>
           <button
             onClick={handleGetStarted}
-            className="bg-white text-black px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-gray-100 transition-colors text-lg"
+            className="bg-white text-black px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer hover:bg-gray-100 transition-colors text-lg"
           >
             Start Your Free Trial
           </button>
