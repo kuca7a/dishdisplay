@@ -34,7 +34,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${pollerOne.className} ${fjallaOne.className}`}>
+      <body
+        className={`${pollerOne.className} ${fjallaOne.className} ${notable.className}`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
