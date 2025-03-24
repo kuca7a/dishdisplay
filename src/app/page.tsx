@@ -103,7 +103,8 @@ const LandingPage = () => {
                   </h3>
                   <p className="text-gray-600 font-['Fjalla_One']">
                     Watch as your customers make more confident ordering
-                    decisions with visual menu items.
+                    decisions with visual menu items. Customers will be prompted
+                    to review the restaurant on Google and Tripadvisor. Win win.
                   </p>
                 </div>
               </div>
