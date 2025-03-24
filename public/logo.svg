@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 500 200"
+    width="500"
+    height="200"
+>
+    <rect x="50" y="50" width="50" height="100" fill="#C1272D" />
+    <circle cx="100" cy="100" r="50" fill="#C4A66A" />
+    <path d="M 100 50 A 50 50 0 0 1 100 150 L 75 150 A 50 50 0 0 0 75 50 Z" fill="#3F2171" />
+    
+    <rect x="150" y="50" width="50" height="100" fill="#E87722" />
+    <rect x="150" y="50" width="50" height="20" fill="#8BC34A" />
+    
+    <path d="M 250 50 A 50 50 0 0 0 200 100 L 200 120 A 50 50 0 0 1 250 150" fill="#C4A66A" />
+    <rect x="200" y="100" width="50" height="50" fill="#3388CC" />
+    <rect x="200" y="120" width="50" height="30" fill="#061A40" />
+    
+    <rect x="260" y="50" width="30" height="100" fill="#E87722" /> 
+    <rect x="300" y="50" width="30" height="100" fill="#3F2171" />
+    <rect x="260" y="90" width="70" height="20" fill="#F4C500" /> 
+    <rect x="290" y="90" width="10" height="20" fill="#C1272D" /> 
+    <rect x="260" y="110" width="70" height="20" fill="#3388CC" /> 
+</svg>

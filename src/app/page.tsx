@@ -18,7 +18,7 @@ const LandingPage = () => {
       <SpeedInsights />
       <Navbar />
       {/* Hero Section */}
-      <section className="bg-[#F0EAD6] text-black py-20">
+      <section className="bg-[#F0EAD6] text-black py-10">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2">
@@ -31,7 +31,7 @@ const LandingPage = () => {
               </p>
               <button
                 onClick={handleGetStarted}
-                className="bg-black text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-gray-800 transition-colors text-lg"
+                className="bg-black text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer hover:bg-gray-800 transition-colors text-lg w-full"
               >
                 Get Started Free
               </button>
@@ -206,7 +206,7 @@ const LandingPage = () => {
           </p>
           <button
             onClick={handleGetStarted}
-            className="bg-white text-black px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-gray-100 transition-colors text-lg"
+            className="bg-white text-black px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer hover:bg-gray-100 transition-colors text-lg"
           >
             Start Your Free Trial
           </button>
@@ -218,9 +218,7 @@ const LandingPage = () => {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-8 md:mb-0">
-              <h3 className="text-3xl font-['Poller_One'] mb-2">
-                Dish Display
-              </h3>
+              <h3 className="text-3xl font-['Notable'] mb-2">Dish Display</h3>
               <p className="text-gray-400 font-['Fjalla_One'] text-lg">
                 Bringing menus to life
               </p>

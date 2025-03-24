@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poller_One, Fjalla_One } from "next/font/google";
+import { Poller_One, Fjalla_One, Notable } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -10,6 +10,12 @@ const pollerOne = Poller_One({
 });
 
 const fjallaOne = Fjalla_One({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const notable = Notable({
   weight: "400",
   subsets: ["latin"],
   display: "swap",
@@ -28,7 +34,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${pollerOne.className} ${fjallaOne.className}`}>
+      <body
+        className={`${pollerOne.className} ${fjallaOne.className} ${notable.className}`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

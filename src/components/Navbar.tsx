@@ -2,6 +2,7 @@
 
 import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
+// import Image from "next/image";
 import { useState } from "react";
 
 const Navbar = () => {
@@ -12,8 +13,15 @@ const Navbar = () => {
     <nav className="bg-[#F0EAD6] shadow-lg">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-['Poller_One'] text-black">
-            Dish Display
+          <Link href="/" className="text-2xl font-['Notable'] text-black">
+            {/* <Image
+              src="/logo.svg"
+              alt="Dish Display Logo"
+              width={180}
+              height={60}
+              priority
+            /> */}
+            DISH DISPLAY
           </Link>
 
           {/* Desktop Navigation */}
@@ -45,7 +53,7 @@ const Navbar = () => {
             {!isAuthenticated ? (
               <button
                 onClick={() => loginWithRedirect()}
-                className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] hover:bg-gray-200 transition-colors hover:cursor-pointer"
+                className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] bg-white transition-colors hover:cursor-pointer"
               >
                 Log In
               </button>
@@ -56,7 +64,7 @@ const Navbar = () => {
                 </span>
                 <button
                   onClick={() => logout({ returnTo: window.location.origin })}
-                  className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] hover:bg-gray-200 transition-colors"
+                  className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] bg-white hover:cursor-pointer transition-colors"
                 >
                   Log Out
                 </button>
