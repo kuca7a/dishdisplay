@@ -14,11 +14,11 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#F0EAD6] dark:bg-gray-900 text-black dark:text-white">
       <SpeedInsights />
       <Navbar />
       {/* Hero Section */}
-      <section className="bg-[#F0EAD6] text-black py-20">
+      <section className="bg-[#F0EAD6] dark:bg-gray-800 text-black dark:text-white py-20">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2">
@@ -31,7 +31,7 @@ const LandingPage = () => {
               </p>
               <button
                 onClick={handleGetStarted}
-                className="bg-black text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-gray-800 transition-colors text-lg"
+                className="bg-black dark:bg-gray-700 text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors text-lg"
               >
                 Get Started Free
               </button>
@@ -44,7 +44,7 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="bg-[#F0EAD6] py-20">
+      <section className="bg-[#F0EAD6] dark:bg-gray-800 py-20">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
             How Dish Display Works
@@ -52,56 +52,56 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="flex items-start space-x-4">
-                <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="bg-black dark:bg-gray-700 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-['Fjalla_One']">1</span>
                 </div>
                 <div>
                   <h3 className="text-xl font-['Fjalla_One'] mb-2">
                     Create Your Account
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
+                  <p className="text-gray-600 dark:text-gray-300 font-['Fjalla_One']">
                     Sign up for Dish Display and create your restaurant&apos;s
                     profile. Upload your menu items with high-quality photos.
                   </p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="bg-black dark:bg-gray-700 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-['Fjalla_One']">2</span>
                 </div>
                 <div>
                   <h3 className="text-xl font-['Fjalla_One'] mb-2">
                     Get Your QR Code
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
+                  <p className="text-gray-600 dark:text-gray-300 font-['Fjalla_One']">
                     We&apos;ll provide you with a unique QR code that links
                     directly to your restaurant&apos;s menu on Dish Display.
                   </p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="bg-black dark:bg-gray-700 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-['Fjalla_One']">3</span>
                 </div>
                 <div>
                   <h3 className="text-xl font-['Fjalla_One'] mb-2">
                     Print on Your Menu
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
+                  <p className="text-gray-600 dark:text-gray-300 font-['Fjalla_One']">
                     Add the QR code to your physical menu. Customers can scan it
                     to instantly view your dishes with photos.
                   </p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="bg-black dark:bg-gray-700 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-['Fjalla_One']">4</span>
                 </div>
                 <div>
                   <h3 className="text-xl font-['Fjalla_One'] mb-2">
                     Delight Your Customers
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
+                  <p className="text-gray-600 dark:text-gray-300 font-['Fjalla_One']">
                     Watch as your customers make more confident ordering
                     decisions with visual menu items. Customers will be prompted
                     to review the restaurant on Google and Tripadvisor. Win win.
@@ -114,14 +114,14 @@ const LandingPage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="bg-[#F0EAD6] py-20">
+      <section className="bg-[#F0EAD6] dark:bg-gray-800 py-20">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
             Why Restaurant Owners Choose Us
           </h2>
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center">
-              <div className="bg-black w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="bg-black dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
                   className="w-8 h-8 text-white"
                   fill="none"
@@ -139,13 +139,13 @@ const LandingPage = () => {
               <h3 className="text-xl font-['Fjalla_One'] mb-4">
                 Increased Orders
               </h3>
-              <p className="text-gray-600 font-['Fjalla_One']">
+              <p className="text-gray-600 dark:text-gray-300 font-['Fjalla_One']">
                 Customers are more likely to order when they can see what
                 they&apos;re getting.
               </p>
             </div>
             <div className="text-center">
-              <div className="bg-black w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="bg-black dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
                   className="w-8 h-8 text-white"
                   fill="none"
@@ -163,12 +163,12 @@ const LandingPage = () => {
               <h3 className="text-xl font-['Fjalla_One'] mb-4">
                 Easy Management
               </h3>
-              <p className="text-gray-600 font-['Fjalla_One']">
+              <p className="text-gray-600 dark:text-gray-300 font-['Fjalla_One']">
                 Update your menu photos instantly through our simple dashboard.
               </p>
             </div>
             <div className="text-center">
-              <div className="bg-black w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="bg-black dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
                   className="w-8 h-8 text-white"
                   fill="none"
@@ -186,7 +186,7 @@ const LandingPage = () => {
               <h3 className="text-xl font-['Fjalla_One'] mb-4">
                 Customer Satisfaction
               </h3>
-              <p className="text-gray-600 font-['Fjalla_One']">
+              <p className="text-gray-600 dark:text-gray-300 font-['Fjalla_One']">
                 Reduce order confusion and improve dining experience.
               </p>
             </div>
@@ -195,7 +195,7 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-black text-white">
+      <section className="py-20 bg-black dark:bg-gray-700 text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-['Fjalla_One'] mb-8">
             Ready to Transform Your Menu?
@@ -206,7 +206,7 @@ const LandingPage = () => {
           </p>
           <button
             onClick={handleGetStarted}
-            className="bg-white text-black px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-gray-100 transition-colors text-lg"
+            className="bg-white dark:bg-gray-800 text-black dark:text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors text-lg"
           >
             Start Your Free Trial
           </button>
@@ -214,14 +214,14 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-16">
+      <footer className="bg-black dark:bg-gray-800 text-white py-16">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-8 md:mb-0">
               <h3 className="text-3xl font-['Poller_One'] mb-2">
                 Dish Display
               </h3>
-              <p className="text-gray-400 font-['Fjalla_One'] text-lg">
+              <p className="text-gray-400 dark:text-gray-300 font-['Fjalla_One'] text-lg">
                 Bringing menus to life
               </p>
             </div>

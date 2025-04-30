@@ -17,18 +17,20 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md">
+      <aside className="w-64 bg-white dark:bg-gray-800 shadow-md">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+            Dashboard
+          </h2>
         </div>
         <nav className="mt-6">
           <ul className="space-y-2">
             <li>
               <a
                 href="#"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-md"
+                className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
               >
                 Overview
               </a>
@@ -36,7 +38,7 @@ const DashboardPage = () => {
             <li>
               <a
                 href="#"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-md"
+                className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
               >
                 Settings
               </a>
@@ -44,7 +46,7 @@ const DashboardPage = () => {
             <li>
               <a
                 href="#"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-md"
+                className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
               >
                 Profile
               </a>
@@ -52,7 +54,7 @@ const DashboardPage = () => {
             <li>
               <button
                 onClick={() => logout({ returnTo: window.location.origin })}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-md"
+                className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
               >
                 Log Out
               </button>
@@ -63,10 +65,10 @@ const DashboardPage = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-6">
-        <h1 className="text-3xl font-bold text-gray-800">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
           Welcome, {user?.name}!
         </h1>
-        <p className="mt-4 text-gray-600">
+        <p className="mt-4 text-gray-600 dark:text-gray-400">
           This is your dashboard. Use the sidebar to navigate through different
           sections.
         </p>

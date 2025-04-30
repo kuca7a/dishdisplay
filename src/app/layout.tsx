@@ -27,8 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${pollerOne.className} ${fjallaOne.className}`}>
+    <html lang="en" className="dark:bg-gray-900 bg-[#F0EAD6]">
+      <body
+        className={`${pollerOne.className} ${fjallaOne.className} dark:text-white text-black`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
