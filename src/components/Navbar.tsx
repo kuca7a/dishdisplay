@@ -37,6 +37,14 @@ const Navbar = () => {
               >
                 Our Team
               </Link>
+              {isAuthenticated && (
+                <Link
+                  href="/dashboard"
+                  className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+                >
+                  Dashboard
+                </Link>
+              )}
             </div>
           </div>
 
@@ -118,6 +126,15 @@ const Navbar = () => {
             >
               Our Team
             </Link>
+            {isAuthenticated && (
+              <Link
+                href="/dashboard"
+                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
             {!isAuthenticated ? (
               <button
                 onClick={() => {
