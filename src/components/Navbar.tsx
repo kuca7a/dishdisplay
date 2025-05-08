@@ -1,212 +1,96 @@
-"use client";
+'use client'
 
-import { useAuth0 } from "@auth0/auth0-react";
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { SunIcon, MoonIcon } from "@heroicons/react/24/solid"; // Import icons from Heroicons
+import * as Headless from '@headlessui/react'
+import clsx from 'clsx'
+import { LayoutGroup, motion } from 'framer-motion'
+import React, { forwardRef, useId } from 'react'
+import { TouchTarget } from './button'
+import { Link } from './link'
 
-const Navbar = () => {
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+export function Navbar({ className, ...props }: React.ComponentPropsWithoutRef<'nav'>) {
+  return <nav {...props} className={clsx(className, 'flex flex-1 items-center gap-4 py-2.5')} />
+}
 
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    if (!isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+export function NavbarDivider({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  return <div aria-hidden="true" {...props} className={clsx(className, 'h-6 w-px bg-zinc-950/10 dark:bg-white/10')} />
+}
 
-  useEffect(() => {
-    // Persist dark mode preference in localStorage
-    const darkModePreference = localStorage.getItem("darkMode") === "true";
-    setIsDarkMode(darkModePreference);
-    if (darkModePreference) {
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("darkMode", isDarkMode.toString());
-  }, [isDarkMode]);
+export function NavbarSection({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  let id = useId()
 
   return (
-    <nav className="bg-[#F0EAD6] dark:bg-gray-800 shadow-lg">
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-2xl font-['Poller_One'] text-black dark:text-white"
-          >
-            Dish Display
-          </Link>
+    <LayoutGroup id={id}>
+      <div {...props} className={clsx(className, 'flex items-center gap-3')} />
+    </LayoutGroup>
+  )
+}
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center flex-1 justify-center">
-            <div className="flex items-center space-x-8">
-              <Link
-                href="/about"
-                className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              >
-                About
-              </Link>
-              <Link
-                href="/services"
-                className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              >
-                Services
-              </Link>
-              <Link
-                href="/team"
-                className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              >
-                Our Team
-              </Link>
-              {isAuthenticated && (
-                <Link
-                  href="/dashboard"
-                  className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                >
-                  Dashboard
-                </Link>
-              )}
-            </div>
-          </div>
+export function NavbarSpacer({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  return <div aria-hidden="true" {...props} className={clsx(className, '-ml-4 flex-1')} />
+}
 
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={toggleDarkMode}
-            className="text-black dark:text-white px-4 py-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label="Toggle Dark Mode"
-          >
-            {isDarkMode ? (
-              <SunIcon className="w-6 h-6 text-yellow-500" /> // Sun icon for light mode
-            ) : (
-              <MoonIcon className="w-6 h-6 text-gray-300" /> // Moon icon for dark mode
-            )}
-          </button>
+export const NavbarItem = forwardRef(function NavbarItem(
+  {
+    current,
+    className,
+    children,
+    ...props
+  }: { current?: boolean; className?: string; children: React.ReactNode } & (
+    | Omit<Headless.ButtonProps, 'as' | 'className'>
+    | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
+  ),
+  ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>
+) {
+  let classes = clsx(
+    // Base
+    'relative flex min-w-0 items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-950 sm:text-sm/5',
+    // Leading icon/icon-only
+    '*:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:fill-zinc-500 sm:*:data-[slot=icon]:size-5',
+    // Trailing icon (down chevron or similar)
+    '*:not-nth-2:last:data-[slot=icon]:ml-auto *:not-nth-2:last:data-[slot=icon]:size-5 sm:*:not-nth-2:last:data-[slot=icon]:size-4',
+    // Avatar
+    '*:data-[slot=avatar]:-m-0.5 *:data-[slot=avatar]:size-7 *:data-[slot=avatar]:[--avatar-radius:var(--radius-md)] sm:*:data-[slot=avatar]:size-6',
+    // Hover
+    'data-hover:bg-zinc-950/5 data-hover:*:data-[slot=icon]:fill-zinc-950',
+    // Active
+    'data-active:bg-zinc-950/5 data-active:*:data-[slot=icon]:fill-zinc-950',
+    // Dark mode
+    'dark:text-white dark:*:data-[slot=icon]:fill-zinc-400',
+    'dark:data-hover:bg-white/5 dark:data-hover:*:data-[slot=icon]:fill-white',
+    'dark:data-active:bg-white/5 dark:data-active:*:data-[slot=icon]:fill-white'
+  )
 
-          {/* Auth Button */}
-          <div className="hidden md:block">
-            {!isAuthenticated ? (
-              <button
-                onClick={() => loginWithRedirect()}
-                className="text-black dark:text-white px-6 py-2 rounded-sm font-['Fjalla_One'] hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors hover:cursor-pointer"
-              >
-                Log In
-              </button>
-            ) : (
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-700 dark:text-gray-300 font-['Fjalla_One']">
-                  Welcome, {user?.name}
-                </span>
-                <button
-                  onClick={() => logout({ returnTo: window.location.origin })}
-                  className="text-black dark:text-white px-6 py-2 rounded-sm font-['Fjalla_One'] hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                >
-                  Log Out
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-black dark:text-white relative w-6 h-6"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            <div className="absolute inset-0 flex flex-col justify-center">
-              <span
-                className={`block w-6 h-0.5 bg-black dark:bg-white transform transition-all duration-300 ${
-                  isMenuOpen ? "rotate-45 translate-y-2" : ""
-                }`}
-              />
-              <span
-                className={`block w-6 h-0.5 bg-black dark:bg-white mt-1.5 transition-all duration-300 ${
-                  isMenuOpen ? "opacity-0" : ""
-                }`}
-              />
-              <span
-                className={`block w-6 h-0.5 bg-black dark:bg-white mt-1.5 transform transition-all duration-300 ${
-                  isMenuOpen ? "-rotate-45 -translate-y-2" : ""
-                }`}
-              />
-            </div>
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
+  return (
+    <span className={clsx(className, 'relative')}>
+      {current && (
+        <motion.span
+          layoutId="current-indicator"
+          className="absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-zinc-950 dark:bg-white"
+        />
+      )}
+      {'href' in props ? (
+        <Link
+          {...props}
+          className={classes}
+          data-current={current ? 'true' : undefined}
+          ref={ref as React.ForwardedRef<HTMLAnchorElement>}
         >
-          <div className="flex flex-col space-y-4 py-4">
-            <Link
-              href="/about"
-              className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="/services"
-              className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Services
-            </Link>
-            <Link
-              href="/team"
-              className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Our Team
-            </Link>
-            {isAuthenticated && (
-              <Link
-                href="/dashboard"
-                className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
-            )}
-            {!isAuthenticated ? (
-              <button
-                onClick={() => {
-                  loginWithRedirect();
-                  setIsMenuOpen(false);
-                }}
-                className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors text-left"
-              >
-                Log In
-              </button>
-            ) : (
-              <div className="flex flex-col space-y-2">
-                <span className="text-gray-700 dark:text-gray-300 font-['Fjalla_One']">
-                  Welcome, {user?.name}
-                </span>
-                <button
-                  onClick={() => {
-                    logout({ returnTo: window.location.origin });
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-black dark:text-white font-['Fjalla_One'] hover:text-gray-700 dark:hover:text-gray-300 transition-colors text-left"
-                >
-                  Log Out
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
-};
+          <TouchTarget>{children}</TouchTarget>
+        </Link>
+      ) : (
+        <Headless.Button
+          {...props}
+          className={clsx('cursor-default', classes)}
+          data-current={current ? 'true' : undefined}
+          ref={ref}
+        >
+          <TouchTarget>{children}</TouchTarget>
+        </Headless.Button>
+      )}
+    </span>
+  )
+})
 
-export default Navbar;
+export function NavbarLabel({ className, ...props }: React.ComponentPropsWithoutRef<'span'>) {
+  return <span {...props} className={clsx(className, 'truncate')} />
+}
