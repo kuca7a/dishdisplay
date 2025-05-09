@@ -10,7 +10,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-[#F0EAD6] shadow-lg">
+    <nav className="bg-[#FFF8F0] shadow-lg">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="text-2xl font-['Notable'] text-black">
@@ -45,6 +45,18 @@ const Navbar = () => {
               >
                 Our Team
               </Link>
+              <Link
+                href="/team"
+                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/team"
+                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+              >
+                Demo
+              </Link>
             </div>
           </div>
 
@@ -53,7 +65,7 @@ const Navbar = () => {
             {!isAuthenticated ? (
               <button
                 onClick={() => loginWithRedirect()}
-                className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] bg-white transition-colors hover:cursor-pointer"
+                className="px-6 py-2 rounded-sm font-['Fjalla_One'] text-white bg-[#5F7161] hover:bg-[#4C5B4F] transition-colors hover:cursor-pointer"
               >
                 Log In
               </button>
@@ -64,7 +76,7 @@ const Navbar = () => {
                 </span>
                 <button
                   onClick={() => logout({ returnTo: window.location.origin })}
-                  className="text-black px-6 py-2 rounded-sm font-['Fjalla_One'] bg-white hover:cursor-pointer transition-colors"
+                  className="px-6 py-2 rounded-sm font-['Fjalla_One'] text-white bg-[#5F7161] hover:bg-[#4C5B4F] hover:cursor-pointer transition-colors"
                 >
                   Log Out
                 </button>

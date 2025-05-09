@@ -4,7 +4,19 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "@/components/Navbar";
 import Carousel from "@/components/Carousel";
+
+import { CheckIcon } from "@heroicons/react/20/solid";
+
+const includedFeatures = [
+  "Unlimited QR code scans",
+  "Up to 100 menu items with images",
+  "Custom restaurant page with your branding",
+  "Update your menu anytime",
+  "Free support",
+];
+
 import { SpeedInsights } from "@vercel/speed-insights/next";
+
 
 const LandingPage = () => {
   const { loginWithRedirect } = useAuth0();
@@ -18,7 +30,7 @@ const LandingPage = () => {
       <SpeedInsights />
       <Navbar />
       {/* Hero Section */}
-      <section className="bg-[#F0EAD6] text-black py-10">
+      <section className="bg-[#FFF8F0] text-black py-10">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2">
@@ -31,7 +43,7 @@ const LandingPage = () => {
               </p>
               <button
                 onClick={handleGetStarted}
-                className="bg-black text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer hover:bg-gray-800 transition-colors text-lg w-full"
+                className="bg-[#5F7161] hover:bg-[#4C5B4F] text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer transition-colors text-lg w-full"
               >
                 Get Started Free
               </button>
@@ -44,7 +56,7 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="bg-[#F0EAD6] py-20">
+      <section className="bg-[#FFF8F0] py-20">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
             How Dish Display Works
@@ -113,8 +125,81 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section className="bg-[#FFF8F0] py-24 sm:py-32 font-['Fjalla_One']">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
+              Simple no-tricks pricing
+            </h2>
+            <p className="mx-auto mt-6 max-w-2xl text-lg font-medium text-gray-500 sm:text-xl">
+              Help customers make confident dining decisions with high-quality
+              photos of every dish on your menu.
+            </p>
+          </div>
+          <div className="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
+            <div className="p-8 sm:p-10 lg:flex-auto">
+              <h3 className="text-3xl font-semibold tracking-tight text-gray-900">
+                Lifetime membership
+              </h3>
+              <p className="mt-6 text-base text-gray-600">
+                Enjoy unlimited access to all features and updates with a simple
+                monthly subscription.
+              </p>
+              <div className="mt-10 flex items-center gap-x-4">
+                <h4 className="flex-none text-sm font-semibold text-[#5F7161]">
+                  What’s included
+                </h4>
+                <div className="h-px flex-auto bg-gray-100" />
+              </div>
+              <ul
+                role="list"
+                className="mt-8 grid grid-cols-1 gap-4 text-sm text-gray-600 sm:grid-cols-2 sm:gap-6"
+              >
+                {includedFeatures.map((feature) => (
+                  <li key={feature} className="flex gap-x-3">
+                    <CheckIcon
+                      aria-hidden="true"
+                      className="h-6 w-5 flex-none text-[#5F7161]"
+                    />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:shrink-0">
+              <div className="rounded-2xl bg-gray-50 py-10 text-center ring-1 ring-inset ring-gray-900/5 lg:flex lg:flex-col lg:justify-center lg:py-16">
+                <div className="mx-auto max-w-xs px-8">
+                  <p className="text-base text-gray-600">
+                    No contracts. No setup fees.
+                  </p>
+                  <p className="mt-6 flex items-baseline justify-center gap-x-2">
+                    <span className="text-5xl tracking-tight text-gray-900">
+                      £10
+                    </span>
+                    <span className="text-sm  tracking-wide text-gray-600">
+                      / month
+                    </span>
+                  </p>
+                  <a
+                    href="#"
+                    className="mt-10 block w-full rounded-md bg-[#5F7161] hover:bg-[#4C5B4F]  px-3 py-2 text-center text-sm text-white shadow-sm "
+                  >
+                    Get access
+                  </a>
+                  <p className="mt-6 text-xs text-gray-600">
+                    Invoices and receipts available for easy company
+                    reimbursement.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Section */}
-      <section className="bg-[#F0EAD6] py-20">
+      <section className="bg-[#FFF8F0] py-20">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
             Why Restaurant Owners Choose Us
