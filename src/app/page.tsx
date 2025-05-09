@@ -4,6 +4,7 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "@/components/Navbar";
 import Carousel from "@/components/Carousel";
+
 import { CheckIcon } from "@heroicons/react/20/solid";
 
 const includedFeatures = [
@@ -14,6 +15,9 @@ const includedFeatures = [
   "Free support",
 ];
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
+
 const LandingPage = () => {
   const { loginWithRedirect } = useAuth0();
 
@@ -23,6 +27,7 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen">
+      <SpeedInsights />
       <Navbar />
       {/* Hero Section */}
       <section className="bg-[#FFF8F0] text-black py-10">
@@ -110,7 +115,8 @@ const LandingPage = () => {
                   </h3>
                   <p className="text-gray-600 font-['Fjalla_One']">
                     Watch as your customers make more confident ordering
-                    decisions with visual menu items.
+                    decisions with visual menu items. Customers will be prompted
+                    to review the restaurant on Google and Tripadvisor. Win win.
                   </p>
                 </div>
               </div>
@@ -304,28 +310,34 @@ const LandingPage = () => {
             </div>
             <div className="flex space-x-8">
               <a
-                href="#"
+                href="/about"
                 className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
               >
                 About
               </a>
               <a
-                href="#"
-                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
-              >
-                Features
-              </a>
-              <a
-                href="#"
-                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
-              >
-                Pricing
-              </a>
-              <a
-                href="#"
+                href="/contact"
                 className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
               >
                 Contact
+              </a>
+              <a
+                href="/privacy"
+                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
+              >
+                Privacy Policy
+              </a>
+              <a
+                href="/terms"
+                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
+              >
+                T&Cs
+              </a>
+              <a
+                href="/licensing"
+                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
+              >
+                Licensing
               </a>
             </div>
           </div>
