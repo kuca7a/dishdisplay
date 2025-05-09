@@ -45,6 +45,18 @@ const Navbar = () => {
               >
                 Our Team
               </Link>
+              <Link
+                href="/team"
+                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+              >
+                Pricing
+              </Link>
+              <Link
+                href="/team"
+                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+              >
+                Demo
+              </Link>
             </div>
           </div>
 
