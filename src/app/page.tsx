@@ -17,7 +17,6 @@ const includedFeatures = [
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-
 const LandingPage = () => {
   const { loginWithRedirect } = useAuth0();
 
@@ -137,7 +136,7 @@ const LandingPage = () => {
               photos of every dish on your menu.
             </p>
           </div>
-          <div className="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
+          <div className="mx-auto mt-16 max-w-2xl rounded-3xl bg-white shadow-2xl sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
             <div className="p-8 sm:p-10 lg:flex-auto">
               <h3 className="text-3xl font-semibold tracking-tight text-gray-900">
                 Lifetime membership
@@ -168,7 +167,7 @@ const LandingPage = () => {
               </ul>
             </div>
             <div className="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:shrink-0">
-              <div className="rounded-2xl bg-gray-50 py-10 text-center ring-1 ring-inset ring-gray-900/5 lg:flex lg:flex-col lg:justify-center lg:py-16">
+              <div className="rounded-2xl bg-white py-10 text-center ring-2 ring-[#5F7161] shadow-2xl lg:flex lg:flex-col lg:justify-center lg:py-16">
                 <div className="mx-auto max-w-xs px-8">
                   <p className="text-base text-gray-600">
                     No contracts. No setup fees.
