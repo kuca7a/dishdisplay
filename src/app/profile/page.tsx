@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Fjalla_One } from "next/font/google";
 import Link from "next/link";
+import Image from "next/image";
 
 const fjallaOne = Fjalla_One({
   weight: "400",
@@ -63,7 +64,7 @@ export default function ProfilePage() {
           </Link>
         </div>
         <nav className="flex flex-col gap-2 relative">
-          {TABS.map((tab, idx) => (
+          {TABS.map((tab) => (
             <div key={tab.key} className="relative flex items-center">
               {activeTab === tab.key && (
                 <span
@@ -88,9 +89,11 @@ export default function ProfilePage() {
           {/* User Info Card */}
           <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3 mb-2 border border-gray-100">
             {user?.picture ? (
-              <img
+              <Image
                 src={user.picture}
                 alt={user.name || "Profile"}
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full object-cover"
               />
             ) : (
@@ -335,9 +338,11 @@ export default function ProfilePage() {
                         key={item.id}
                         className="flex items-center bg-gray-50 rounded-lg p-3 shadow-sm"
                       >
-                        <img
+                        <Image
                           src={item.image}
                           alt={item.name}
+                          width={64}
+                          height={64}
                           className="w-16 h-16 rounded-lg object-cover mr-4"
                         />
                         <div className="flex-1 min-w-0">
