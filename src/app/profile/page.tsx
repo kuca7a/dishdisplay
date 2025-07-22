@@ -4,8 +4,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Fjalla_One } from "next/font/google";
-import Link from "next/link";
-import Image from "next/image";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -29,7 +27,7 @@ const fjallaOne = Fjalla_One({
 });
 
 export default function Page() {
-  const { isAuthenticated, isLoading, user } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const router = useRouter();
 
   useEffect(() => {

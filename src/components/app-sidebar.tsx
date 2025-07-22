@@ -1,34 +1,11 @@
 "use client";
 
-import * as React from "react";
-import {
-  BookOpen,
-  Utensils,
-  Command,
-  Frame,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Send,
-  Eye,
-  UserRoundPen,
-  WandSparkles,
-} from "lucide-react";
+import { UserRoundPen, Utensils, Eye, WandSparkles, LifeBuoy, Send, Frame, PieChart, Map } from "lucide-react";
+import { Sidebar, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { useAuth0 } from "@auth0/auth0-react";
-
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import Link from "next/link";
 
 const data = {
   navMain: [
@@ -112,7 +89,6 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isAuthenticated } = useAuth0();
 
-  // Dynamic user info based on login
   const sidebarUser = isAuthenticated && user
     ? {
         name: user.name || user.nickname || "User",
@@ -131,11 +107,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <Link href="/" className="text-1xl font-['Notable'] text-black">
-                  DISH DISPLAY
-                </Link>
-              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
