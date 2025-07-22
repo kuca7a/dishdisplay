@@ -187,8 +187,7 @@ const LandingPage = () => {
                     Get access
                   </a>
                   <p className="mt-6 text-xs text-gray-600">
-                    Invoices and receipts available for easy company
-                    reimbursement.
+                    Cancel anytime. No hidden fees.
                   </p>
                 </div>
               </div>
