@@ -6,7 +6,7 @@ import { useState } from "react";
 import { CircleUser } from 'lucide-react';
 
 const Navbar = () => {
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, user } = useAuth0();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
