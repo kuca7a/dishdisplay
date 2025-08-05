@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Fjalla_One } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -27,7 +27,7 @@ const fjallaOne = Fjalla_One({
 });
 
 export default function Page() {
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
 
   useEffect(() => {
@@ -35,6 +35,14 @@ export default function Page() {
       router.replace("/");
     }
   }, [isLoading, isAuthenticated, router]);
+
+  // Greeting logic
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  }, []);
 
   if (isLoading || !isAuthenticated) {
     return null;
@@ -45,8 +53,12 @@ export default function Page() {
       <AppSidebar />
       <SidebarInset>
         <div className={fjallaOne.className}>
-          <header className="flex h-16 shrink-0 items-center gap-2">
-            <div className="flex items-center gap-2 px-4">
+          <header className="flex flex-col gap-2 h-auto shrink-0 items-start px-4 pt-4">
+            <span className="text-xl font-semibold">
+              {greeting}
+              {user?.name ? `, ${user.name}` : "!"}
+            </span>
+            <div className="flex h-16 items-center gap-2 w-full">
               <SidebarTrigger className="-ml-1" />
               <Separator
                 orientation="vertical"

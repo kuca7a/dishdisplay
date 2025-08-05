@@ -1,6 +1,6 @@
 "use client";
 
-import { UserRoundPen, Utensils, Eye, WandSparkles, LifeBuoy, Send, Frame, PieChart, Map } from "lucide-react";
+import { UserRoundPen, Utensils, Eye, WandSparkles, Frame, PieChart, Map, MessageCircleQuestion, Sticker} from "lucide-react";
 import { Sidebar, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavMain } from "@/components/nav-main";
@@ -59,12 +59,12 @@ const data = {
     {
       title: "Support",
       url: "#",
-      icon: LifeBuoy,
+      icon: MessageCircleQuestion,
     },
     {
       title: "Feedback",
       url: "#",
-      icon: Send,
+      icon: Sticker,
     },
   ],
   projects: [

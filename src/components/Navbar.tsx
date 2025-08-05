@@ -2,8 +2,8 @@
 
 import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
-// import Image from "next/image";
 import { useState } from "react";
+import { CircleUser } from 'lucide-react';
 
 const Navbar = () => {
   const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
@@ -69,31 +69,12 @@ const Navbar = () => {
                 </span>
                 <a
                   href="/profile"
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-[#5F7161] hover:bg-[#4C5B4F] text-white transition-colors"
+                  className="flex items-center justify-center w-10 h-10 rounded-full hover:text-[#5F7161] transition-colors"
                   title="Profile"
                 >
-                  {/* Simple user icon SVG */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0v.75a.75.75 0 01-.75.75h-13.5a.75.75 0 01-.75-.75v-.75z"
-                    />
-                  </svg>
+                  <CircleUser />
                 </a>
-                <button
-                  onClick={() => logout({ returnTo: window.location.origin })}
-                  className="px-6 py-2 rounded-sm font-['Fjalla_One'] text-white bg-[#5F7161] hover:bg-[#4C5B4F] hover:cursor-pointer transition-colors"
-                >
-                  Log Out
-                </button>
+                {/* Log Out button removed */}
               </div>
             )}
           </div>
