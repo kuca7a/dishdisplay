@@ -112,6 +112,16 @@ const Navbar = () => {
           }`}
         >
           <div className="flex flex-col space-y-4 py-4">
+            {isAuthenticated && (
+              <Link
+                href="/profile"
+                className="text-black font-['Fjalla_One'] hover:text-[#5F7161] transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+                title="Profile"
+              >
+                Profile
+              </Link>
+            )}
             <Link
               href="/about"
               className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
@@ -143,22 +153,7 @@ const Navbar = () => {
               >
                 Log In
               </button>
-            ) : (
-              <div className="flex flex-col space-y-2">
-                <span className="text-gray-700 font-['Fjalla_One']">
-                  Welcome, {user?.name}
-                </span>
-                <button
-                  onClick={() => {
-                    logout({ returnTo: window.location.origin });
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors text-left"
-                >
-                  Log Out
-                </button>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
