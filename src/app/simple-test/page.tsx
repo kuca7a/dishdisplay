@@ -21,7 +21,7 @@ export default function SimpleSupabaseTest() {
     setResult('Testing Supabase connection...')
     
     try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      const { error: sessionError } = await supabase.auth.getSession()
       const { data: tableData, error: tableError } = await supabase
         .from('test_items')
         .select('*')

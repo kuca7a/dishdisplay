@@ -59,7 +59,7 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
         name: formData.name.trim(),
         description: formData.description.trim() || undefined,
         price: price,
-        category: formData.category as any,
+        category: formData.category as 'appetizer' | 'main' | 'dessert' | 'drink',
         image_url: formData.image_url.trim() || undefined,
         is_available: formData.is_available,
       };

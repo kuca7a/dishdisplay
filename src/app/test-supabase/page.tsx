@@ -15,7 +15,7 @@ interface TestData {
 }
 
 export default function TestSupabasePage() {
-  const [data, setData] = useState<TestData[]>([])
+  const [items, setItems] = useState<TestData[]>([])
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -28,7 +28,7 @@ export default function TestSupabasePage() {
 
   const testConnection = async () => {
     try {
-      const { data, error } = await supabase.from('test_items').select('*').limit(1)
+      const { error } = await supabase.from('test_items').select('*').limit(1)
       if (error) {
         console.log('Table might not exist yet, but connection is working')
         setConnectionStatus('connected')
@@ -44,7 +44,7 @@ export default function TestSupabasePage() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const { data: items, error } = await supabase
+      const { data: fetchedItems, error } = await supabase
         .from('test_items')
         .select('*')
         .order('created_at', { ascending: false })
@@ -53,7 +53,7 @@ export default function TestSupabasePage() {
         console.error('Error fetching data:', error)
         alert('Error fetching data: ' + error.message)
       } else {
-        setData(items || [])
+        setItems(fetchedItems || [])
       }
     } catch (error) {
       console.error('Error:', error)
@@ -233,14 +233,14 @@ export default function TestSupabasePage() {
       </Card>
 
       {/* Display Data */}
-      {data.length > 0 && (
+      {items.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Retrieved Data</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {data.map((item) => (
+              {items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between p-3 border rounded">
                   <div>
                     <strong>{item.name}</strong>
