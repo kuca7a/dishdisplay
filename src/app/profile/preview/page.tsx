@@ -1,12 +1,12 @@
 "use client";
 
+// Force dynamic rendering to prevent prerender issues with Auth0
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { restaurantService } from "@/lib/database";
 import { Fjalla_One } from "next/font/google";
-
-// Force dynamic rendering to prevent prerender issues with Auth0
-export const dynamic = 'force-dynamic';
 
 const fjallaOne = Fjalla_One({
   weight: "400",

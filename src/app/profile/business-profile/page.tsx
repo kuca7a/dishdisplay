@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to prevent prerender issues with Auth0
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
@@ -33,9 +36,6 @@ import { Button } from "@/components/ui/button";
 import { Building2, Phone, Globe, Mail, Loader2 } from "lucide-react";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
-
-// Force dynamic rendering to prevent prerender issues with Auth0
-export const dynamic = 'force-dynamic';
 
 const fjallaOne = Fjalla_One({
   weight: "400",
