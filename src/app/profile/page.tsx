@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to prevent prerender issues with Auth0
+export const dynamic = 'force-dynamic';
+
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";

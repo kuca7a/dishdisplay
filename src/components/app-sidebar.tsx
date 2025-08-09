@@ -17,15 +17,15 @@ const data = {
       items: [
         {
           title: "Business  Profile",
-          url: "#",
+          url: "/profile/business-profile",
         },
         {
           title: "Location & Hours",
-          url: "#",
+          url: "/profile/location-hours",
         },
         {
           title: "Media & Branding",
-          url: "#",
+          url: "/profile/media-branding",
         },
       ],
     },
@@ -36,11 +36,11 @@ const data = {
       items: [
         {
           title: "Manage",
-          url: "#",
+          url: "/profile/menu/manage",
         },
         {
           title: "Explore",
-          url: "#",
+          url: "/profile/menu/explore",
         },
       ],
     },
@@ -51,19 +51,19 @@ const data = {
     },
     {
       title: "Insights",
-      url: "#",
+      url: "/profile/insights",
       icon: WandSparkles,
     },
   ],
   navSecondary: [
     {
       title: "Support",
-      url: "#",
+      url: "/profile/support",
       icon: MessageCircleQuestion,
     },
     {
       title: "Feedback",
-      url: "#",
+      url: "/profile/feedback",
       icon: Sticker,
     },
   ],
