@@ -30,7 +30,7 @@ const fjallaOne = Fjalla_One({
 });
 
 export default function InsightsPage() {
-  const { isAuthenticated, isLoading, user } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const router = useRouter();
 
   useEffect(() => {

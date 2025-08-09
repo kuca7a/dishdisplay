@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Palette, Upload, Image, Sparkles, Loader2, Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
+import { Palette, Image, Sparkles, Loader2, Facebook, Instagram, Twitter } from "lucide-react";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
 
@@ -85,6 +85,36 @@ export default function MediaBrandingPage() {
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
+      const loadRestaurantData = async () => {
+        try {
+          setLoading(true);
+          const restaurantData = await restaurantService.getByOwnerEmail(user!.email!);
+          
+          if (restaurantData) {
+            setRestaurant(restaurantData);
+            setFormData({
+              logo_url: restaurantData.logo_url || '',
+              cover_image_url: restaurantData.cover_image_url || '',
+              primary_color: restaurantData.primary_color || '#FF6B35',
+              secondary_color: restaurantData.secondary_color || '#FFF5F1',
+              accent_color: restaurantData.accent_color || '#2C3E50',
+              font_family: restaurantData.font_family || 'Inter',
+              theme_style: restaurantData.theme_style || 'modern',
+              social_facebook: restaurantData.social_facebook || '',
+              social_instagram: restaurantData.social_instagram || '',
+              social_twitter: restaurantData.social_twitter || '',
+              social_linkedin: restaurantData.social_linkedin || '',
+              social_tiktok: restaurantData.social_tiktok || ''
+            });
+          }
+        } catch (err: unknown) {
+          console.error("Error loading restaurant data:", err);
+          setError("Failed to load restaurant data");
+        } finally {
+          setLoading(false);
+        }
+      };
+
       loadRestaurantData();
     }
   }, [isAuthenticated, user]);
@@ -111,7 +141,7 @@ export default function MediaBrandingPage() {
           social_tiktok: restaurantData.social_tiktok || ''
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error loading restaurant data:", err);
       setError("Failed to load restaurant data");
     } finally {
@@ -151,16 +181,18 @@ export default function MediaBrandingPage() {
       // Reload data to get the updated info
       await loadRestaurantData();
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error updating restaurant:", err);
-      console.error("Error details:", err.message, err.details, err.hint);
+      
+      const errorObj = err as { message?: string; details?: string; hint?: string };
+      console.error("Error details:", errorObj.message, errorObj.details, errorObj.hint);
       
       let errorMessage = "Failed to update media & branding. ";
       
-      if (err.message?.includes("column") && err.message?.includes("does not exist")) {
+      if (errorObj.message?.includes("column") && errorObj.message?.includes("does not exist")) {
         errorMessage += "Database schema needs to be updated. Please run the SQL script in Supabase.";
-      } else if (err.message) {
-        errorMessage += `Details: ${err.message}`;
+      } else if (errorObj.message) {
+        errorMessage += `Details: ${errorObj.message}`;
       } else {
         errorMessage += "Please try again.";
       }

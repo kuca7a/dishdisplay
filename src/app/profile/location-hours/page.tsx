@@ -23,8 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Clock, Calendar, Loader2 } from "lucide-react";
+import { MapPin, Clock, Loader2 } from "lucide-react";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
 
@@ -80,6 +79,37 @@ export default function LocationHoursPage() {
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
+      const loadRestaurantData = async () => {
+        try {
+          setLoading(true);
+          const restaurantData = await restaurantService.getByOwnerEmail(user!.email!);
+          
+          if (restaurantData) {
+            setRestaurant(restaurantData);
+            setFormData({
+              address: restaurantData.address || '',
+              city: restaurantData.city || '',
+              state: restaurantData.state || '',
+              postal_code: restaurantData.postal_code || '',
+              country: restaurantData.country || '',
+              monday_hours: restaurantData.monday_hours || '',
+              tuesday_hours: restaurantData.tuesday_hours || '',
+              wednesday_hours: restaurantData.wednesday_hours || '',
+              thursday_hours: restaurantData.thursday_hours || '',
+              friday_hours: restaurantData.friday_hours || '',
+              saturday_hours: restaurantData.saturday_hours || '',
+              sunday_hours: restaurantData.sunday_hours || '',
+              timezone: restaurantData.timezone || 'America/New_York'
+            });
+          }
+        } catch (err) {
+          console.error("Error loading restaurant data:", err);
+          setError("Failed to load restaurant data");
+        } finally {
+          setLoading(false);
+        }
+      };
+
       loadRestaurantData();
     }
   }, [isAuthenticated, user]);
@@ -147,16 +177,18 @@ export default function LocationHoursPage() {
       // Reload data to get the updated info
       await loadRestaurantData();
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error updating restaurant:", err);
-      console.error("Error details:", err.message, err.details, err.hint);
+      
+      const errorObj = err as { message?: string; details?: string; hint?: string };
+      console.error("Error details:", errorObj.message, errorObj.details, errorObj.hint);
       
       let errorMessage = "Failed to update location & hours. ";
       
-      if (err.message?.includes("column") && err.message?.includes("does not exist")) {
+      if (errorObj.message?.includes("column") && errorObj.message?.includes("does not exist")) {
         errorMessage += "Database schema needs to be updated. Please run the SQL script in Supabase.";
-      } else if (err.message) {
-        errorMessage += `Details: ${err.message}`;
+      } else if (errorObj.message) {
+        errorMessage += `Details: ${errorObj.message}`;
       } else {
         errorMessage += "Please try again.";
       }
@@ -267,7 +299,7 @@ export default function LocationHoursPage() {
                       Location Details
                     </CardTitle>
                     <CardDescription>
-                      Your restaurant's physical address and location information
+                      Your restaurant&apos;s physical address and location information
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">

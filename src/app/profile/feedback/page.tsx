@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -20,7 +20,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Sticker, ThumbsUp, MessageSquare, Lightbulb } from "lucide-react";
 
 const fjallaOne = Fjalla_One({
@@ -30,7 +30,7 @@ const fjallaOne = Fjalla_One({
 });
 
 export default function FeedbackPage() {
-  const { isAuthenticated, isLoading, user } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const router = useRouter();
 
   useEffect(() => {
@@ -84,36 +84,46 @@ export default function FeedbackPage() {
                 <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Sticker className="h-10 w-10 text-orange-600" />
                 </div>
-                <h2 className="text-2xl font-bold mb-4">Feedback System Coming Soon</h2>
+                <h2 className="text-2xl font-bold mb-4">
+                  Feedback System Coming Soon
+                </h2>
                 <p className="text-gray-600 mb-6">
-                  We're building a comprehensive feedback system where you can share suggestions, 
-                  report issues, and help us improve DishDisplay for all restaurant owners.
+                  We&apos;re building a comprehensive feedback system where you
+                  can share suggestions, report issues, and help us improve
+                  DishDisplay for all restaurant owners.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                     <MessageSquare className="h-5 w-5 text-orange-600" />
                     <div className="text-left">
                       <p className="font-medium text-sm">Feature Requests</p>
-                      <p className="text-xs text-gray-600">Suggest new features and improvements</p>
+                      <p className="text-xs text-gray-600">
+                        Suggest new features and improvements
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                     <ThumbsUp className="h-5 w-5 text-orange-600" />
                     <div className="text-left">
                       <p className="font-medium text-sm">Bug Reports</p>
-                      <p className="text-xs text-gray-600">Help us fix issues and improve stability</p>
+                      <p className="text-xs text-gray-600">
+                        Help us fix issues and improve stability
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                     <Lightbulb className="h-5 w-5 text-orange-600" />
                     <div className="text-left">
                       <p className="font-medium text-sm">General Feedback</p>
-                      <p className="text-xs text-gray-600">Share your thoughts and experiences</p>
+                      <p className="text-xs text-gray-600">
+                        Share your thoughts and experiences
+                      </p>
                     </div>
                   </div>
                 </div>
                 <p className="text-sm text-gray-500 mt-6">
-                  In the meantime, feel free to reach out via our Support section!
+                  In the meantime, feel free to reach out via our Support
+                  section!
                 </p>
               </CardContent>
             </Card>

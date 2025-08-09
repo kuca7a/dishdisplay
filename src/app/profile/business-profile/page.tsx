@@ -19,7 +19,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,7 +43,7 @@ const fjallaOne = Fjalla_One({
 export default function BusinessProfilePage() {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
-  
+
   // State for restaurant data
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,12 +53,12 @@ export default function BusinessProfilePage() {
 
   // Form state
   const [formData, setFormData] = useState({
-    name: '',
-    business_type: '',
-    description: '',
-    phone: '',
-    business_email: '',
-    website: ''
+    name: "",
+    business_type: "",
+    description: "",
+    phone: "",
+    business_email: "",
+    website: "",
   });
 
   useEffect(() => {
@@ -63,6 +69,32 @@ export default function BusinessProfilePage() {
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
+      const loadRestaurantData = async () => {
+        try {
+          setLoading(true);
+          const restaurantData = await restaurantService.getByOwnerEmail(
+            user!.email!
+          );
+
+          if (restaurantData) {
+            setRestaurant(restaurantData);
+            setFormData({
+              name: restaurantData.name || "",
+              business_type: restaurantData.business_type || "",
+              description: restaurantData.description || "",
+              phone: restaurantData.phone || "",
+              business_email: restaurantData.business_email || "",
+              website: restaurantData.website || "",
+            });
+          }
+        } catch (err) {
+          console.error("Error loading restaurant data:", err);
+          setError("Failed to load restaurant data");
+        } finally {
+          setLoading(false);
+        }
+      };
+
       loadRestaurantData();
     }
   }, [isAuthenticated, user]);
@@ -70,17 +102,19 @@ export default function BusinessProfilePage() {
   const loadRestaurantData = async () => {
     try {
       setLoading(true);
-      const restaurantData = await restaurantService.getByOwnerEmail(user!.email!);
-      
+      const restaurantData = await restaurantService.getByOwnerEmail(
+        user!.email!
+      );
+
       if (restaurantData) {
         setRestaurant(restaurantData);
         setFormData({
-          name: restaurantData.name || '',
-          business_type: restaurantData.business_type || '',
-          description: restaurantData.description || '',
-          phone: restaurantData.phone || '',
-          business_email: restaurantData.business_email || '',
-          website: restaurantData.website || ''
+          name: restaurantData.name || "",
+          business_type: restaurantData.business_type || "",
+          description: restaurantData.description || "",
+          phone: restaurantData.phone || "",
+          business_email: restaurantData.business_email || "",
+          website: restaurantData.website || "",
         });
       }
     } catch (err) {
@@ -91,9 +125,11 @@ export default function BusinessProfilePage() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear success message when user starts editing
     if (successMessage) setSuccessMessage(null);
   };
@@ -101,7 +137,9 @@ export default function BusinessProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!restaurant) {
-      setError("No restaurant found. Please create a restaurant first in Menu > Manage.");
+      setError(
+        "No restaurant found. Please create a restaurant first in Menu > Manage."
+      );
       return;
     }
 
@@ -110,12 +148,11 @@ export default function BusinessProfilePage() {
       setError(null);
 
       await restaurantService.update(restaurant.id, formData);
-      
+
       setSuccessMessage("Business profile updated successfully!");
-      
+
       // Reload data to get the updated info
       await loadRestaurantData();
-      
     } catch (err) {
       console.error("Error updating restaurant:", err);
       setError("Failed to update business profile. Please try again.");
@@ -279,7 +316,10 @@ export default function BusinessProfilePage() {
 
                   {/* Business Email */}
                   <div className="space-y-2">
-                    <Label htmlFor="business_email" className="flex items-center gap-2">
+                    <Label
+                      htmlFor="business_email"
+                      className="flex items-center gap-2"
+                    >
                       <Mail className="h-4 w-4" />
                       Business Email
                     </Label>
@@ -295,7 +335,10 @@ export default function BusinessProfilePage() {
 
                   {/* Website */}
                   <div className="space-y-2">
-                    <Label htmlFor="website" className="flex items-center gap-2">
+                    <Label
+                      htmlFor="website"
+                      className="flex items-center gap-2"
+                    >
                       <Globe className="h-4 w-4" />
                       Website
                     </Label>
@@ -331,8 +374,9 @@ export default function BusinessProfilePage() {
                 {!restaurant && (
                   <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <p className="text-blue-700 text-sm">
-                      <strong>No restaurant found.</strong> To create your restaurant profile, 
-                      go to <strong>Menu → Manage</strong> and add your first restaurant.
+                      <strong>No restaurant found.</strong> To create your
+                      restaurant profile, go to <strong>Menu → Manage</strong>{" "}
+                      and add your first restaurant.
                     </p>
                   </div>
                 )}
