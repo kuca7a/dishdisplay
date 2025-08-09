@@ -5,6 +5,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 import { Fjalla_One } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
+
+// Force dynamic rendering to prevent prerender issues with Auth0
+export const dynamic = 'force-dynamic';
 import {
   Breadcrumb,
   BreadcrumbItem,

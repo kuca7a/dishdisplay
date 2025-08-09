@@ -5,6 +5,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "@/components/Navbar";
 import Carousel from "@/components/Carousel";
 
+// Force dynamic rendering to prevent prerender issues with Auth0
+export const dynamic = 'force-dynamic';
+
 import { CheckIcon } from "@heroicons/react/20/solid";
 
 const includedFeatures = [
