@@ -28,6 +28,12 @@ export default function TestSupabasePage() {
 
   const testConnection = async () => {
     try {
+      if (!supabase) {
+        console.error('Supabase client not configured')
+        setConnectionStatus('error')
+        return
+      }
+
       const { error } = await supabase.from('test_items').select('*').limit(1)
       if (error) {
         console.log('Table might not exist yet, but connection is working')
@@ -44,6 +50,13 @@ export default function TestSupabasePage() {
   const fetchData = async () => {
     setLoading(true)
     try {
+      if (!supabase) {
+        console.error('Supabase client not configured')
+        alert('Supabase not configured. Please check environment variables.')
+        setLoading(false)
+        return
+      }
+
       const { data: fetchedItems, error } = await supabase
         .from('test_items')
         .select('*')
@@ -65,6 +78,13 @@ export default function TestSupabasePage() {
   const createTable = async () => {
     setLoading(true)
     try {
+      if (!supabase) {
+        console.error('Supabase client not configured')
+        alert('Supabase not configured. Please check environment variables.')
+        setLoading(false)
+        return
+      }
+
       const { error } = await supabase.rpc('create_test_table')
       
       if (error) {
@@ -100,6 +120,13 @@ export default function TestSupabasePage() {
 
     setLoading(true)
     try {
+      if (!supabase) {
+        console.error('Supabase client not configured')
+        alert('Supabase not configured. Please check environment variables.')
+        setLoading(false)
+        return
+      }
+
       const { error } = await supabase
         .from('test_items')
         .insert([{ name: name.trim(), description: description.trim() }])
@@ -122,6 +149,13 @@ export default function TestSupabasePage() {
   const deleteItem = async (id: number) => {
     setLoading(true)
     try {
+      if (!supabase) {
+        console.error('Supabase client not configured')
+        alert('Supabase not configured. Please check environment variables.')
+        setLoading(false)
+        return
+      }
+
       const { error } = await supabase
         .from('test_items')
         .delete()

@@ -1,10 +1,16 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 import { Restaurant, MenuItem, CreateRestaurantData, UpdateRestaurantData, CreateMenuItemData, UpdateMenuItemData } from '@/types/database'
 
 // Restaurant operations
 export const restaurantService = {
   // Get restaurant by owner email
   async getByOwnerEmail(email: string): Promise<Restaurant | null> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('Database: Supabase client not available');
+      return null;
+    }
+    
     console.log('Database: Searching for restaurant with owner_email:', email);
     
     const { data, error } = await supabase
@@ -30,6 +36,12 @@ export const restaurantService = {
 
   // Get restaurant by ID
   async getById(id: string): Promise<Restaurant | null> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('Database: Supabase client not available');
+      return null;
+    }
+    
     const { data, error } = await supabase
       .from('restaurants')
       .select('*')
@@ -45,6 +57,11 @@ export const restaurantService = {
 
   // Create restaurant
   async create(restaurantData: CreateRestaurantData): Promise<Restaurant> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error('Database not available');
+    }
+    
     const { data, error } = await supabase
       .from('restaurants')
       .insert([restaurantData])
@@ -57,6 +74,11 @@ export const restaurantService = {
 
   // Update restaurant
   async update(id: string, updates: UpdateRestaurantData): Promise<Restaurant> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error('Database not available');
+    }
+    
     const { data, error } = await supabase
       .from('restaurants')
       .update(updates)
@@ -70,6 +92,11 @@ export const restaurantService = {
 
   // Delete restaurant
   async delete(id: string): Promise<void> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error('Database not available');
+    }
+    
     const { error } = await supabase
       .from('restaurants')
       .delete()
@@ -83,6 +110,12 @@ export const restaurantService = {
 export const menuItemService = {
   // Get all menu items for a restaurant
   async getByRestaurantId(restaurantId: string): Promise<MenuItem[]> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('Database: Supabase client not available');
+      return [];
+    }
+    
     const { data, error } = await supabase
       .from('menu_items')
       .select('*')
@@ -95,6 +128,12 @@ export const menuItemService = {
 
   // Get menu items by category
   async getByCategory(restaurantId: string, category: string): Promise<MenuItem[]> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.error('Database: Supabase client not available');
+      return [];
+    }
+    
     const { data, error } = await supabase
       .from('menu_items')
       .select('*')
@@ -108,6 +147,11 @@ export const menuItemService = {
 
   // Create menu item
   async create(menuItemData: CreateMenuItemData): Promise<MenuItem> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error('Database not available');
+    }
+    
     const { data, error } = await supabase
       .from('menu_items')
       .insert([menuItemData])
@@ -120,6 +164,11 @@ export const menuItemService = {
 
   // Update menu item
   async update(id: string, updates: UpdateMenuItemData): Promise<MenuItem> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error('Database not available');
+    }
+    
     const { data, error } = await supabase
       .from('menu_items')
       .update(updates)
@@ -133,6 +182,11 @@ export const menuItemService = {
 
   // Delete menu item
   async delete(id: string): Promise<void> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error('Database not available');
+    }
+    
     const { error } = await supabase
       .from('menu_items')
       .delete()
@@ -143,6 +197,11 @@ export const menuItemService = {
 
   // Toggle availability
   async toggleAvailability(id: string): Promise<MenuItem> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error('Database not available');
+    }
+    
     // First get current status
     const { data: currentItem, error: fetchError } = await supabase
       .from('menu_items')

@@ -21,6 +21,11 @@ export default function SimpleSupabaseTest() {
     setResult('Testing Supabase connection...')
     
     try {
+      if (!supabase) {
+        setResult('❌ Supabase not configured. Please check environment variables.')
+        return
+      }
+
       const { error: sessionError } = await supabase.auth.getSession()
       const { data: tableData, error: tableError } = await supabase
         .from('test_items')
@@ -41,6 +46,12 @@ export default function SimpleSupabaseTest() {
   const fetchItems = async () => {
     setLoading(true)
     try {
+      if (!supabase) {
+        setResult('❌ Supabase not configured. Please check environment variables.')
+        setLoading(false)
+        return
+      }
+
       const { data, error } = await supabase
         .from('test_items')
         .select('*')
@@ -66,6 +77,12 @@ export default function SimpleSupabaseTest() {
 
     setLoading(true)
     try {
+      if (!supabase) {
+        setResult('❌ Supabase not configured. Please check environment variables.')
+        setLoading(false)
+        return
+      }
+
       const { error } = await supabase
         .from('test_items')
         .insert([{ 
@@ -91,6 +108,12 @@ export default function SimpleSupabaseTest() {
   const deleteItem = async (id: number, itemName: string) => {
     setLoading(true)
     try {
+      if (!supabase) {
+        setResult('❌ Supabase not configured. Please check environment variables.')
+        setLoading(false)
+        return
+      }
+
       const { error } = await supabase
         .from('test_items')
         .delete()
