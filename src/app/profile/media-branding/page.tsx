@@ -299,6 +299,7 @@ export default function MediaBrandingPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
+                      {/* eslint-disable-next-line jsx-a11y/alt-text */}
                       <Image className="h-5 w-5" />
                       Media Assets
                     </CardTitle>

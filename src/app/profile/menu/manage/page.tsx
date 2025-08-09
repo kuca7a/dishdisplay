@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Fjalla_One } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -25,8 +26,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Edit, Trash2, Eye, EyeOff, Utensils } from "lucide-react";
-import { menuService, menuItemService, restaurantService } from "@/lib/database";
+import { Plus, Eye, EyeOff, Utensils } from "lucide-react";
+import { menuItemService, restaurantService } from "@/lib/database";
 import { Restaurant, MenuItem } from "@/types/database";
 import { AddMenuItemForm } from "@/components/AddMenuItemForm";
 import { EditMenuItemForm } from "@/components/EditMenuItemForm";
@@ -118,6 +119,38 @@ export default function MenuManagePage() {
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
+      const loadRestaurantData = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          
+          console.log("Loading restaurant data for user:", user?.email);
+          console.log("Full user object:", user);
+          
+          // First try to get existing restaurant
+          const restaurant = await restaurantService.getByOwnerEmail(user!.email!);
+          
+          if (restaurant) {
+            console.log("Found existing restaurant:", restaurant);
+            setRestaurant(restaurant);
+            
+            // Load menu items for this restaurant
+            const items = await menuItemService.getByRestaurantId(restaurant.id);
+            console.log("Loaded menu items:", items);
+            setMenuItems(items);
+          } else {
+            console.log("No restaurant found for user");
+            setRestaurant(null);
+            setMenuItems([]);
+          }
+        } catch (err) {
+          console.error("Error loading restaurant data:", err);
+          setError("Failed to load restaurant data. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
       loadRestaurantData();
     }
   }, [isAuthenticated, user]);
@@ -427,11 +460,12 @@ export default function MenuManagePage() {
                 {menuItems.map((item) => (
                   <Card key={item.id} className="overflow-hidden">
                     {item.image_url && (
-                      <div className="aspect-video bg-gray-100">
-                        <img
+                      <div className="aspect-video bg-gray-100 relative">
+                        <Image
                           src={item.image_url}
                           alt={item.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                         />
                       </div>
                     )}

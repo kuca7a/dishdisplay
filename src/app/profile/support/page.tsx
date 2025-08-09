@@ -20,7 +20,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircleQuestion, Phone, Mail } from "lucide-react";
 
 const fjallaOne = Fjalla_One({
@@ -30,7 +30,7 @@ const fjallaOne = Fjalla_One({
 });
 
 export default function SupportPage() {
-  const { isAuthenticated, isLoading, user } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const router = useRouter();
 
   useEffect(() => {
