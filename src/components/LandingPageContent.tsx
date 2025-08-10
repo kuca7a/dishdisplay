@@ -58,8 +58,8 @@ export default function LandingPageContent() {
           <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
             How Dish Display Works
           </h2>
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+          <div className="flex justify-center">
+            <div className="max-w-2xl space-y-12">
               <div className="flex items-start space-x-4">
                 <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-['Fjalla_One']">1</span>
@@ -134,7 +134,7 @@ export default function LandingPageContent() {
               photos of every dish on your menu.
             </p>
           </div>
-          <div className="mx-auto mt-16 max-w-2xl rounded-3xl bg-white shadow-2xl sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
+          <div className="mx-auto mt-16 max-w-2xl rounded-3xl bg-white shadow-2xl sm:mt-20 lg:mx-0 lg:flex lg:max-w-none lg:items-center">
             <div className="p-8 sm:p-10 lg:flex-auto">
               <h3 className="text-3xl font-semibold tracking-tight text-gray-900">
                 Lifetime membership
@@ -164,7 +164,7 @@ export default function LandingPageContent() {
                 ))}
               </ul>
             </div>
-            <div className="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:shrink-0">
+            <div className="p-2 lg:mt-0 lg:w-full lg:max-w-md lg:shrink-0">
               <div className="rounded-2xl bg-white py-10 text-center ring-2 ring-[#5F7161] shadow-2xl lg:flex lg:flex-col lg:justify-center lg:py-16">
                 <div className="mx-auto max-w-xs px-8">
                   <p className="text-base text-gray-600">
