@@ -1,6 +1,6 @@
 "use client";
 
-import { UserRoundPen, Utensils, Eye, WandSparkles, Frame, PieChart, Map, MessageCircleQuestion, Sticker} from "lucide-react";
+import { UserRoundPen, Utensils, Eye, WandSparkles, Frame, PieChart, Map, MessageCircleQuestion, Sticker, QrCode} from "lucide-react";
 import { Sidebar, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavMain } from "@/components/nav-main";
@@ -45,8 +45,13 @@ const data = {
       ],
     },
     {
+      title: "QR Code",
+      url: "/profile/qr-code",
+      icon: QrCode,
+    },
+    {
       title: "Preview",
-      url: "#",
+      url: "/profile/preview",
       icon: Eye,
     },
     {
