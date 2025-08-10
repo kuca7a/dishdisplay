@@ -5,8 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Edit } from "lucide-react";
 import { menuItemService } from "@/lib/database";
@@ -19,13 +32,17 @@ interface EditMenuItemFormProps {
 }
 
 const categories = [
-  { value: 'appetizer', label: 'Appetizer' },
-  { value: 'main', label: 'Main Course' },
-  { value: 'dessert', label: 'Dessert' },
-  { value: 'drink', label: 'Drink' },
+  { value: "appetizer", label: "Appetizer" },
+  { value: "main", label: "Main Course" },
+  { value: "dessert", label: "Dessert" },
+  { value: "drink", label: "Drink" },
 ];
 
-export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormProps) {
+export function EditMenuItemForm({
+  item,
+  onSuccess,
+  trigger,
+}: EditMenuItemFormProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -39,7 +56,7 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim() || !formData.price || !formData.category) {
       alert("Please fill in all required fields");
       return;
@@ -53,21 +70,24 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
 
     try {
       setLoading(true);
-      
+
       const updateData: UpdateMenuItemData = {
         name: formData.name.trim(),
         description: formData.description.trim() || undefined,
         price: price,
-        category: formData.category as 'appetizer' | 'main' | 'dessert' | 'drink',
+        category: formData.category as
+          | "appetizer"
+          | "main"
+          | "dessert"
+          | "drink",
         image_url: formData.image_url.trim() || undefined,
         is_available: formData.is_available,
       };
 
       const updatedItem = await menuItemService.update(item.id, updateData);
-      
+
       setOpen(false);
       onSuccess(updatedItem);
-      
     } catch (error) {
       console.error("Error updating menu item:", error);
       alert("Failed to update menu item. Please try again.");
@@ -98,24 +118,25 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || defaultTrigger}
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Edit Menu Item</DialogTitle>
           <DialogDescription>
-            Update the details of your menu item. All fields marked with * are required.
+            Update the details of your menu item. All fields marked with * are
+            required.
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="edit-item-name">Item Name *</Label>
             <Input
               id="edit-item-name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               placeholder="e.g., Margherita Pizza"
               required
             />
@@ -126,7 +147,9 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
             <Textarea
               id="edit-item-description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Describe your dish..."
               rows={2}
             />
@@ -141,7 +164,9 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
                 step="0.01"
                 min="0"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
                 placeholder="12.99"
                 required
               />
@@ -149,9 +174,14 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
 
             <div>
               <Label htmlFor="edit-item-category">Category *</Label>
-              <Select 
-                value={formData.category} 
-                onValueChange={(value) => setFormData({ ...formData, category: value as MenuItem['category'] })}
+              <Select
+                value={formData.category}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    category: value as MenuItem["category"],
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -173,7 +203,9 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
               id="edit-item-image"
               type="url"
               value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, image_url: e.target.value })
+              }
               placeholder="https://example.com/image.jpg"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -185,23 +217,30 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
             <Switch
               id="edit-item-available"
               checked={formData.is_available}
-              onCheckedChange={(checked) => setFormData({ ...formData, is_available: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, is_available: checked })
+              }
             />
             <Label htmlFor="edit-item-available">Available for order</Label>
           </div>
 
           <div className="flex gap-2 pt-2">
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => setOpen(false)}
               className="flex-1"
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              disabled={loading || !formData.name.trim() || !formData.price || !formData.category}
+            <Button
+              type="submit"
+              disabled={
+                loading ||
+                !formData.name.trim() ||
+                !formData.price ||
+                !formData.category
+              }
               className="flex-1"
             >
               {loading ? "Updating..." : "Update Item"}

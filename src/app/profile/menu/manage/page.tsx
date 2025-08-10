@@ -1,7 +1,7 @@
 "use client";
 
 // Force dynamic rendering to prevent prerender issues with Auth0
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -24,7 +24,13 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,11 +51,11 @@ const fjallaOne = Fjalla_One({
 });
 
 // Quick restaurant creation form component
-function QuickRestaurantForm({ 
-  userEmail, 
-  onSuccess 
-}: { 
-  userEmail: string; 
+function QuickRestaurantForm({
+  userEmail,
+  onSuccess,
+}: {
+  userEmail: string;
   onSuccess: (restaurant: Restaurant) => void;
 }) {
   const [name, setName] = useState("");
@@ -126,19 +132,23 @@ export default function MenuManagePage() {
         try {
           setLoading(true);
           setError(null);
-          
+
           console.log("Loading restaurant data for user:", user?.email);
           console.log("Full user object:", user);
-          
+
           // First try to get existing restaurant
-          const restaurant = await restaurantService.getByOwnerEmail(user!.email!);
-          
+          const restaurant = await restaurantService.getByOwnerEmail(
+            user!.email!
+          );
+
           if (restaurant) {
             console.log("Found existing restaurant:", restaurant);
             setRestaurant(restaurant);
-            
+
             // Load menu items for this restaurant
-            const items = await menuItemService.getByRestaurantId(restaurant.id);
+            const items = await menuItemService.getByRestaurantId(
+              restaurant.id
+            );
             console.log("Loaded menu items:", items);
             setMenuItems(items);
           } else {
@@ -162,15 +172,15 @@ export default function MenuManagePage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log("Loading restaurant data for user:", user?.email);
       console.log("Full user object:", user);
-      
+
       // First try to get existing restaurant
       const restaurant = await restaurantService.getByOwnerEmail(user!.email!);
-      
+
       console.log("Found restaurant:", restaurant);
-      
+
       if (!restaurant) {
         // No restaurant found - this is normal for new users
         console.log("No restaurant found for email:", user!.email);
@@ -178,16 +188,19 @@ export default function MenuManagePage() {
         setMenuItems([]);
         return;
       }
-      
+
       // Restaurant exists, get menu items
       const menuItems = await menuItemService.getByRestaurantId(restaurant.id);
       console.log("Found menu items:", menuItems);
       setRestaurant(restaurant);
       setMenuItems(menuItems);
-      
     } catch (err) {
       console.error("Error loading restaurant data:", err);
-      setError(`Failed to load restaurant data: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setError(
+        `Failed to load restaurant data: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
     } finally {
       setLoading(false);
     }
@@ -198,7 +211,9 @@ export default function MenuManagePage() {
       await menuItemService.toggleAvailability(itemId);
       // Reload menu items
       if (restaurant) {
-        const updatedItems = await menuItemService.getByRestaurantId(restaurant.id);
+        const updatedItems = await menuItemService.getByRestaurantId(
+          restaurant.id
+        );
         setMenuItems(updatedItems);
       }
     } catch (err) {
@@ -211,7 +226,7 @@ export default function MenuManagePage() {
       setDeleteLoading(itemId);
       await menuItemService.delete(itemId);
       // Remove item from state immediately for better UX
-      setMenuItems(prev => prev.filter(item => item.id !== itemId));
+      setMenuItems((prev) => prev.filter((item) => item.id !== itemId));
     } catch (err) {
       console.error("Error deleting item:", err);
       alert("Failed to delete item. Please try again.");
@@ -221,12 +236,12 @@ export default function MenuManagePage() {
   };
 
   const handleAddMenuItem = (newItem: MenuItem) => {
-    setMenuItems(prev => [newItem, ...prev]);
+    setMenuItems((prev) => [newItem, ...prev]);
   };
 
   const handleUpdateMenuItem = (updatedItem: MenuItem) => {
-    setMenuItems(prev => 
-      prev.map(item => item.id === updatedItem.id ? updatedItem : item)
+    setMenuItems((prev) =>
+      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
   };
 
@@ -236,19 +251,20 @@ export default function MenuManagePage() {
 
   const handleDeleteRestaurant = async () => {
     if (!restaurant) return;
-    
+
     try {
       setLoading(true);
       // Delete all menu items first (cascade should handle this, but let's be explicit)
-      await Promise.all(menuItems.map(item => menuItemService.delete(item.id)));
-      
+      await Promise.all(
+        menuItems.map((item) => menuItemService.delete(item.id))
+      );
+
       // Then delete the restaurant
       await restaurantService.delete(restaurant.id);
-      
+
       // Reset state
       setRestaurant(null);
       setMenuItems([]);
-      
     } catch (err) {
       console.error("Error deleting restaurant:", err);
       alert("Failed to delete restaurant. Please try again.");
@@ -259,11 +275,16 @@ export default function MenuManagePage() {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'appetizer': return 'bg-green-100 text-green-800';
-      case 'main': return 'bg-blue-100 text-blue-800';
-      case 'dessert': return 'bg-pink-100 text-pink-800';
-      case 'drink': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "appetizer":
+        return "bg-green-100 text-green-800";
+      case "main":
+        return "bg-blue-100 text-blue-800";
+      case "dessert":
+        return "bg-pink-100 text-pink-800";
+      case "drink":
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -340,18 +361,19 @@ export default function MenuManagePage() {
                 </Breadcrumb>
               </div>
             </header>
-            
+
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
               <Card className="max-w-2xl mx-auto">
                 <CardHeader>
                   <CardTitle>Welcome to Dish Display!</CardTitle>
                   <CardDescription>
-                    Let's create your restaurant profile so you can start managing your menu.
+                    Let's create your restaurant profile so you can start
+                    managing your menu.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <QuickRestaurantForm 
-                    userEmail={user!.email!} 
+                  <QuickRestaurantForm
+                    userEmail={user!.email!}
                     onSuccess={(restaurant: Restaurant) => {
                       setRestaurant(restaurant);
                       setMenuItems([]);
@@ -372,9 +394,7 @@ export default function MenuManagePage() {
       <SidebarInset>
         <div className={fjallaOne.className}>
           <header className="flex flex-col gap-2 h-auto shrink-0 items-start px-4 pt-4">
-            <span className="text-xl font-semibold">
-              Menu Management
-            </span>
+            <span className="text-xl font-semibold">Menu Management</span>
             <div className="flex h-16 items-center gap-2 w-full">
               <SidebarTrigger className="-ml-1" />
               <Separator
@@ -398,7 +418,7 @@ export default function MenuManagePage() {
               </Breadcrumb>
             </div>
           </header>
-          
+
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             {/* Restaurant Info */}
             <Card>
@@ -411,8 +431,8 @@ export default function MenuManagePage() {
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <EditRestaurantForm 
-                      restaurant={restaurant} 
+                    <EditRestaurantForm
+                      restaurant={restaurant}
                       onSuccess={handleUpdateRestaurant}
                     />
                     <DeleteRestaurantModal
@@ -428,9 +448,11 @@ export default function MenuManagePage() {
 
             {/* Add New Item Button */}
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold">Menu Items ({menuItems.length})</h2>
-              <AddMenuItemForm 
-                restaurantId={restaurant.id} 
+              <h2 className="text-2xl font-semibold">
+                Menu Items ({menuItems.length})
+              </h2>
+              <AddMenuItemForm
+                restaurantId={restaurant.id}
                 onSuccess={handleAddMenuItem}
               />
             </div>
@@ -443,10 +465,11 @@ export default function MenuManagePage() {
                     <Utensils className="h-12 w-12 text-gray-400" />
                     <h3 className="text-xl font-semibold">No menu items yet</h3>
                     <p className="text-gray-600 max-w-md">
-                      Start building your menu by adding your first dish. Your customers will love seeing photos of your delicious food!
+                      Start building your menu by adding your first dish. Your
+                      customers will love seeing photos of your delicious food!
                     </p>
-                    <AddMenuItemForm 
-                      restaurantId={restaurant.id} 
+                    <AddMenuItemForm
+                      restaurantId={restaurant.id}
                       onSuccess={handleAddMenuItem}
                       trigger={
                         <Button>
@@ -480,7 +503,11 @@ export default function MenuManagePage() {
                             <Badge className={getCategoryColor(item.category)}>
                               {item.category}
                             </Badge>
-                            <Badge variant={item.is_available ? "default" : "secondary"}>
+                            <Badge
+                              variant={
+                                item.is_available ? "default" : "secondary"
+                              }
+                            >
                               {item.is_available ? "Available" : "Unavailable"}
                             </Badge>
                           </div>
@@ -508,8 +535,8 @@ export default function MenuManagePage() {
                             <Eye className="h-4 w-4" />
                           )}
                         </Button>
-                        <EditMenuItemForm 
-                          item={item} 
+                        <EditMenuItemForm
+                          item={item}
                           onSuccess={handleUpdateMenuItem}
                         />
                         <DeleteConfirmationModal

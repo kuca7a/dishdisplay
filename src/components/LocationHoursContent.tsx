@@ -19,7 +19,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -40,13 +46,13 @@ const daysOfWeek = [
   { key: "thursday", label: "Thursday" },
   { key: "friday", label: "Friday" },
   { key: "saturday", label: "Saturday" },
-  { key: "sunday", label: "Sunday" }
+  { key: "sunday", label: "Sunday" },
 ];
 
 export default function LocationHoursContent() {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
-  
+
   // State for restaurant data
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,19 +62,19 @@ export default function LocationHoursContent() {
 
   // Form state
   const [formData, setFormData] = useState({
-    address: '',
-    city: '',
-    state: '',
-    postal_code: '',
-    country: '',
-    monday_hours: '',
-    tuesday_hours: '',
-    wednesday_hours: '',
-    thursday_hours: '',
-    friday_hours: '',
-    saturday_hours: '',
-    sunday_hours: '',
-    timezone: 'America/New_York'
+    address: "",
+    city: "",
+    state: "",
+    postal_code: "",
+    country: "",
+    monday_hours: "",
+    tuesday_hours: "",
+    wednesday_hours: "",
+    thursday_hours: "",
+    friday_hours: "",
+    saturday_hours: "",
+    sunday_hours: "",
+    timezone: "America/New_York",
   });
 
   useEffect(() => {
@@ -82,24 +88,26 @@ export default function LocationHoursContent() {
       const loadRestaurantData = async () => {
         try {
           setLoading(true);
-          const restaurantData = await restaurantService.getByOwnerEmail(user!.email!);
-          
+          const restaurantData = await restaurantService.getByOwnerEmail(
+            user!.email!
+          );
+
           if (restaurantData) {
             setRestaurant(restaurantData);
             setFormData({
-              address: restaurantData.address || '',
-              city: restaurantData.city || '',
-              state: restaurantData.state || '',
-              postal_code: restaurantData.postal_code || '',
-              country: restaurantData.country || '',
-              monday_hours: restaurantData.monday_hours || '',
-              tuesday_hours: restaurantData.tuesday_hours || '',
-              wednesday_hours: restaurantData.wednesday_hours || '',
-              thursday_hours: restaurantData.thursday_hours || '',
-              friday_hours: restaurantData.friday_hours || '',
-              saturday_hours: restaurantData.saturday_hours || '',
-              sunday_hours: restaurantData.sunday_hours || '',
-              timezone: restaurantData.timezone || 'America/New_York'
+              address: restaurantData.address || "",
+              city: restaurantData.city || "",
+              state: restaurantData.state || "",
+              postal_code: restaurantData.postal_code || "",
+              country: restaurantData.country || "",
+              monday_hours: restaurantData.monday_hours || "",
+              tuesday_hours: restaurantData.tuesday_hours || "",
+              wednesday_hours: restaurantData.wednesday_hours || "",
+              thursday_hours: restaurantData.thursday_hours || "",
+              friday_hours: restaurantData.friday_hours || "",
+              saturday_hours: restaurantData.saturday_hours || "",
+              sunday_hours: restaurantData.sunday_hours || "",
+              timezone: restaurantData.timezone || "America/New_York",
             });
           }
         } catch (err) {
@@ -117,24 +125,26 @@ export default function LocationHoursContent() {
   const loadRestaurantData = async () => {
     try {
       setLoading(true);
-      const restaurantData = await restaurantService.getByOwnerEmail(user!.email!);
-      
+      const restaurantData = await restaurantService.getByOwnerEmail(
+        user!.email!
+      );
+
       if (restaurantData) {
         setRestaurant(restaurantData);
         setFormData({
-          address: restaurantData.address || '',
-          city: restaurantData.city || '',
-          state: restaurantData.state || '',
-          postal_code: restaurantData.postal_code || '',
-          country: restaurantData.country || '',
-          monday_hours: restaurantData.monday_hours || '',
-          tuesday_hours: restaurantData.tuesday_hours || '',
-          wednesday_hours: restaurantData.wednesday_hours || '',
-          thursday_hours: restaurantData.thursday_hours || '',
-          friday_hours: restaurantData.friday_hours || '',
-          saturday_hours: restaurantData.saturday_hours || '',
-          sunday_hours: restaurantData.sunday_hours || '',
-          timezone: restaurantData.timezone || 'America/New_York'
+          address: restaurantData.address || "",
+          city: restaurantData.city || "",
+          state: restaurantData.state || "",
+          postal_code: restaurantData.postal_code || "",
+          country: restaurantData.country || "",
+          monday_hours: restaurantData.monday_hours || "",
+          tuesday_hours: restaurantData.tuesday_hours || "",
+          wednesday_hours: restaurantData.wednesday_hours || "",
+          thursday_hours: restaurantData.thursday_hours || "",
+          friday_hours: restaurantData.friday_hours || "",
+          saturday_hours: restaurantData.saturday_hours || "",
+          sunday_hours: restaurantData.sunday_hours || "",
+          timezone: restaurantData.timezone || "America/New_York",
         });
       }
     } catch (err) {
@@ -147,19 +157,21 @@ export default function LocationHoursContent() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (successMessage) setSuccessMessage(null);
   };
 
   const handleHoursChange = (day: string, value: string) => {
-    setFormData(prev => ({ ...prev, [`${day}_hours`]: value }));
+    setFormData((prev) => ({ ...prev, [`${day}_hours`]: value }));
     if (successMessage) setSuccessMessage(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!restaurant) {
-      setError("No restaurant found. Please create a restaurant first in Menu > Manage.");
+      setError(
+        "No restaurant found. Please create a restaurant first in Menu > Manage."
+      );
       return;
     }
 
@@ -167,32 +179,44 @@ export default function LocationHoursContent() {
       setSaving(true);
       setError(null);
 
-      console.log('Updating restaurant with data:', formData);
-      console.log('Restaurant ID:', restaurant.id);
+      console.log("Updating restaurant with data:", formData);
+      console.log("Restaurant ID:", restaurant.id);
 
       await restaurantService.update(restaurant.id, formData);
-      
+
       setSuccessMessage("Location & Hours updated successfully!");
-      
+
       // Reload data to get the updated info
       await loadRestaurantData();
-      
     } catch (err: unknown) {
       console.error("Error updating restaurant:", err);
-      
-      const errorObj = err as { message?: string; details?: string; hint?: string };
-      console.error("Error details:", errorObj.message, errorObj.details, errorObj.hint);
-      
+
+      const errorObj = err as {
+        message?: string;
+        details?: string;
+        hint?: string;
+      };
+      console.error(
+        "Error details:",
+        errorObj.message,
+        errorObj.details,
+        errorObj.hint
+      );
+
       let errorMessage = "Failed to update location & hours. ";
-      
-      if (errorObj.message?.includes("column") && errorObj.message?.includes("does not exist")) {
-        errorMessage += "Database schema needs to be updated. Please run the SQL script in Supabase.";
+
+      if (
+        errorObj.message?.includes("column") &&
+        errorObj.message?.includes("does not exist")
+      ) {
+        errorMessage +=
+          "Database schema needs to be updated. Please run the SQL script in Supabase.";
       } else if (errorObj.message) {
         errorMessage += `Details: ${errorObj.message}`;
       } else {
         errorMessage += "Please try again.";
       }
-      
+
       setError(errorMessage);
     } finally {
       setSaving(false);
@@ -299,13 +323,14 @@ export default function LocationHoursContent() {
                       Location Details
                     </CardTitle>
                     <CardDescription>
-                      Your restaurant&apos;s physical address and location information
+                      Your restaurant&apos;s physical address and location
+                      information
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="address">Street Address</Label>
-                      <Input 
+                      <Input
                         id="address"
                         name="address"
                         value={formData.address}
@@ -314,11 +339,11 @@ export default function LocationHoursContent() {
                         className="w-full"
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="city">City</Label>
-                        <Input 
+                        <Input
                           id="city"
                           name="city"
                           value={formData.city}
@@ -329,7 +354,7 @@ export default function LocationHoursContent() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="state">State</Label>
-                        <Input 
+                        <Input
                           id="state"
                           name="state"
                           value={formData.state}
@@ -339,11 +364,11 @@ export default function LocationHoursContent() {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="postal_code">ZIP Code</Label>
-                        <Input 
+                        <Input
                           id="postal_code"
                           name="postal_code"
                           value={formData.postal_code}
@@ -354,7 +379,7 @@ export default function LocationHoursContent() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="country">Country</Label>
-                        <Input 
+                        <Input
                           id="country"
                           name="country"
                           value={formData.country}
@@ -380,15 +405,24 @@ export default function LocationHoursContent() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {daysOfWeek.map((day) => (
-                      <div key={day.key} className="flex items-center justify-between space-x-4">
+                      <div
+                        key={day.key}
+                        className="flex items-center justify-between space-x-4"
+                      >
                         <div className="w-20 text-sm font-medium">
                           {day.label}
                         </div>
                         <div className="flex items-center space-x-2 flex-1">
                           <Input
                             type="text"
-                            value={formData[`${day.key}_hours` as keyof typeof formData]}
-                            onChange={(e) => handleHoursChange(day.key, e.target.value)}
+                            value={
+                              formData[
+                                `${day.key}_hours` as keyof typeof formData
+                              ]
+                            }
+                            onChange={(e) =>
+                              handleHoursChange(day.key, e.target.value)
+                            }
                             placeholder="e.g., 9:00 AM - 9:00 PM or Closed"
                             className="w-full"
                           />
@@ -423,8 +457,9 @@ export default function LocationHoursContent() {
               {!restaurant && (
                 <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-blue-700 text-sm">
-                    <strong>No restaurant found.</strong> To create your restaurant profile, 
-                    go to <strong>Menu → Manage</strong> and add your first restaurant.
+                    <strong>No restaurant found.</strong> To create your
+                    restaurant profile, go to <strong>Menu → Manage</strong> and
+                    add your first restaurant.
                   </p>
                 </div>
               )}

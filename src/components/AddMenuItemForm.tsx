@@ -5,8 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Plus } from "lucide-react";
 import { menuItemService } from "@/lib/database";
@@ -19,13 +32,17 @@ interface AddMenuItemFormProps {
 }
 
 const categories = [
-  { value: 'appetizer', label: 'Appetizer' },
-  { value: 'main', label: 'Main Course' },
-  { value: 'dessert', label: 'Dessert' },
-  { value: 'drink', label: 'Drink' },
+  { value: "appetizer", label: "Appetizer" },
+  { value: "main", label: "Main Course" },
+  { value: "dessert", label: "Dessert" },
+  { value: "drink", label: "Drink" },
 ];
 
-export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuItemFormProps) {
+export function AddMenuItemForm({
+  restaurantId,
+  onSuccess,
+  trigger,
+}: AddMenuItemFormProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -39,7 +56,7 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim() || !formData.price || !formData.category) {
       alert("Please fill in all required fields");
       return;
@@ -53,19 +70,23 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
 
     try {
       setLoading(true);
-      
+
       const menuItemData: CreateMenuItemData = {
         restaurant_id: restaurantId,
         name: formData.name.trim(),
         description: formData.description.trim() || undefined,
         price: price,
-        category: formData.category as 'appetizer' | 'main' | 'dessert' | 'drink',
+        category: formData.category as
+          | "appetizer"
+          | "main"
+          | "dessert"
+          | "drink",
         image_url: formData.image_url.trim() || undefined,
         is_available: formData.is_available,
       };
 
       const newItem = await menuItemService.create(menuItemData);
-      
+
       // Reset form
       setFormData({
         name: "",
@@ -75,10 +96,9 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
         image_url: "",
         is_available: true,
       });
-      
+
       setOpen(false);
       onSuccess(newItem);
-      
     } catch (error) {
       console.error("Error creating menu item:", error);
       alert("Failed to create menu item. Please try again.");
@@ -96,24 +116,25 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || defaultTrigger}
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Add New Menu Item</DialogTitle>
           <DialogDescription>
-            Create a new dish for your menu. All fields marked with * are required.
+            Create a new dish for your menu. All fields marked with * are
+            required.
           </DialogDescription>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="item-name">Item Name *</Label>
             <Input
               id="item-name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               placeholder="e.g., Margherita Pizza"
               required
             />
@@ -124,7 +145,9 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
             <Textarea
               id="item-description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Describe your dish..."
               rows={2}
             />
@@ -139,7 +162,9 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
                 step="0.01"
                 min="0"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
                 placeholder="12.99"
                 required
               />
@@ -147,9 +172,11 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
 
             <div>
               <Label htmlFor="item-category">Category *</Label>
-              <Select 
-                value={formData.category} 
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
+              <Select
+                value={formData.category}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, category: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -171,7 +198,9 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
               id="item-image"
               type="url"
               value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, image_url: e.target.value })
+              }
               placeholder="https://example.com/image.jpg"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -183,23 +212,30 @@ export function AddMenuItemForm({ restaurantId, onSuccess, trigger }: AddMenuIte
             <Switch
               id="item-available"
               checked={formData.is_available}
-              onCheckedChange={(checked) => setFormData({ ...formData, is_available: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, is_available: checked })
+              }
             />
             <Label htmlFor="item-available">Available for order</Label>
           </div>
 
           <div className="flex gap-2 pt-2">
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => setOpen(false)}
               className="flex-1"
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              disabled={loading || !formData.name.trim() || !formData.price || !formData.category}
+            <Button
+              type="submit"
+              disabled={
+                loading ||
+                !formData.name.trim() ||
+                !formData.price ||
+                !formData.category
+              }
               className="flex-1"
             >
               {loading ? "Adding..." : "Add Item"}

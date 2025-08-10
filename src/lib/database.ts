@@ -1,5 +1,12 @@
-import { getSupabaseClient } from '@/lib/supabase'
-import { Restaurant, MenuItem, CreateRestaurantData, UpdateRestaurantData, CreateMenuItemData, UpdateMenuItemData } from '@/types/database'
+import { getSupabaseClient } from "@/lib/supabase";
+import {
+  Restaurant,
+  MenuItem,
+  CreateRestaurantData,
+  UpdateRestaurantData,
+  CreateMenuItemData,
+  UpdateMenuItemData,
+} from "@/types/database";
 
 // Restaurant operations
 export const restaurantService = {
@@ -7,104 +14,101 @@ export const restaurantService = {
   async getByOwnerEmail(email: string): Promise<Restaurant | null> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.error('Database: Supabase client not available');
+      console.error("Database: Supabase client not available");
       return null;
     }
-    
-    console.log('Database: Searching for restaurant with owner_email:', email);
-    
-    const { data, error } = await supabase
-      .from('restaurants')
-      .select('*')
-      .eq('owner_email', email)
-      .single()
 
-    console.log('Database: Query result:', { data, error });
+    console.log("Database: Searching for restaurant with owner_email:", email);
+
+    const { data, error } = await supabase
+      .from("restaurants")
+      .select("*")
+      .eq("owner_email", email)
+      .single();
+
+    console.log("Database: Query result:", { data, error });
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        console.log('Database: No restaurant found for email:', email);
+      if (error.code === "PGRST116") {
+        console.log("Database: No restaurant found for email:", email);
         return null; // No rows returned
       }
-      console.error('Database: Error querying restaurant:', error);
-      throw error
+      console.error("Database: Error querying restaurant:", error);
+      throw error;
     }
-    
-    console.log('Database: Found restaurant:', data);
-    return data
+
+    console.log("Database: Found restaurant:", data);
+    return data;
   },
 
   // Get restaurant by ID
   async getById(id: string): Promise<Restaurant | null> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.error('Database: Supabase client not available');
+      console.error("Database: Supabase client not available");
       return null;
     }
-    
+
     const { data, error } = await supabase
-      .from('restaurants')
-      .select('*')
-      .eq('id', id)
-      .single()
+      .from("restaurants")
+      .select("*")
+      .eq("id", id)
+      .single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null // No rows returned
-      throw error
+      if (error.code === "PGRST116") return null; // No rows returned
+      throw error;
     }
-    return data
+    return data;
   },
 
   // Create restaurant
   async create(restaurantData: CreateRestaurantData): Promise<Restaurant> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      throw new Error('Database not available');
+      throw new Error("Database not available");
     }
-    
+
     const { data, error } = await supabase
-      .from('restaurants')
+      .from("restaurants")
       .insert([restaurantData])
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   },
 
   // Update restaurant
   async update(id: string, updates: UpdateRestaurantData): Promise<Restaurant> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      throw new Error('Database not available');
+      throw new Error("Database not available");
     }
-    
-    const { data, error } = await supabase
-      .from('restaurants')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
 
-    if (error) throw error
-    return data
+    const { data, error } = await supabase
+      .from("restaurants")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   },
 
   // Delete restaurant
   async delete(id: string): Promise<void> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      throw new Error('Database not available');
+      throw new Error("Database not available");
     }
-    
-    const { error } = await supabase
-      .from('restaurants')
-      .delete()
-      .eq('id', id)
 
-    if (error) throw error
-  }
-}
+    const { error } = await supabase.from("restaurants").delete().eq("id", id);
+
+    if (error) throw error;
+  },
+};
 
 // Menu item operations
 export const menuItemService = {
@@ -112,148 +116,153 @@ export const menuItemService = {
   async getByRestaurantId(restaurantId: string): Promise<MenuItem[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.error('Database: Supabase client not available');
+      console.error("Database: Supabase client not available");
       return [];
     }
-    
-    const { data, error } = await supabase
-      .from('menu_items')
-      .select('*')
-      .eq('restaurant_id', restaurantId)
-      .order('created_at', { ascending: false })
 
-    if (error) throw error
-    return data || []
+    const { data, error } = await supabase
+      .from("menu_items")
+      .select("*")
+      .eq("restaurant_id", restaurantId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data || [];
   },
 
   // Get menu items by category
-  async getByCategory(restaurantId: string, category: string): Promise<MenuItem[]> {
+  async getByCategory(
+    restaurantId: string,
+    category: string
+  ): Promise<MenuItem[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.error('Database: Supabase client not available');
+      console.error("Database: Supabase client not available");
       return [];
     }
-    
-    const { data, error } = await supabase
-      .from('menu_items')
-      .select('*')
-      .eq('restaurant_id', restaurantId)
-      .eq('category', category)
-      .order('created_at', { ascending: false })
 
-    if (error) throw error
-    return data || []
+    const { data, error } = await supabase
+      .from("menu_items")
+      .select("*")
+      .eq("restaurant_id", restaurantId)
+      .eq("category", category)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data || [];
   },
 
   // Create menu item
   async create(menuItemData: CreateMenuItemData): Promise<MenuItem> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      throw new Error('Database not available');
+      throw new Error("Database not available");
     }
-    
+
     const { data, error } = await supabase
-      .from('menu_items')
+      .from("menu_items")
       .insert([menuItemData])
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   },
 
   // Update menu item
   async update(id: string, updates: UpdateMenuItemData): Promise<MenuItem> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      throw new Error('Database not available');
+      throw new Error("Database not available");
     }
-    
-    const { data, error } = await supabase
-      .from('menu_items')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
 
-    if (error) throw error
-    return data
+    const { data, error } = await supabase
+      .from("menu_items")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   },
 
   // Delete menu item
   async delete(id: string): Promise<void> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      throw new Error('Database not available');
+      throw new Error("Database not available");
     }
-    
-    const { error } = await supabase
-      .from('menu_items')
-      .delete()
-      .eq('id', id)
 
-    if (error) throw error
+    const { error } = await supabase.from("menu_items").delete().eq("id", id);
+
+    if (error) throw error;
   },
 
   // Toggle availability
   async toggleAvailability(id: string): Promise<MenuItem> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      throw new Error('Database not available');
+      throw new Error("Database not available");
     }
-    
+
     // First get current status
     const { data: currentItem, error: fetchError } = await supabase
-      .from('menu_items')
-      .select('is_available')
-      .eq('id', id)
-      .single()
+      .from("menu_items")
+      .select("is_available")
+      .eq("id", id)
+      .single();
 
-    if (fetchError) throw fetchError
+    if (fetchError) throw fetchError;
 
     // Toggle the availability
     const { data, error } = await supabase
-      .from('menu_items')
+      .from("menu_items")
       .update({ is_available: !currentItem.is_available })
-      .eq('id', id)
+      .eq("id", id)
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
-  }
-}
+    if (error) throw error;
+    return data;
+  },
+};
 
 // Combined operations
 export const menuService = {
   // Get or create restaurant for user
-  async getOrCreateRestaurant(userEmail: string, restaurantName?: string): Promise<Restaurant> {
-    let restaurant = await restaurantService.getByOwnerEmail(userEmail)
-    
+  async getOrCreateRestaurant(
+    userEmail: string,
+    restaurantName?: string
+  ): Promise<Restaurant> {
+    let restaurant = await restaurantService.getByOwnerEmail(userEmail);
+
     if (!restaurant && restaurantName) {
       restaurant = await restaurantService.create({
         name: restaurantName,
         owner_email: userEmail,
-        description: `Welcome to ${restaurantName}!`
-      })
+        description: `Welcome to ${restaurantName}!`,
+      });
     }
-    
+
     if (!restaurant) {
-      throw new Error('Restaurant not found and no name provided for creation')
+      throw new Error("Restaurant not found and no name provided for creation");
     }
-    
-    return restaurant
+
+    return restaurant;
   },
 
   // Get restaurant with menu items
-  async getRestaurantWithMenu(userEmail: string): Promise<{ restaurant: Restaurant; menuItems: MenuItem[] }> {
-    const restaurant = await restaurantService.getByOwnerEmail(userEmail)
+  async getRestaurantWithMenu(
+    userEmail: string
+  ): Promise<{ restaurant: Restaurant; menuItems: MenuItem[] }> {
+    const restaurant = await restaurantService.getByOwnerEmail(userEmail);
     if (!restaurant) {
-      throw new Error('Restaurant not found')
+      throw new Error("Restaurant not found");
     }
 
-    const menuItems = await menuItemService.getByRestaurantId(restaurant.id)
-    
-    return { restaurant, menuItems }
-  }
-}
+    const menuItems = await menuItemService.getByRestaurantId(restaurant.id);
+
+    return { restaurant, menuItems };
+  },
+};

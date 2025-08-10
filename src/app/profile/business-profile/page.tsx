@@ -1,10 +1,10 @@
 "use client";
 
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
 // Dynamic import to prevent SSR issues with Auth0
 const BusinessProfileContent = dynamic(
-  () => import('@/components/BusinessProfileContent'),
+  () => import("@/components/BusinessProfileContent"),
   {
     ssr: false,
     loading: () => (

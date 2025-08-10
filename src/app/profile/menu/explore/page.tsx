@@ -1,7 +1,7 @@
 "use client";
 
 // Force dynamic rendering to prevent prerender issues with Auth0
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -36,12 +36,48 @@ const fjallaOne = Fjalla_One({
 
 // Sample menu items for exploration
 const sampleMenuItems = [
-  { id: 1, name: "Margherita Pizza", category: "Main Course", cuisine: "Italian", popularity: "High" },
-  { id: 2, name: "Caesar Salad", category: "Appetizer", cuisine: "Italian", popularity: "Medium" },
-  { id: 3, name: "Chocolate Lava Cake", category: "Dessert", cuisine: "American", popularity: "High" },
-  { id: 4, name: "Pad Thai", category: "Main Course", cuisine: "Thai", popularity: "High" },
-  { id: 5, name: "Chicken Wings", category: "Appetizer", cuisine: "American", popularity: "Medium" },
-  { id: 6, name: "Tiramisu", category: "Dessert", cuisine: "Italian", popularity: "Medium" },
+  {
+    id: 1,
+    name: "Margherita Pizza",
+    category: "Main Course",
+    cuisine: "Italian",
+    popularity: "High",
+  },
+  {
+    id: 2,
+    name: "Caesar Salad",
+    category: "Appetizer",
+    cuisine: "Italian",
+    popularity: "Medium",
+  },
+  {
+    id: 3,
+    name: "Chocolate Lava Cake",
+    category: "Dessert",
+    cuisine: "American",
+    popularity: "High",
+  },
+  {
+    id: 4,
+    name: "Pad Thai",
+    category: "Main Course",
+    cuisine: "Thai",
+    popularity: "High",
+  },
+  {
+    id: 5,
+    name: "Chicken Wings",
+    category: "Appetizer",
+    cuisine: "American",
+    popularity: "Medium",
+  },
+  {
+    id: 6,
+    name: "Tiramisu",
+    category: "Dessert",
+    cuisine: "Italian",
+    popularity: "Medium",
+  },
 ];
 
 export default function MenuExplorePage() {
@@ -82,7 +118,7 @@ export default function MenuExplorePage() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          
+
           <div className="flex flex-1 flex-col gap-4 p-4">
             <div className="max-w-6xl mx-auto w-full space-y-6">
               <div className="flex items-center justify-between">
@@ -90,7 +126,9 @@ export default function MenuExplorePage() {
                   <Search className="h-8 w-8 text-orange-600" />
                   <div>
                     <h1 className="text-3xl font-bold">Explore Menu Ideas</h1>
-                    <p className="text-gray-600">Discover popular dishes and menu inspiration</p>
+                    <p className="text-gray-600">
+                      Discover popular dishes and menu inspiration
+                    </p>
                   </div>
                 </div>
                 <Button className="bg-orange-600 hover:bg-orange-700">
@@ -106,8 +144,8 @@ export default function MenuExplorePage() {
                     <div className="flex-1">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input 
-                          placeholder="Search for dishes, ingredients, or cuisines..." 
+                        <Input
+                          placeholder="Search for dishes, ingredients, or cuisines..."
                           className="pl-10"
                         />
                       </div>
@@ -132,12 +170,23 @@ export default function MenuExplorePage() {
 
               {/* Categories */}
               <div className="flex flex-wrap gap-2">
-                {["All", "Appetizers", "Main Courses", "Desserts", "Popular", "Trending"].map((category) => (
-                  <Button 
+                {[
+                  "All",
+                  "Appetizers",
+                  "Main Courses",
+                  "Desserts",
+                  "Popular",
+                  "Trending",
+                ].map((category) => (
+                  <Button
                     key={category}
                     variant={category === "All" ? "default" : "outline"}
                     size="sm"
-                    className={category === "All" ? "bg-orange-600 hover:bg-orange-700" : ""}
+                    className={
+                      category === "All"
+                        ? "bg-orange-600 hover:bg-orange-700"
+                        : ""
+                    }
                   >
                     {category}
                   </Button>
@@ -147,13 +196,20 @@ export default function MenuExplorePage() {
               {/* Menu Items Grid */}
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {sampleMenuItems.map((item) => (
-                  <Card key={item.id} className="hover:shadow-md transition-shadow">
+                  <Card
+                    key={item.id}
+                    className="hover:shadow-md transition-shadow"
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
                         <CardTitle className="text-lg">{item.name}</CardTitle>
-                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          item.popularity === "High" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                        }`}>
+                        <div
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            item.popularity === "High"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
                           {item.popularity}
                         </div>
                       </div>
@@ -169,7 +225,10 @@ export default function MenuExplorePage() {
                           <span className="font-medium">{item.cuisine}</span>
                         </div>
                         <div className="flex gap-2 pt-2">
-                          <Button size="sm" className="flex-1 bg-orange-600 hover:bg-orange-700">
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-orange-600 hover:bg-orange-700"
+                          >
                             Add to Menu
                           </Button>
                           <Button size="sm" variant="outline">

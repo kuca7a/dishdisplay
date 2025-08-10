@@ -101,7 +101,7 @@ export default function BusinessProfileContent() {
 
   const loadRestaurantData = async () => {
     if (!user?.email) return;
-    
+
     try {
       setLoading(true);
       const restaurantData = await restaurantService.getByOwnerEmail(
