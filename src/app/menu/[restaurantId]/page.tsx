@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 import { Fjalla_One } from "next/font/google";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Star, ChefHat } from "lucide-react";
+import { Clock, Star, ChefHat, Utensils } from "lucide-react";
 import { restaurantService, menuItemService } from "@/lib/database";
 import { Restaurant, MenuItem } from "@/types/database";
 
@@ -219,17 +220,20 @@ export default function CustomerMenuPage() {
               >
                 <CardContent className="p-0">
                   <div className="flex flex-col sm:flex-row">
-                    {/* Item Image Placeholder */}
-                    <div className="w-full sm:w-32 h-32 sm:h-24 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
-                      <span className="text-2xl sm:text-xl">
-                        {item.category === "appetizer" && "🥗"}
-                        {item.category === "main" && "🍽️"}
-                        {item.category === "dessert" && "🍰"}
-                        {item.category === "drink" && "🥤"}
-                        {!["appetizer", "main", "dessert", "drink"].includes(
-                          item.category
-                        ) && "🍴"}
-                      </span>
+                    {/* Item Image */}
+                    <div className="w-full sm:w-32 h-32 sm:h-24 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center relative overflow-hidden">
+                      {item.image_url ? (
+                        <Image
+                          src={item.image_url}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center w-full h-full">
+                          <Utensils className="h-6 w-6 sm:h-5 sm:w-5 text-orange-400" />
+                        </div>
+                      )}
                     </div>
 
                     {/* Item Details */}
@@ -266,7 +270,7 @@ export default function CustomerMenuPage() {
 
                         <div className="text-right flex-shrink-0">
                           <div className="text-xl font-bold text-orange-600">
-                            ${Number(item.price).toFixed(2)}
+                            £{Number(item.price).toFixed(2)}
                           </div>
                         </div>
                       </div>
