@@ -24,6 +24,7 @@ import { Switch } from "@/components/ui/switch";
 import { Plus } from "lucide-react";
 import { menuItemService } from "@/lib/database";
 import { CreateMenuItemData, MenuItem } from "@/types/database";
+import { ImageUpload } from "@/components/ImageUpload";
 
 interface AddMenuItemFormProps {
   restaurantId: string;
@@ -192,21 +193,14 @@ export function AddMenuItemForm({
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="item-image">Image URL (Optional)</Label>
-            <Input
-              id="item-image"
-              type="url"
-              value={formData.image_url}
-              onChange={(e) =>
-                setFormData({ ...formData, image_url: e.target.value })
-              }
-              placeholder="https://example.com/image.jpg"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Add a link to an image of your dish
-            </p>
-          </div>
+          {/* Image Upload */}
+          <ImageUpload
+            onImageUploaded={(url) =>
+              setFormData({ ...formData, image_url: url })
+            }
+            restaurantId={restaurantId}
+            currentImageUrl={formData.image_url}
+          />
 
           <div className="flex items-center space-x-2">
             <Switch

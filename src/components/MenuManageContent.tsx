@@ -32,7 +32,14 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Eye, EyeOff, Utensils } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, Eye, EyeOff, Utensils, Filter } from "lucide-react";
 import { menuItemService, restaurantService } from "@/lib/database";
 import { Restaurant, MenuItem } from "@/types/database";
 import { AddMenuItemForm } from "@/components/AddMenuItemForm";
@@ -116,6 +123,8 @@ export default function MenuManageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("name");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -285,6 +294,39 @@ export default function MenuManageContent() {
     }
   };
 
+  // Get unique categories from menu items
+  const getCategories = () => {
+    const categories = [...new Set(menuItems.map(item => item.category))];
+    return categories.sort();
+  };
+
+  // Filter and sort menu items
+  const getFilteredAndSortedItems = () => {
+    let filtered = selectedCategory === "all" 
+      ? menuItems 
+      : menuItems.filter(item => item.category === selectedCategory);
+
+    // Sort items
+    filtered = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "price":
+          return a.price - b.price;
+        case "category":
+          return a.category.localeCompare(b.category);
+        case "availability":
+          return (b.is_available ? 1 : 0) - (a.is_available ? 1 : 0);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  };
+
+  const filteredAndSortedItems = getFilteredAndSortedItems();
+
   if (isLoading || !isAuthenticated) {
     return null;
   }
@@ -444,15 +486,66 @@ export default function MenuManageContent() {
             </Card>
 
             {/* Add New Item Button */}
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold">
-                Menu Items ({menuItems.length})
-              </h2>
+            <div className="flex justify-between items-center py-2">
+              <div className="space-y-1">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Menu Items
+                </h2>
+                <p className="text-gray-600">
+                  {menuItems.length} {menuItems.length === 1 ? 'item' : 'items'} in your menu
+                </p>
+              </div>
               <AddMenuItemForm
                 restaurantId={restaurant.id}
                 onSuccess={handleAddMenuItem}
               />
             </div>
+
+            {/* Filter and Sort Controls */}
+            {menuItems.length > 0 && (
+              <div className="flex gap-4 items-center p-4 bg-gray-50 rounded-lg border">
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm font-medium text-gray-700">Filter & Sort:</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="category-filter" className="text-sm text-gray-600">Category:</Label>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder="All" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      {getCategories().map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category.charAt(0).toUpperCase() + category.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="sort-select" className="text-sm text-gray-600">Sort by:</Label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="Name" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="name">Name</SelectItem>
+                      <SelectItem value="category">Category</SelectItem>
+                      <SelectItem value="price">Price</SelectItem>
+                      <SelectItem value="availability">Availability</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="text-xs text-gray-500">
+                  Showing {filteredAndSortedItems.length} of {menuItems.length} items
+                </div>
+              </div>
+            )}
 
             {/* Menu Items Grid */}
             {menuItems.length === 0 ? (
@@ -478,71 +571,114 @@ export default function MenuManageContent() {
                   </div>
                 </CardContent>
               </Card>
+            ) : filteredAndSortedItems.length === 0 ? (
+              <Card className="text-center py-12">
+                <CardContent>
+                  <div className="flex flex-col items-center space-y-4">
+                    <Filter className="h-12 w-12 text-gray-400" />
+                    <h3 className="text-xl font-semibold">No items match your filter</h3>
+                    <p className="text-gray-600 max-w-md">
+                      Try adjusting your category filter or sort options to see more items.
+                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedCategory("all");
+                        setSortBy("name");
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {menuItems.map((item) => (
-                  <Card key={item.id} className="overflow-hidden">
-                    {item.image_url && (
-                      <div className="aspect-video bg-gray-100 relative">
-                        <Image
-                          src={item.image_url}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
+              <div className="space-y-4">
+                {filteredAndSortedItems.map((item) => (
+                  <Card key={item.id} className="group hover:shadow-lg transition-shadow duration-200 overflow-hidden bg-white border border-gray-200">
+                    <div className="flex min-h-32">
+                      {/* Left side - Image (1/3 of space) */}
+                      <div className="w-1/3 bg-gray-50 relative overflow-hidden">
+                        {item.image_url ? (
+                          <Image
+                            src={item.image_url}
+                            alt={item.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-200"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full">
+                            <Utensils className="h-8 w-8 text-gray-300" />
+                          </div>
+                        )}
+                        {/* Availability indicator */}
+                        <div className="absolute top-2 right-2">
+                          <Badge
+                            variant={item.is_available ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {item.is_available ? "Available" : "Unavailable"}
+                          </Badge>
+                        </div>
                       </div>
-                    )}
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <CardTitle className="text-lg">{item.name}</CardTitle>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge className={getCategoryColor(item.category)}>
+
+                      {/* Right side - Content (2/3 of space) */}
+                      <div className="w-2/3 p-4 flex flex-col justify-between">
+                        <div className="space-y-2">
+                          {/* Display name and ID */}
+                          <div>
+                            <h3 className="font-semibold text-gray-900 text-lg leading-tight">
+                              {item.name}
+                            </h3>
+                            <p className="text-xs text-gray-500 mt-1">
+                              Item ID: {item.id.slice(0, 8).toUpperCase()}
+                            </p>
+                          </div>
+
+                          {/* Category and Price */}
+                          <div className="flex items-center gap-3">
+                            <Badge className={`${getCategoryColor(item.category)} text-xs`}>
                               {item.category}
                             </Badge>
-                            <Badge
-                              variant={
-                                item.is_available ? "default" : "secondary"
-                              }
-                            >
-                              {item.is_available ? "Available" : "Unavailable"}
-                            </Badge>
+                            <div className="text-xl font-bold text-gray-900">
+                              £{item.price.toFixed(2)}
+                            </div>
                           </div>
-                        </div>
-                        <div className="text-lg font-semibold text-green-600">
-                          £{item.price.toFixed(2)}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      {item.description && (
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                          {item.description}
-                        </p>
-                      )}
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleToggleAvailability(item.id)}
-                        >
-                          {item.is_available ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
+
+                          {/* Description */}
+                          {item.description && (
+                            <p className="text-gray-600 text-xs leading-relaxed line-clamp-2">
+                              {item.description}
+                            </p>
                           )}
-                        </Button>
-                        <EditMenuItemForm
-                          item={item}
-                          onSuccess={handleUpdateMenuItem}
-                        />
-                        <DeleteConfirmationModal
-                          itemName={item.name}
-                          onConfirm={() => handleDeleteItem(item.id)}
-                          loading={deleteLoading === item.id}
-                        />
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex gap-2 mt-3">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleAvailability(item.id)}
+                          >
+                            {item.is_available ? (
+                              <EyeOff className="h-3 w-3 mr-1" />
+                            ) : (
+                              <Eye className="h-3 w-3 mr-1" />
+                            )}
+                            {item.is_available ? "Hide" : "Show"}
+                          </Button>
+                          <EditMenuItemForm
+                            item={item}
+                            onSuccess={handleUpdateMenuItem}
+                          />
+                          <DeleteConfirmationModal
+                            itemName={item.name}
+                            onConfirm={() => handleDeleteItem(item.id)}
+                            loading={deleteLoading === item.id}
+                          />
+                        </div>
                       </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>

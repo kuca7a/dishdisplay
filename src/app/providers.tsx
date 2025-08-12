@@ -1,6 +1,7 @@
 "use client";
 
 import { Auth0Provider } from "@auth0/auth0-react";
+import { StorageInitializer } from "@/components/StorageInitializer";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -12,6 +13,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
           typeof window !== "undefined" ? window.location.origin : "",
       }}
     >
+      <StorageInitializer />
       {children}
     </Auth0Provider>
   );
