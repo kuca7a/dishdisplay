@@ -172,20 +172,20 @@ export default function LandingPageContent() {
                   </p>
                   <p className="mt-6 flex items-baseline justify-center gap-x-2">
                     <span className="text-5xl tracking-tight text-gray-900">
-                      £10
+                      £19.99
                     </span>
                     <span className="text-sm  tracking-wide text-gray-600">
                       / month
                     </span>
                   </p>
                   <a
-                    href="#"
+                    href="/profile/subscription"
                     className="mt-10 block w-full rounded-md bg-[#5F7161] hover:bg-[#4C5B4F]  px-3 py-2 text-center text-sm text-white shadow-sm "
                   >
-                    Get access
+                    Start 14-day free trial
                   </a>
                   <p className="mt-6 text-xs text-gray-600">
-                    Cancel anytime. No hidden fees.
+                    14-day free trial • Cancel anytime • No setup fees
                   </p>
                 </div>
               </div>

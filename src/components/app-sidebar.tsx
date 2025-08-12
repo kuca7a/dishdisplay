@@ -1,7 +1,27 @@
 "use client";
 
-import { UserRoundPen, Utensils, Eye, WandSparkles, Frame, PieChart, Map, MessageCircleQuestion, Sticker, QrCode} from "lucide-react";
-import { Sidebar, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarContent, SidebarFooter } from "@/components/ui/sidebar";
+import {
+  UserRoundPen,
+  Utensils,
+  Eye,
+  WandSparkles,
+  Frame,
+  PieChart,
+  Map,
+  MessageCircleQuestion,
+  Sticker,
+  QrCode,
+  CreditCard,
+} from "lucide-react";
+import {
+  Sidebar,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarContent,
+  SidebarFooter,
+} from "@/components/ui/sidebar";
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
@@ -59,6 +79,11 @@ const data = {
       url: "/profile/insights",
       icon: WandSparkles,
     },
+    {
+      title: "Subscription",
+      url: "/profile/subscription",
+      icon: CreditCard,
+    },
   ],
   navSecondary: [
     {
@@ -94,25 +119,25 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isAuthenticated } = useAuth0();
 
-  const sidebarUser = isAuthenticated && user
-    ? {
-        name: user.name || user.nickname || "User",
-        email: user.email || "",
-        avatar: user.picture || "/avatars/default.jpg",
-      }
-    : {
-        name: "Guest",
-        email: "",
-        avatar: "/avatars/default.jpg",
-      };
+  const sidebarUser =
+    isAuthenticated && user
+      ? {
+          name: user.name || user.nickname || "User",
+          email: user.email || "",
+          avatar: user.picture || "/avatars/default.jpg",
+        }
+      : {
+          name: "Guest",
+          email: "",
+          avatar: "/avatars/default.jpg",
+        };
 
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-            </SidebarMenuButton>
+            <SidebarMenuButton size="lg" asChild></SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
