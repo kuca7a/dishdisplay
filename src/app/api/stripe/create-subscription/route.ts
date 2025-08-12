@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase";
 import { subscriptionService } from "@/lib/stripe";
+import Stripe from "stripe";
 
 export async function POST(request: NextRequest) {
   try {
@@ -83,9 +84,13 @@ export async function POST(request: NextRequest) {
       })
       .eq("id", restaurant.id);
 
-    // Fix TypeScript error by properly typing the response
-    const latestInvoice = subscription.latest_invoice as any;
-    const clientSecret = latestInvoice?.payment_intent?.client_secret;
+    // Properly type the latest invoice and payment intent
+    const latestInvoice = subscription.latest_invoice as Stripe.Invoice;
+    const clientSecret = 
+      latestInvoice?.payment_intent && 
+      typeof latestInvoice.payment_intent !== 'string'
+        ? (latestInvoice.payment_intent as Stripe.PaymentIntent).client_secret
+        : null;
 
     return NextResponse.json({
       subscriptionId: subscription.id,
