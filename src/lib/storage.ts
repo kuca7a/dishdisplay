@@ -14,6 +14,48 @@ export interface UploadError {
 }
 
 /**
+ * Initialize storage bucket (create if doesn't exist)
+ */
+export const initializeStorageBucket = async (): Promise<{ success: boolean; error?: string }> => {
+  try {
+    if (!supabase) {
+      return { success: false, error: 'Supabase client not available' };
+    }
+
+    // Check if bucket exists
+    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+    
+    if (listError) {
+      console.error('Error listing buckets:', listError);
+      return { success: false, error: listError.message };
+    }
+
+    const bucketExists = buckets?.some(bucket => bucket.name === BUCKET_NAME);
+
+    if (!bucketExists) {
+      // Create bucket with public access
+      const { data, error: createError } = await supabase.storage.createBucket(BUCKET_NAME, {
+        public: true,
+        allowedMimeTypes: ['image/*'],
+        fileSizeLimit: 5242880 // 5MB
+      });
+
+      if (createError) {
+        console.error('Error creating bucket:', createError);
+        return { success: false, error: createError.message };
+      }
+
+      console.log('Storage bucket created successfully:', data);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Storage initialization error:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+};
+
+/**
  * Upload an image file using the API route (production-ready)
  */
 export const uploadMenuImage = async (
