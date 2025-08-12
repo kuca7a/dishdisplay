@@ -58,10 +58,10 @@ export default function PreviewContent() {
   if (isLoading) {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50`}
+        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
           <p className="text-lg text-gray-600">Authenticating...</p>
         </div>
       </div>
@@ -71,14 +71,14 @@ export default function PreviewContent() {
   if (!isAuthenticated) {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50`}
+        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
           <p className="text-gray-600">Please sign in to preview your menu.</p>
           <button
             onClick={() => window.history.back()}
-            className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+            className="mt-4 px-4 py-2 bg-[#5F7161] text-white rounded-md hover:bg-[#4C5B4F] transition-colors"
           >
             Go Back
           </button>
@@ -90,7 +90,7 @@ export default function PreviewContent() {
   if (status === "no-restaurant") {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50`}
+        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-6xl mb-4">🍽️</div>
@@ -102,7 +102,7 @@ export default function PreviewContent() {
           <div className="space-y-3">
             <button
               onClick={() => (window.location.href = "/profile/menu/manage")}
-              className="block w-full px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+              className="block w-full px-4 py-2 bg-[#5F7161] text-white rounded-md hover:bg-[#4C5B4F] transition-colors"
             >
               Create Restaurant
             </button>
@@ -121,7 +121,7 @@ export default function PreviewContent() {
   if (status === "error") {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50`}
+        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-6xl mb-4">⚠️</div>
@@ -132,7 +132,7 @@ export default function PreviewContent() {
           <div className="space-y-3">
             <button
               onClick={() => window.location.reload()}
-              className="block w-full px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+              className="block w-full px-4 py-2 bg-[#5F7161] text-white rounded-md hover:bg-[#4C5B4F] transition-colors"
             >
               Try Again
             </button>
@@ -150,11 +150,11 @@ export default function PreviewContent() {
 
   return (
     <div
-      className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50`}
+      className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
     >
       <div className="text-center">
         <div className="animate-pulse text-6xl mb-4">👀</div>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
         <p className="text-lg text-gray-600">
           Opening customer menu preview...
         </p>

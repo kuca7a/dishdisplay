@@ -89,7 +89,7 @@ export default function MenuExploreContent() {
   if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
       </div>
     );
   }
@@ -119,7 +119,7 @@ export default function MenuExploreContent() {
             <div className="max-w-6xl mx-auto w-full space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Search className="h-8 w-8 text-orange-600" />
+                  <Search className="h-8 w-8 text-[#5F7161]" />
                   <div>
                     <h1 className="text-3xl font-bold">Explore Menu Ideas</h1>
                     <p className="text-gray-600">
@@ -127,7 +127,7 @@ export default function MenuExploreContent() {
                     </p>
                   </div>
                 </div>
-                <Button className="bg-orange-600 hover:bg-orange-700">
+                <Button className="bg-[#5F7161] hover:bg-[#4C5B4F]">
                   <Plus className="h-4 w-4 mr-2" />
                   Add to My Menu
                 </Button>
@@ -180,7 +180,7 @@ export default function MenuExploreContent() {
                     size="sm"
                     className={
                       category === "All"
-                        ? "bg-orange-600 hover:bg-orange-700"
+                        ? "bg-[#5F7161] hover:bg-[#4C5B4F]"
                         : ""
                     }
                   >
@@ -223,7 +223,7 @@ export default function MenuExploreContent() {
                         <div className="flex gap-2 pt-2">
                           <Button
                             size="sm"
-                            className="flex-1 bg-orange-600 hover:bg-orange-700"
+                            className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F]"
                           >
                             Add to Menu
                           </Button>

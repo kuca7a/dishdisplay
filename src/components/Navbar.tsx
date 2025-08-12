@@ -3,14 +3,14 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
 import { useState } from "react";
-import { CircleUser } from 'lucide-react';
+import { CircleUser } from "lucide-react";
 
 const Navbar = () => {
   const { loginWithRedirect, isAuthenticated, user } = useAuth0();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-[#FFF8F0] shadow-lg">
+    <nav className="bg-[#ffffff] shadow-lg">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="text-2xl font-['Notable'] text-black">

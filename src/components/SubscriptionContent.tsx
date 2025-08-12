@@ -267,7 +267,7 @@ export default function SubscriptionContent() {
   if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
       </div>
     );
   }
@@ -318,7 +318,7 @@ export default function SubscriptionContent() {
 
             {subscription.loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#5F7161]" />
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2">
@@ -385,7 +385,7 @@ export default function SubscriptionContent() {
                             handleUpgrade("price_1RuwrXAluVLbiFnm14DNsfhz")
                           }
                           disabled={actionLoading}
-                          className="w-full bg-orange-600 hover:bg-orange-700"
+                          className="w-full bg-[#5F7161] hover:bg-[#4C5B4F]"
                         >
                           {actionLoading ? (
                             <>

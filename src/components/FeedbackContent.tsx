@@ -42,7 +42,7 @@ export default function FeedbackContent() {
   if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
       </div>
     );
   }
@@ -71,7 +71,7 @@ export default function FeedbackContent() {
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="flex items-center gap-2">
-            <Sticker className="h-8 w-8 text-orange-600" />
+            <Sticker className="h-8 w-8 text-[#5F7161]" />
             <h1 className={`${fjallaOne.className} text-3xl text-gray-800`}>
               Feedback Center
             </h1>
@@ -81,8 +81,8 @@ export default function FeedbackContent() {
           <div className="flex flex-1 flex-col items-center justify-center min-h-[400px]">
             <Card className="max-w-md text-center">
               <CardContent className="p-8">
-                <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Sticker className="h-10 w-10 text-orange-600" />
+                <div className="w-20 h-20 bg-[#5F7161]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Sticker className="h-10 w-10 text-[#5F7161]" />
                 </div>
                 <h2 className="text-2xl font-bold mb-4">
                   Feedback System Coming Soon
@@ -94,7 +94,7 @@ export default function FeedbackContent() {
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <MessageSquare className="h-5 w-5 text-orange-600" />
+                    <MessageSquare className="h-5 w-5 text-[#5F7161]" />
                     <div className="text-left">
                       <p className="font-medium text-sm">Feature Requests</p>
                       <p className="text-xs text-gray-600">
@@ -103,7 +103,7 @@ export default function FeedbackContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <ThumbsUp className="h-5 w-5 text-orange-600" />
+                    <ThumbsUp className="h-5 w-5 text-[#5F7161]" />
                     <div className="text-left">
                       <p className="font-medium text-sm">Bug Reports</p>
                       <p className="text-xs text-gray-600">
@@ -112,7 +112,7 @@ export default function FeedbackContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Lightbulb className="h-5 w-5 text-orange-600" />
+                    <Lightbulb className="h-5 w-5 text-[#5F7161]" />
                     <div className="text-left">
                       <p className="font-medium text-sm">General Feedback</p>
                       <p className="text-xs text-gray-600">

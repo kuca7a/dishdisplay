@@ -48,7 +48,7 @@ export default function InsightsContent() {
   if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function InsightsContent() {
           <div className="flex flex-1 flex-col gap-4 p-4">
             <div className="max-w-6xl mx-auto w-full space-y-6">
               <div className="flex items-center gap-3 mb-6">
-                <BarChart className="h-8 w-8 text-orange-600" />
+                <BarChart className="h-8 w-8 text-[#5F7161]" />
                 <div>
                   <h1 className="text-3xl font-bold">Restaurant Insights</h1>
                   <p className="text-gray-600">
@@ -167,7 +167,7 @@ export default function InsightsContent() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
+                      <div className="flex items-center justify-between p-4 bg-[#5F7161]/5 rounded-lg">
                         <div>
                           <p className="font-medium">Margherita Pizza</p>
                           <p className="text-sm text-gray-600">234 views</p>
@@ -224,19 +224,19 @@ export default function InsightsContent() {
                       <div className="space-y-2">
                         <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                           <span className="text-sm">Heat Maps</span>
-                          <span className="text-xs text-orange-600">
+                          <span className="text-xs text-[#5F7161]">
                             Coming Soon
                           </span>
                         </div>
                         <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                           <span className="text-sm">Customer Journey</span>
-                          <span className="text-xs text-orange-600">
+                          <span className="text-xs text-[#5F7161]">
                             Coming Soon
                           </span>
                         </div>
                         <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                           <span className="text-sm">Revenue Analytics</span>
-                          <span className="text-xs text-orange-600">
+                          <span className="text-xs text-[#5F7161]">
                             Coming Soon
                           </span>
                         </div>
@@ -275,7 +275,7 @@ export default function InsightsContent() {
                       </div>
                     </div>
                     <div className="flex items-center gap-4 p-4 border rounded-lg">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <div className="w-2 h-2 bg-[#5F7161] rounded-full"></div>
                       <div className="flex-1">
                         <p className="font-medium">
                           Menu shared on social media
