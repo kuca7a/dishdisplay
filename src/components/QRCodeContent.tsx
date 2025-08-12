@@ -67,7 +67,7 @@ export default function QRCodeContent() {
   if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function QRCodeContent() {
               {/* Header */}
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-3 mb-4">
-                  <QrCode className="h-8 w-8 text-orange-600" />
+                  <QrCode className="h-8 w-8 text-[#5F7161]" />
                   <h1 className="text-3xl font-bold">Your Menu QR Code</h1>
                 </div>
                 <p className="text-gray-600 max-w-2xl mx-auto">
@@ -111,7 +111,7 @@ export default function QRCodeContent() {
 
               {loading && (
                 <div className="flex items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
                 </div>
               )}
 
@@ -122,7 +122,7 @@ export default function QRCodeContent() {
                       <QrCode className="h-12 w-12 mx-auto mb-2" />
                       <p>{error}</p>
                     </div>
-                    <Button onClick={() => window.location.reload()} variant="outline">
+                    <Button onClick={() => window.location.reload()} variant="outline" className="hover:cursor-pointer">
                       Try Again
                     </Button>
                   </CardContent>
@@ -137,7 +137,7 @@ export default function QRCodeContent() {
                     <p className="text-gray-600 mb-4">
                       You need to create a restaurant first before generating a QR code.
                     </p>
-                    <Button onClick={() => router.push('/profile/menu/manage')}>
+                    <Button onClick={() => router.push('/profile/menu/manage')} className="hover:cursor-pointer">
                       Create Restaurant
                     </Button>
                   </CardContent>
@@ -165,8 +165,8 @@ export default function QRCodeContent() {
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="flex items-start gap-3">
-                          <div className="bg-orange-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
-                            <span className="text-orange-600 text-sm font-semibold">1</span>
+                          <div className="bg-[#5F7161]/10 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+                            <span className="text-[#5F7161] text-sm font-semibold">1</span>
                           </div>
                           <div>
                             <h4 className="font-semibold">Download Your QR Code</h4>
@@ -177,8 +177,8 @@ export default function QRCodeContent() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                          <div className="bg-orange-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
-                            <span className="text-orange-600 text-sm font-semibold">2</span>
+                          <div className="bg-[#5F7161]/10 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+                            <span className="text-[#5F7161] text-sm font-semibold">2</span>
                           </div>
                           <div>
                             <h4 className="font-semibold">Print and Display</h4>
@@ -189,8 +189,8 @@ export default function QRCodeContent() {
                         </div>
 
                         <div className="flex items-start gap-3">
-                          <div className="bg-orange-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
-                            <span className="text-orange-600 text-sm font-semibold">3</span>
+                          <div className="bg-[#5F7161]/10 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+                            <span className="text-[#5F7161] text-sm font-semibold">3</span>
                           </div>
                           <div>
                             <h4 className="font-semibold">Customers Scan & Enjoy</h4>
@@ -211,23 +211,23 @@ export default function QRCodeContent() {
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="flex items-center gap-2 text-sm">
-                          <ArrowRight className="h-4 w-4 text-orange-600" />
+                          <ArrowRight className="h-4 w-4 text-[#5F7161]" />
                           <span>Place at eye level for easy scanning</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <ArrowRight className="h-4 w-4 text-orange-600" />
+                          <ArrowRight className="h-4 w-4 text-[#5F7161]" />
                           <span>Ensure good lighting around the QR code</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <ArrowRight className="h-4 w-4 text-orange-600" />
+                          <ArrowRight className="h-4 w-4 text-[#5F7161]" />
                           <span>Add text: "Scan for Digital Menu"</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <ArrowRight className="h-4 w-4 text-orange-600" />
+                          <ArrowRight className="h-4 w-4 text-[#5F7161]" />
                           <span>Print at least 2cm x 2cm for reliable scanning</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <ArrowRight className="h-4 w-4 text-orange-600" />
+                          <ArrowRight className="h-4 w-4 text-[#5F7161]" />
                           <span>Test scanning before finalizing placement</span>
                         </div>
                       </CardContent>
@@ -242,13 +242,13 @@ export default function QRCodeContent() {
                           <Button 
                             onClick={() => router.push('/profile/menu/manage')}
                             variant="outline"
-                            className="flex-1"
+                            className="flex-1 hover:cursor-pointer"
                           >
                             Edit Menu
                           </Button>
                           <Button 
                             onClick={() => window.open(`/menu/${restaurant.id}`, '_blank')}
-                            className="flex-1"
+                            className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F] hover:cursor-pointer"
                           >
                             Preview Menu
                           </Button>

@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Camera, 
-  Upload, 
-  X, 
-  Image as ImageIcon, 
+import React, { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import {
+  Camera,
+  Upload,
+  X,
+  Image as ImageIcon,
   Loader2,
-  AlertCircle 
-} from 'lucide-react';
-import Image from 'next/image';
-import { uploadMenuImage, compressImage } from '@/lib/storage';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+  AlertCircle,
+} from "lucide-react";
+import Image from "next/image";
+import { uploadMenuImage, compressImage } from "@/lib/storage";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface ImageUploadProps {
   onImageUploaded: (url: string) => void;
@@ -23,18 +23,18 @@ interface ImageUploadProps {
   className?: string;
 }
 
-export function ImageUpload({ 
-  onImageUploaded, 
-  restaurantId, 
+export function ImageUpload({
+  onImageUploaded,
+  restaurantId,
   currentImageUrl,
-  className = '' 
+  className = "",
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [previewUrl, setPreviewUrl] = useState(currentImageUrl || '');
+  const [previewUrl, setPreviewUrl] = useState(currentImageUrl || "");
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,9 +59,9 @@ export function ImageUpload({
       const result = await uploadMenuImage(compressedFile, restaurantId);
       setProgress(90);
 
-      if ('error' in result) {
+      if ("error" in result) {
         setError(result.error);
-        setPreviewUrl(currentImageUrl || '');
+        setPreviewUrl(currentImageUrl || "");
         return;
       }
 
@@ -72,11 +72,10 @@ export function ImageUpload({
 
       // Clean up object URL
       URL.revokeObjectURL(objectUrl);
-
     } catch (err) {
-      console.error('Upload error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to upload image');
-      setPreviewUrl(currentImageUrl || '');
+      console.error("Upload error:", err);
+      setError(err instanceof Error ? err.message : "Failed to upload image");
+      setPreviewUrl(currentImageUrl || "");
     } finally {
       setUploading(false);
       setProgress(0);
@@ -93,10 +92,10 @@ export function ImageUpload({
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
@@ -107,21 +106,21 @@ export function ImageUpload({
     setDragActive(false);
 
     const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file && file.type.startsWith("image/")) {
       handleFileSelect(file);
     } else {
-      setError('Please select an image file');
+      setError("Please select an image file");
     }
   };
 
   const removeImage = () => {
-    setPreviewUrl('');
-    onImageUploaded('');
+    setPreviewUrl("");
+    onImageUploaded("");
     setError(null);
-    
+
     // Reset file inputs
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    if (cameraInputRef.current) cameraInputRef.current.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
   return (
@@ -162,11 +161,12 @@ export function ImageUpload({
         <div
           className={`
             border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer
-            ${dragActive 
-              ? 'border-blue-400 bg-blue-50' 
-              : 'border-gray-300 hover:border-gray-400'
+            ${
+              dragActive
+                ? "border-blue-400 bg-blue-50"
+                : "border-gray-300 hover:border-gray-400"
             }
-            ${uploading ? 'pointer-events-none opacity-50' : ''}
+            ${uploading ? "pointer-events-none opacity-50" : ""}
           `}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -235,7 +235,7 @@ export function ImageUpload({
         onChange={handleFileInputChange}
         className="hidden"
       />
-      
+
       <input
         ref={cameraInputRef}
         type="file"
@@ -255,7 +255,8 @@ export function ImageUpload({
 
       {/* Helper Text */}
       <p className="text-xs text-gray-500">
-        Upload a high-quality image of your dish. Images will be automatically optimized for fast loading.
+        Upload a high-quality image of your dish. Images will be automatically
+        optimized for fast loading.
       </p>
     </div>
   );

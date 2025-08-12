@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
         // Try to create a basic portal configuration automatically
         try {
           await subscriptionService.createPortalConfiguration();
-          
+
           // Retry creating the session
           const session = await subscriptionService.createPortalSession(
             customerId,

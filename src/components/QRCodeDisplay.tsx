@@ -147,7 +147,7 @@ export function QRCodeDisplay({
       <Card className={className}>
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5F7161]"></div>
           </div>
         </CardContent>
       </Card>
@@ -164,7 +164,7 @@ export function QRCodeDisplay({
             <Button 
               variant="outline" 
               onClick={generateQRCode}
-              className="mt-2"
+              className="mt-2 hover:cursor-pointer"
             >
               Try Again
             </Button>
@@ -221,6 +221,7 @@ export function QRCodeDisplay({
                 variant="outline" 
                 size="sm" 
                 onClick={handleDownloadPNG}
+                className="hover:cursor-pointer"
               >
                 <Download className="h-4 w-4 mr-2" />
                 PNG
@@ -229,6 +230,7 @@ export function QRCodeDisplay({
                 variant="outline" 
                 size="sm" 
                 onClick={handleDownloadSVG}
+                className="hover:cursor-pointer"
               >
                 <Download className="h-4 w-4 mr-2" />
                 SVG
@@ -237,6 +239,7 @@ export function QRCodeDisplay({
                 variant="outline" 
                 size="sm" 
                 onClick={handleCopyUrl}
+                className="hover:cursor-pointer"
               >
                 <Copy className="h-4 w-4 mr-2" />
                 {copied ? 'Copied!' : 'Copy URL'}
@@ -245,6 +248,7 @@ export function QRCodeDisplay({
                 variant="outline" 
                 size="sm" 
                 onClick={handleShare}
+                className="hover:cursor-pointer"
               >
                 <Share2 className="h-4 w-4 mr-2" />
                 Share
@@ -256,7 +260,7 @@ export function QRCodeDisplay({
                 variant="outline" 
                 size="sm" 
                 onClick={() => window.open(menuUrl, '_blank')}
-                className="flex-1"
+                className="flex-1 hover:cursor-pointer"
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Preview Menu
@@ -265,7 +269,7 @@ export function QRCodeDisplay({
               {/* Customization Dialog */}
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="hover:cursor-pointer">
                     <Settings className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>

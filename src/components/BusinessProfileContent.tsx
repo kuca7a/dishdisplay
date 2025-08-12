@@ -168,7 +168,7 @@ export default function BusinessProfileContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
           <p>Loading...</p>
         </div>
       </div>
@@ -211,7 +211,7 @@ export default function BusinessProfileContent() {
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="flex items-center gap-2">
-            <Building2 className="h-8 w-8 text-orange-600" />
+            <Building2 className="h-8 w-8 text-[#5F7161]" />
             <h1 className={`${fjallaOne.className} text-3xl text-gray-800`}>
               Business Profile
             </h1>
@@ -222,7 +222,7 @@ export default function BusinessProfileContent() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#5F7161]" />
                   <span className="ml-2">Loading restaurant data...</span>
                 </div>
               </CardContent>
@@ -359,7 +359,7 @@ export default function BusinessProfileContent() {
                     <Button
                       type="submit"
                       disabled={saving || loading}
-                      className="w-full bg-orange-600 hover:bg-orange-700"
+                      className="w-full bg-[#5F7161] hover:bg-[#4C5B4F]"
                     >
                       {saving ? (
                         <>

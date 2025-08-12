@@ -228,7 +228,7 @@ export default function LocationHoursContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
           <p>Loading...</p>
         </div>
       </div>
@@ -271,7 +271,7 @@ export default function LocationHoursContent() {
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="flex items-center gap-2">
-            <MapPin className="h-8 w-8 text-orange-600" />
+            <MapPin className="h-8 w-8 text-[#5F7161]" />
             <h1 className={`${fjallaOne.className} text-3xl text-gray-800`}>
               Location & Hours
             </h1>
@@ -282,7 +282,7 @@ export default function LocationHoursContent() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+                  <Loader2 className="h-8 w-8 animate-spin text-[#5F7161]" />
                   <span className="ml-2">Loading location data...</span>
                 </div>
               </CardContent>
@@ -438,7 +438,7 @@ export default function LocationHoursContent() {
                 <Button
                   type="submit"
                   disabled={saving || loading}
-                  className="bg-orange-600 hover:bg-orange-700"
+                  className="bg-[#5F7161] hover:bg-[#4C5B4F]"
                 >
                   {saving ? (
                     <>

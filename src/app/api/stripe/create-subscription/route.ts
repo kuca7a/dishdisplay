@@ -86,9 +86,9 @@ export async function POST(request: NextRequest) {
 
     // Properly type the latest invoice and payment intent
     const latestInvoice = subscription.latest_invoice as Stripe.Invoice;
-    const clientSecret = 
-      latestInvoice?.payment_intent && 
-      typeof latestInvoice.payment_intent !== 'string'
+    const clientSecret =
+      latestInvoice?.payment_intent &&
+      typeof latestInvoice.payment_intent !== "string"
         ? (latestInvoice.payment_intent as Stripe.PaymentIntent).client_secret
         : null;
 

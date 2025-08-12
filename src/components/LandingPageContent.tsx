@@ -27,7 +27,7 @@ export default function LandingPageContent() {
       <SpeedInsights />
       <Navbar />
       {/* Hero Section */}
-      <section className="bg-[#FFF8F0] text-black py-10">
+      <section className="bg-[#ffffff] text-black py-16">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2">
@@ -53,7 +53,7 @@ export default function LandingPageContent() {
       </section>
 
       {/* How It Works Section */}
-      <section className="bg-[#FFF8F0] py-20">
+      <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
             How Dish Display Works
@@ -112,8 +112,33 @@ export default function LandingPageContent() {
                   </h3>
                   <p className="text-gray-600 font-['Fjalla_One']">
                     Watch as your customers make more confident ordering
-                    decisions with visual menu items. Customers will be prompted
-                    to review the restaurant on Google and Tripadvisor. Win win.
+                    decisions with visual menu items and have a better dining experience.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-['Fjalla_One']">5</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-['Fjalla_One'] mb-2">
+                    Customers Join Rewards Program
+                  </h3>
+                  <p className="text-gray-600 font-['Fjalla_One']">
+                    After their meal, customers are invited to join our review rewards program and leave a Google Review with photos to earn points.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-['Fjalla_One']">6</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-['Fjalla_One'] mb-2">
+                    Grow Your Online Presence
+                  </h3>
+                  <p className="text-gray-600 font-['Fjalla_One']">
+                    Customers compete for monthly rewards by reviewing restaurants, generating authentic Google Reviews with photos that attract new diners to your restaurant.
                   </p>
                 </div>
               </div>
@@ -123,7 +148,7 @@ export default function LandingPageContent() {
       </section>
 
       {/* Pricing Section */}
-      <section className="bg-[#FFF8F0] py-24 sm:py-32 font-['Fjalla_One']">
+      <section className="bg-[#ffffff] py-16 font-['Fjalla_One']">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
@@ -194,8 +219,265 @@ export default function LandingPageContent() {
         </div>
       </section>
 
+      {/* Analytics USP Section */}
+      <section className="bg-gray-50 text-black py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-['Fjalla_One'] mb-6">
+              The Only Menu Platform with Advanced Analytics
+            </h2>
+            <p className="text-xl font-['Fjalla_One'] max-w-3xl mx-auto text-gray-600">
+              Don't just show your menu - understand your customers. Dish
+              Display provides restaurant owners with unprecedented insights
+              into customer behavior and menu performance.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="text-center">
+              <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg
+                  className="w-10 h-10 text-[#5F7161]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-['Fjalla_One'] mb-4">
+                Menu Performance Analytics
+              </h3>
+              <p className="font-['Fjalla_One'] text-gray-600">
+                Track which dishes are viewed most, conversion rates, and
+                customer preferences in real-time.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg
+                  className="w-10 h-10 text-[#5F7161]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-['Fjalla_One'] mb-4">
+                Revenue Optimization
+              </h3>
+              <p className="font-['Fjalla_One'] text-gray-600">
+                Identify your highest-performing dishes and optimize pricing
+                based on customer engagement data.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg
+                  className="w-10 h-10 text-[#5F7161]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-['Fjalla_One'] mb-4">
+                Customer Behavior Insights
+              </h3>
+              <p className="font-['Fjalla_One'] text-gray-600">
+                Understand peak viewing times, popular combinations, and
+                seasonal trends to make data-driven decisions.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-2xl p-8">
+            <div className="grid md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-3xl font-['Fjalla_One'] mb-2 text-[#5F7161]">
+                  95%
+                </div>
+                <div className="font-['Fjalla_One'] text-gray-600">
+                  Restaurants report increased orders with visual menus
+                </div>
+              </div>
+              <div>
+                <div className="text-3xl font-['Fjalla_One'] mb-2 text-[#5F7161]">
+                  47%
+                </div>
+                <div className="font-['Fjalla_One'] text-gray-600">
+                  Average increase in customer engagement
+                </div>
+              </div>
+              <div>
+                <div className="text-3xl font-['Fjalla_One'] mb-2 text-[#5F7161]">
+                  23%
+                </div>
+                <div className="font-['Fjalla_One'] text-gray-600">
+                  Boost in average order value
+                </div>
+              </div>
+              <div>
+                <div className="text-3xl font-['Fjalla_One'] mb-2 text-[#5F7161]">
+                  24/7
+                </div>
+                <div className="font-['Fjalla_One'] text-gray-600">
+                  Real-time analytics dashboard access
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-xl font-['Fjalla_One'] mb-6 text-gray-700">
+              🚀 Advanced analytics dashboard coming soon - be among the first
+              to access detailed insights!
+            </p>
+            <button
+              onClick={handleGetStarted}
+              className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-[#4C5B4F] transition-colors text-lg"
+            >
+              Get Early Access to Analytics
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Review Rewards System Section */}
+      <section className="bg-[#ffffff] py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-['Fjalla_One'] mb-6">
+              Turn Customers Into Review Champions
+            </h2>
+            <p className="text-xl font-['Fjalla_One'] max-w-3xl mx-auto text-gray-600">
+              Our unique reward system motivates customers to leave more Google Reviews with photos, boosting your restaurant's online presence and attracting new diners.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            {/* How It Works */}
+            <div className="bg-gray-50 rounded-2xl p-8">
+              <h3 className="text-2xl font-['Fjalla_One'] mb-6 text-center">How The Reward System Works</h3>
+              <div className="flex justify-center">
+                <div className="max-w-2xl space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-['Fjalla_One']">1</span>
+                    </div>
+                    <div>
+                      <h4 className="font-['Fjalla_One'] text-lg mb-2">Customer Creates Profile</h4>
+                      <p className="text-gray-600 font-['Fjalla_One']">Diners sign up and track their reviews across all Dish Display restaurants.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-['Fjalla_One']">2</span>
+                    </div>
+                    <div>
+                      <h4 className="font-['Fjalla_One'] text-lg mb-2">Reviews Earn Points</h4>
+                      <p className="text-gray-600 font-['Fjalla_One']">Google Reviews with photos earn more points, encouraging quality feedback.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-['Fjalla_One']">3</span>
+                    </div>
+                    <div>
+                      <h4 className="font-['Fjalla_One'] text-lg mb-2">Monthly Competition</h4>
+                      <p className="text-gray-600 font-['Fjalla_One']">Top reviewers compete for discount vouchers from participating restaurants.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-['Fjalla_One']">4</span>
+                    </div>
+                    <div>
+                      <h4 className="font-['Fjalla_One'] text-lg mb-2">Winners Get Rewards</h4>
+                      <p className="text-gray-600 font-['Fjalla_One']">Monthly winners receive vouchers, driving repeat visits and new customer discovery.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Restaurant Benefits */}
+            <div className="space-y-8">
+              <div className="text-center">
+                <h3 className="text-2xl font-['Fjalla_One'] mb-6">Restaurant Benefits</h3>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="bg-[#5F7161] w-8 h-8 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h4 className="font-['Fjalla_One'] text-lg">More Google Reviews</h4>
+                  </div>
+                  <p className="text-gray-600 font-['Fjalla_One']">Customers actively seek out your restaurant to earn points, generating authentic reviews.</p>
+                </div>
+                
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h4 className="font-['Fjalla_One'] text-lg">Photo Reviews</h4>
+                  </div>
+                  <p className="text-gray-600 font-['Fjalla_One']">Higher points for photo reviews mean more visual content showcasing your dishes.</p>
+                </div>
+                
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="bg-[#4C5B4F] w-8 h-8 rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <h4 className="font-['Fjalla_One'] text-lg">New Customer Discovery</h4>
+                  </div>
+                  <p className="text-gray-600 font-['Fjalla_One']">Winners share their experiences, bringing their network to discover your restaurant.</p>
+                </div>
+              </div>
+              
+              <div className="bg-[#5F7161] text-white rounded-lg p-6 text-center">
+                <h4 className="font-['Fjalla_One'] text-xl mb-3">Marketing That Pays For Itself</h4>
+                <p className="font-['Fjalla_One']">Sponsor monthly prizes for less than traditional advertising, while generating authentic customer content and reviews.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Section */}
-      <section className="bg-[#FFF8F0] py-20">
+      <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
             Why Restaurant Owners Choose Us
@@ -276,7 +558,7 @@ export default function LandingPageContent() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-black text-white">
+      <section className="py-16 bg-[#ffffff] text-black">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-['Fjalla_One'] mb-8">
             Ready to Transform Your Menu?
@@ -287,7 +569,7 @@ export default function LandingPageContent() {
           </p>
           <button
             onClick={handleGetStarted}
-            className="bg-white text-black px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer hover:bg-gray-100 transition-colors text-lg"
+            className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer hover:bg-[#4C5B4F] transition-colors text-lg"
           >
             Start Your Free Trial
           </button>

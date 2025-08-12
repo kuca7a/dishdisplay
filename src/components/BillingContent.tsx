@@ -189,7 +189,7 @@ export default function BillingContent() {
   if (isLoading || !isAuthenticated || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
       </div>
     );
   }
@@ -254,7 +254,7 @@ export default function BillingContent() {
             {/* Header */}
             <div className="text-center mb-8">
               <div className="flex items-center justify-center gap-3 mb-4">
-                <CreditCard className="h-8 w-8 text-orange-600" />
+                <CreditCard className="h-8 w-8 text-[#5F7161]" />
                 <h1 className="text-3xl font-bold">Billing & Subscription</h1>
               </div>
               <p className="text-gray-600 max-w-2xl mx-auto">
@@ -393,7 +393,7 @@ export default function BillingContent() {
                           )
                         }
                         disabled={actionLoading === "upgrade"}
-                        className="bg-orange-600 hover:bg-orange-700"
+                        className="bg-[#5F7161] hover:bg-[#4C5B4F]"
                       >
                         {actionLoading === "upgrade" && (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -463,7 +463,7 @@ export default function BillingContent() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-orange-200 bg-gradient-to-b from-orange-50 to-white">
+                <Card className="border-[#5F7161]/20 bg-gradient-to-b from-[#5F7161]/5 to-white">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Crown className="h-5 w-5 text-yellow-500" />

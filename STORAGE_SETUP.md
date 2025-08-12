@@ -7,14 +7,17 @@ Your image upload feature is ready, but you need to create a storage bucket in S
 ### Step 1: Create Storage Bucket
 
 1. **Go to your Supabase Dashboard**
+
    - Visit [supabase.com](https://supabase.com)
    - Sign in and select your project
 
 2. **Navigate to Storage**
+
    - Click **"Storage"** in the left sidebar
    - Click **"New bucket"**
 
 3. **Configure the Bucket**
+
    ```
    Bucket name: menu-images
    Public bucket: ✅ (checked)
@@ -37,7 +40,7 @@ After creating the bucket, you can set up security policies:
 CREATE POLICY "Allow authenticated users to upload menu images" ON storage.objects
 FOR INSERT
 WITH CHECK (
-  auth.role() = 'authenticated' 
+  auth.role() = 'authenticated'
   AND bucket_id = 'menu-images'
   AND (storage.foldername(name))[1] = auth.jwt() ->> 'email'
 );
@@ -71,15 +74,18 @@ USING (bucket_id = 'menu-images');
 ## Troubleshooting
 
 **"Bucket not found" error?**
+
 - Make sure you created the `menu-images` bucket
 - Check the bucket name is exactly `menu-images`
 - Ensure the bucket is marked as public
 
 **Images not loading?**
+
 - Check your Supabase URL and keys are correct
 - Verify the bucket has public read access
 
 **Upload fails?**
+
 - Check file size (max 5MB)
 - Ensure file is an image (JPG, PNG, WEBP)
 - Verify your internet connection
@@ -87,6 +93,7 @@ USING (bucket_id = 'menu-images');
 ## Next Steps
 
 Once storage is set up, your users can:
+
 - Upload high-quality menu item photos
 - Take pictures directly with their camera
 - Automatically optimized images for fast loading
