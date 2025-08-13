@@ -4,13 +4,20 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
 import { useState } from "react";
 import { CircleUser } from "lucide-react";
+import { Rubik } from "next/font/google";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const Navbar = () => {
   const { loginWithRedirect, isAuthenticated, user } = useAuth0();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-[#ffffff] shadow-lg">
+    <nav className={`bg-[#ffffff] shadow-lg ${rubik.className}`}>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="text-2xl font-['Notable'] text-black">
@@ -22,31 +29,31 @@ const Navbar = () => {
             <div className="flex items-center space-x-8">
               <Link
                 href="/about"
-                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+                className="text-black font-medium hover:text-gray-700 transition-colors"
               >
                 About
               </Link>
               <Link
                 href="/services"
-                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+                className="text-black font-medium hover:text-gray-700 transition-colors"
               >
                 Services
               </Link>
               <Link
                 href="/team"
-                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+                className="text-black font-medium hover:text-gray-700 transition-colors"
               >
                 Our Team
               </Link>
               <Link
                 href="/team"
-                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+                className="text-black font-medium hover:text-gray-700 transition-colors"
               >
                 Pricing
               </Link>
               <Link
                 href="/team"
-                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+                className="text-black font-medium hover:text-gray-700 transition-colors"
               >
                 Demo
               </Link>
@@ -58,13 +65,13 @@ const Navbar = () => {
             {!isAuthenticated ? (
               <button
                 onClick={() => loginWithRedirect()}
-                className="px-6 py-2 rounded-sm font-['Fjalla_One'] text-white bg-[#5F7161] hover:bg-[#4C5B4F] transition-colors hover:cursor-pointer"
+                className="px-6 py-2 rounded-sm font-medium text-white bg-[#5F7161] hover:bg-[#4C5B4F] transition-colors hover:cursor-pointer"
               >
                 Log In
               </button>
             ) : (
               <div className="flex items-center space-x-4">
-                <span className="text-gray-700 font-['Fjalla_One']">
+                <span className="text-gray-700 font-medium">
                   Welcome, {user?.name}
                 </span>
                 <a
@@ -115,7 +122,7 @@ const Navbar = () => {
             {isAuthenticated && (
               <Link
                 href="/profile"
-                className="text-black font-['Fjalla_One'] hover:text-[#5F7161] transition-colors"
+                className="text-black font-medium hover:text-[#5F7161] transition-colors"
                 onClick={() => setIsMenuOpen(false)}
                 title="Profile"
               >
@@ -124,21 +131,21 @@ const Navbar = () => {
             )}
             <Link
               href="/about"
-              className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+              className="text-black font-medium hover:text-gray-700 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
             <Link
               href="/services"
-              className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+              className="text-black font-medium hover:text-gray-700 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Services
             </Link>
             <Link
               href="/team"
-              className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors"
+              className="text-black font-medium hover:text-gray-700 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               Our Team
@@ -149,7 +156,7 @@ const Navbar = () => {
                   loginWithRedirect();
                   setIsMenuOpen(false);
                 }}
-                className="text-black font-['Fjalla_One'] hover:text-gray-700 transition-colors text-left"
+                className="text-black font-medium hover:text-gray-700 transition-colors text-left"
               >
                 Log In
               </button>

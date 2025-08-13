@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import React from 'react';
+import { ThreeDotsLoader } from '@/components/ui/three-dots-loader';
 
 // Dynamic import to prevent Auth0 SSR issues
 const SupportContent = dynamic(() => import('@/components/SupportContent'), {
@@ -9,8 +10,8 @@ const SupportContent = dynamic(() => import('@/components/SupportContent'), {
   loading: () => (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-        <p>Loading Support...</p>
+        <ThreeDotsLoader size="lg" />
+        <p className="mt-4">Loading Support...</p>
       </div>
     </div>
   )

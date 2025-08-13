@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -40,16 +40,16 @@ import {
   Palette,
   Image,
   Sparkles,
-  Loader2,
   Facebook,
   Instagram,
   Twitter,
 } from "lucide-react";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -244,10 +244,12 @@ export default function MediaBrandingContent() {
   // Simple loading check
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
-          <p>Loading...</p>
+          <ThreeDotsLoader size="lg" />
+          <p className="mt-4">Loading...</p>
         </div>
       </div>
     );
@@ -256,7 +258,9 @@ export default function MediaBrandingContent() {
   // Simple auth check
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Please sign in</h1>
           <p>You need to be authenticated to access this page.</p>
@@ -268,7 +272,7 @@ export default function MediaBrandingContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className={rubik.className}>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -290,7 +294,9 @@ export default function MediaBrandingContent() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="flex items-center gap-2">
             <Palette className="h-8 w-8 text-[#5F7161]" />
-            <h1 className={`${fjallaOne.className} text-3xl text-gray-800`}>
+            <h1
+              className={`${rubik.className} font-semibold text-3xl text-gray-800`}
+            >
               Media & Branding
             </h1>
           </div>
@@ -300,7 +306,7 @@ export default function MediaBrandingContent() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#5F7161]" />
+                  <ThreeDotsLoader size="md" />
                   <span className="ml-2">Loading branding data...</span>
                 </div>
               </CardContent>
@@ -580,18 +586,22 @@ export default function MediaBrandingContent() {
                 <Button
                   type="submit"
                   disabled={saving || loading}
-                  className="bg-[#5F7161] hover:bg-[#4C5B4F]"
+                  className="bg-[#5F7161] hover:bg-[#4C5B4F] cursor-pointer"
                 >
                   {saving ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Saving Changes...
-                    </>
+                    <div className="flex items-center">
+                      <ThreeDotsLoader size="sm" />
+                      <span className="ml-2">Saving Changes...</span>
+                    </div>
                   ) : (
                     "Save Media & Branding"
                   )}
                 </Button>
-                <Button type="button" variant="outline">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="cursor-pointer"
+                >
                   Preview Changes
                 </Button>
               </div>

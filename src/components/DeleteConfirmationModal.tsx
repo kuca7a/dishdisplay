@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Trash2, AlertTriangle } from "lucide-react";
 
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+
 interface DeleteConfirmationModalProps {
   itemName: string;
   onConfirm: () => void;
@@ -76,16 +78,13 @@ export function DeleteConfirmationModal({
             disabled={loading}
             className="bg-red-600 hover:bg-red-700"
           >
-            {loading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Deleting...
-              </>
+                        {loading ? (
+              <div className="flex items-center">
+                <ThreeDotsLoader size="sm" color="white" />
+                <span className="ml-2">Deleting...</span>
+              </div>
             ) : (
-              <>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Item
-              </>
+              "Delete Item"
             )}
           </Button>
         </div>

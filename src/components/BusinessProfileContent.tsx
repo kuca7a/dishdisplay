@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -30,12 +30,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Building2, Phone, Globe, Mail, Loader2 } from "lucide-react";
+import { Building2, Phone, Globe, Mail } from "lucide-react";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -168,8 +169,8 @@ export default function BusinessProfileContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
-          <p>Loading...</p>
+          <ThreeDotsLoader size="lg" />
+          <p className="mt-4">Loading...</p>
         </div>
       </div>
     );
@@ -190,7 +191,7 @@ export default function BusinessProfileContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className={rubik.className}>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -212,7 +213,7 @@ export default function BusinessProfileContent() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="flex items-center gap-2">
             <Building2 className="h-8 w-8 text-[#5F7161]" />
-            <h1 className={`${fjallaOne.className} text-3xl text-gray-800`}>
+            <h1 className={`${rubik.className} text-3xl text-gray-800 font-medium`}>
               Business Profile
             </h1>
           </div>
@@ -222,7 +223,7 @@ export default function BusinessProfileContent() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#5F7161]" />
+                  <ThreeDotsLoader size="md" />
                   <span className="ml-2">Loading restaurant data...</span>
                 </div>
               </CardContent>
@@ -362,10 +363,10 @@ export default function BusinessProfileContent() {
                       className="w-full bg-[#5F7161] hover:bg-[#4C5B4F]"
                     >
                       {saving ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Saving Changes...
-                        </>
+                        <div className="flex items-center">
+                          <ThreeDotsLoader size="sm" />
+                          <span className="ml-2">Saving Changes...</span>
+                        </div>
                       ) : (
                         "Save Business Profile"
                       )}

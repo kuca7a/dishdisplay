@@ -2,10 +2,17 @@
 
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Rubik } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Carousel from "@/components/Carousel";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const includedFeatures = [
   "Unlimited QR code scans",
@@ -23,7 +30,7 @@ export default function LandingPageContent() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${rubik.className}`}>
       <SpeedInsights />
       <Navbar />
       {/* Hero Section */}
@@ -31,16 +38,16 @@ export default function LandingPageContent() {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2">
-              <h1 className="text-4xl md:text-6xl font-['Fjalla_One'] mb-6">
+              <h1 className="text-4xl md:text-6xl font-semibold mb-6">
                 Bring Your Menu to Life with Beautiful Photos
               </h1>
-              <p className="text-xl mb-8 font-['Fjalla_One']">
+              <p className="text-xl mb-8 font-medium">
                 Help customers make confident dining decisions with high-quality
                 photos of every dish on your menu.
               </p>
               <button
                 onClick={handleGetStarted}
-                className="bg-[#5F7161] hover:bg-[#4C5B4F] text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer transition-colors text-lg w-full"
+                className="bg-[#5F7161] hover:bg-[#4C5B4F] text-white px-8 py-4 rounded-lg font-medium hover:cursor-pointer transition-colors text-lg w-full"
               >
                 Get Started Free
               </button>
@@ -55,20 +62,20 @@ export default function LandingPageContent() {
       {/* How It Works Section */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
+          <h2 className="text-3xl font-semibold text-center mb-16">
             How Dish Display Works
           </h2>
           <div className="flex justify-center">
             <div className="max-w-2xl space-y-12">
               <div className="flex items-start space-x-4">
                 <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-['Fjalla_One']">1</span>
+                  <span className="text-white font-medium">1</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-['Fjalla_One'] mb-2">
+                  <h3 className="text-xl font-semibold mb-2">
                     Create Your Account
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
+                  <p className="text-gray-600 font-medium">
                     Sign up for Dish Display and create your restaurant&apos;s
                     profile. Upload your menu items with high-quality photos.
                   </p>
@@ -76,13 +83,13 @@ export default function LandingPageContent() {
               </div>
               <div className="flex items-start space-x-4">
                 <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-['Fjalla_One']">2</span>
+                  <span className="text-white font-medium">2</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-['Fjalla_One'] mb-2">
+                  <h3 className="text-xl font-semibold mb-2">
                     Get Your QR Code
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
+                  <p className="text-gray-600 font-medium">
                     We&apos;ll provide you with a unique QR code that links
                     directly to your restaurant&apos;s menu on Dish Display.
                   </p>
@@ -90,13 +97,13 @@ export default function LandingPageContent() {
               </div>
               <div className="flex items-start space-x-4">
                 <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-['Fjalla_One']">3</span>
+                  <span className="text-white font-medium">3</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-['Fjalla_One'] mb-2">
+                  <h3 className="text-xl font-semibold mb-2">
                     Print on Your Menu
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
+                  <p className="text-gray-600 font-medium">
                     Add the QR code to your physical menu. Customers can scan it
                     to instantly view your dishes with photos.
                   </p>
@@ -104,41 +111,46 @@ export default function LandingPageContent() {
               </div>
               <div className="flex items-start space-x-4">
                 <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-['Fjalla_One']">4</span>
+                  <span className="text-white font-medium">4</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-['Fjalla_One'] mb-2">
+                  <h3 className="text-xl font-semibold mb-2">
                     Delight Your Customers
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
+                  <p className="text-gray-600 font-medium">
                     Watch as your customers make more confident ordering
-                    decisions with visual menu items and have a better dining experience.
+                    decisions with visual menu items and have a better dining
+                    experience.
                   </p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
                 <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-['Fjalla_One']">5</span>
+                  <span className="text-white font-medium">5</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-['Fjalla_One'] mb-2">
+                  <h3 className="text-xl font-semibold mb-2">
                     Customers Join Rewards Program
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
-                    After their meal, customers are invited to join our review rewards program and leave a Google Review with photos to earn points.
+                  <p className="text-gray-600 font-medium">
+                    After their meal, customers are invited to join our review
+                    rewards program and leave a Google Review with photos to
+                    earn points.
                   </p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
                 <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-['Fjalla_One']">6</span>
+                  <span className="text-white font-medium">6</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-['Fjalla_One'] mb-2">
+                  <h3 className="text-xl font-semibold mb-2">
                     Grow Your Online Presence
                   </h3>
-                  <p className="text-gray-600 font-['Fjalla_One']">
-                    Customers compete for monthly rewards by reviewing restaurants, generating authentic Google Reviews with photos that attract new diners to your restaurant.
+                  <p className="text-gray-600 font-medium">
+                    Customers compete for monthly rewards by reviewing
+                    restaurants, generating authentic Google Reviews with photos
+                    that attract new diners to your restaurant.
                   </p>
                 </div>
               </div>
@@ -148,10 +160,10 @@ export default function LandingPageContent() {
       </section>
 
       {/* Pricing Section */}
-      <section className="bg-[#ffffff] py-16 font-['Fjalla_One']">
+      <section className="bg-[#ffffff] py-16 font-medium">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
-            <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
+            <h2 className="text-3xl font-semibold text-center mb-16">
               Simple no-tricks pricing
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-lg font-medium text-gray-500 sm:text-xl">
@@ -223,10 +235,10 @@ export default function LandingPageContent() {
       <section className="bg-gray-50 text-black py-16">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-['Fjalla_One'] mb-6">
+            <h2 className="text-4xl font-semibold mb-6">
               The Only Menu Platform with Advanced Analytics
             </h2>
-            <p className="text-xl font-['Fjalla_One'] max-w-3xl mx-auto text-gray-600">
+            <p className="text-xl font-medium max-w-3xl mx-auto text-gray-600">
               Don't just show your menu - understand your customers. Dish
               Display provides restaurant owners with unprecedented insights
               into customer behavior and menu performance.
@@ -250,10 +262,10 @@ export default function LandingPageContent() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-['Fjalla_One'] mb-4">
+              <h3 className="text-xl font-semibold mb-4">
                 Menu Performance Analytics
               </h3>
-              <p className="font-['Fjalla_One'] text-gray-600">
+              <p className="font-medium text-gray-600">
                 Track which dishes are viewed most, conversion rates, and
                 customer preferences in real-time.
               </p>
@@ -275,10 +287,10 @@ export default function LandingPageContent() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-['Fjalla_One'] mb-4">
+              <h3 className="text-xl font-semibold mb-4">
                 Revenue Optimization
               </h3>
-              <p className="font-['Fjalla_One'] text-gray-600">
+              <p className="font-medium text-gray-600">
                 Identify your highest-performing dishes and optimize pricing
                 based on customer engagement data.
               </p>
@@ -300,10 +312,10 @@ export default function LandingPageContent() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-['Fjalla_One'] mb-4">
+              <h3 className="text-xl font-semibold mb-4">
                 Customer Behavior Insights
               </h3>
-              <p className="font-['Fjalla_One'] text-gray-600">
+              <p className="font-medium text-gray-600">
                 Understand peak viewing times, popular combinations, and
                 seasonal trends to make data-driven decisions.
               </p>
@@ -313,34 +325,34 @@ export default function LandingPageContent() {
           <div className="bg-gray-50 rounded-2xl p-8">
             <div className="grid md:grid-cols-4 gap-8 text-center">
               <div>
-                <div className="text-3xl font-['Fjalla_One'] mb-2 text-[#5F7161]">
+                <div className="text-3xl font-medium mb-2 text-[#5F7161]">
                   95%
                 </div>
-                <div className="font-['Fjalla_One'] text-gray-600">
+                <div className="font-medium text-gray-600">
                   Restaurants report increased orders with visual menus
                 </div>
               </div>
               <div>
-                <div className="text-3xl font-['Fjalla_One'] mb-2 text-[#5F7161]">
+                <div className="text-3xl font-medium mb-2 text-[#5F7161]">
                   47%
                 </div>
-                <div className="font-['Fjalla_One'] text-gray-600">
+                <div className="font-medium text-gray-600">
                   Average increase in customer engagement
                 </div>
               </div>
               <div>
-                <div className="text-3xl font-['Fjalla_One'] mb-2 text-[#5F7161]">
+                <div className="text-3xl font-medium mb-2 text-[#5F7161]">
                   23%
                 </div>
-                <div className="font-['Fjalla_One'] text-gray-600">
+                <div className="font-medium text-gray-600">
                   Boost in average order value
                 </div>
               </div>
               <div>
-                <div className="text-3xl font-['Fjalla_One'] mb-2 text-[#5F7161]">
+                <div className="text-3xl font-medium mb-2 text-[#5F7161]">
                   24/7
                 </div>
-                <div className="font-['Fjalla_One'] text-gray-600">
+                <div className="font-medium text-gray-600">
                   Real-time analytics dashboard access
                 </div>
               </div>
@@ -348,13 +360,13 @@ export default function LandingPageContent() {
           </div>
 
           <div className="text-center mt-12">
-            <p className="text-xl font-['Fjalla_One'] mb-6 text-gray-700">
+            <p className="text-xl font-medium mb-6 text-gray-700">
               🚀 Advanced analytics dashboard coming soon - be among the first
               to access detailed insights!
             </p>
             <button
               onClick={handleGetStarted}
-              className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:bg-[#4C5B4F] transition-colors text-lg"
+              className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-medium hover:bg-[#4C5B4F] transition-colors text-lg"
             >
               Get Early Access to Analytics
             </button>
@@ -366,57 +378,81 @@ export default function LandingPageContent() {
       <section className="bg-[#ffffff] py-16">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-['Fjalla_One'] mb-6">
+            <h2 className="text-4xl font-semibold mb-6">
               Turn Customers Into Review Champions
             </h2>
-            <p className="text-xl font-['Fjalla_One'] max-w-3xl mx-auto text-gray-600">
-              Our unique reward system motivates customers to leave more Google Reviews with photos, boosting your restaurant's online presence and attracting new diners.
+            <p className="text-xl font-medium max-w-3xl mx-auto text-gray-600">
+              Our unique reward system motivates customers to leave more Google
+              Reviews with photos, boosting your restaurant's online presence
+              and attracting new diners.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
             {/* How It Works */}
             <div className="bg-gray-50 rounded-2xl p-8">
-              <h3 className="text-2xl font-['Fjalla_One'] mb-6 text-center">How The Reward System Works</h3>
+              <h3 className="text-2xl font-semibold mb-6 text-center">
+                How The Reward System Works
+              </h3>
               <div className="flex justify-center">
                 <div className="max-w-2xl space-y-6">
                   <div className="flex items-start space-x-4">
                     <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-['Fjalla_One']">1</span>
+                      <span className="text-white font-medium">1</span>
                     </div>
                     <div>
-                      <h4 className="font-['Fjalla_One'] text-lg mb-2">Customer Creates Profile</h4>
-                      <p className="text-gray-600 font-['Fjalla_One']">Diners sign up and track their reviews across all Dish Display restaurants.</p>
+                      <h4 className="font-semibold text-lg mb-2">
+                        Customer Creates Profile
+                      </h4>
+                      <p className="text-gray-600 font-medium">
+                        Diners sign up and track their reviews across all Dish
+                        Display restaurants.
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start space-x-4">
                     <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-['Fjalla_One']">2</span>
+                      <span className="text-white font-medium">2</span>
                     </div>
                     <div>
-                      <h4 className="font-['Fjalla_One'] text-lg mb-2">Reviews Earn Points</h4>
-                      <p className="text-gray-600 font-['Fjalla_One']">Google Reviews with photos earn more points, encouraging quality feedback.</p>
+                      <h4 className="font-semibold text-lg mb-2">
+                        Reviews Earn Points
+                      </h4>
+                      <p className="text-gray-600 font-medium">
+                        Google Reviews with photos earn more points, encouraging
+                        quality feedback.
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start space-x-4">
                     <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-['Fjalla_One']">3</span>
+                      <span className="text-white font-medium">3</span>
                     </div>
                     <div>
-                      <h4 className="font-['Fjalla_One'] text-lg mb-2">Monthly Competition</h4>
-                      <p className="text-gray-600 font-['Fjalla_One']">Top reviewers compete for discount vouchers from participating restaurants.</p>
+                      <h4 className="font-semibold text-lg mb-2">
+                        Monthly Competition
+                      </h4>
+                      <p className="text-gray-600 font-medium">
+                        Top reviewers compete for discount vouchers from
+                        participating restaurants.
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start space-x-4">
                     <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-['Fjalla_One']">4</span>
+                      <span className="text-white font-medium">4</span>
                     </div>
                     <div>
-                      <h4 className="font-['Fjalla_One'] text-lg mb-2">Winners Get Rewards</h4>
-                      <p className="text-gray-600 font-['Fjalla_One']">Monthly winners receive vouchers, driving repeat visits and new customer discovery.</p>
+                      <h4 className="font-semibold text-lg mb-2">
+                        Winners Get Rewards
+                      </h4>
+                      <p className="text-gray-600 font-medium">
+                        Monthly winners receive vouchers, driving repeat visits
+                        and new customer discovery.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -426,50 +462,100 @@ export default function LandingPageContent() {
             {/* Restaurant Benefits */}
             <div className="space-y-8">
               <div className="text-center">
-                <h3 className="text-2xl font-['Fjalla_One'] mb-6">Restaurant Benefits</h3>
+                <h3 className="text-2xl font-semibold mb-6">
+                  Restaurant Benefits
+                </h3>
               </div>
-              
+
               <div className="space-y-6">
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="bg-[#5F7161] w-8 h-8 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </div>
-                    <h4 className="font-['Fjalla_One'] text-lg">More Google Reviews</h4>
+                    <h4 className="font-semibold text-lg">
+                      More Google Reviews
+                    </h4>
                   </div>
-                  <p className="text-gray-600 font-['Fjalla_One']">Customers actively seek out your restaurant to earn points, generating authentic reviews.</p>
+                  <p className="text-gray-600 font-medium">
+                    Customers actively seek out your restaurant to earn points,
+                    generating authentic reviews.
+                  </p>
                 </div>
-                
+
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="bg-black w-8 h-8 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <svg
+                        className="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
                       </svg>
                     </div>
-                    <h4 className="font-['Fjalla_One'] text-lg">Photo Reviews</h4>
+                    <h4 className="font-semibold text-lg">Photo Reviews</h4>
                   </div>
-                  <p className="text-gray-600 font-['Fjalla_One']">Higher points for photo reviews mean more visual content showcasing your dishes.</p>
+                  <p className="text-gray-600 font-medium">
+                    Higher points for photo reviews mean more visual content
+                    showcasing your dishes.
+                  </p>
                 </div>
-                
+
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="bg-[#4C5B4F] w-8 h-8 rounded-full flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      <svg
+                        className="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
                       </svg>
                     </div>
-                    <h4 className="font-['Fjalla_One'] text-lg">New Customer Discovery</h4>
+                    <h4 className="font-semibold text-lg">
+                      New Customer Discovery
+                    </h4>
                   </div>
-                  <p className="text-gray-600 font-['Fjalla_One']">Winners share their experiences, bringing their network to discover your restaurant.</p>
+                  <p className="text-gray-600 font-medium">
+                    Winners share their experiences, bringing their network to
+                    discover your restaurant.
+                  </p>
                 </div>
               </div>
-              
+
               <div className="bg-[#5F7161] text-white rounded-lg p-6 text-center">
-                <h4 className="font-['Fjalla_One'] text-xl mb-3">Marketing That Pays For Itself</h4>
-                <p className="font-['Fjalla_One']">Sponsor monthly prizes for less than traditional advertising, while generating authentic customer content and reviews.</p>
+                <h4 className="font-semibold text-xl mb-3">
+                  Marketing That Pays For Itself
+                </h4>
+                <p className="font-medium">
+                  Sponsor monthly prizes for less than traditional advertising,
+                  while generating authentic customer content and reviews.
+                </p>
               </div>
             </div>
           </div>
@@ -479,7 +565,7 @@ export default function LandingPageContent() {
       {/* Benefits Section */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-['Fjalla_One'] text-center mb-16">
+          <h2 className="text-3xl font-semibold text-center mb-16">
             Why Restaurant Owners Choose Us
           </h2>
           <div className="grid md:grid-cols-3 gap-12">
@@ -499,10 +585,8 @@ export default function LandingPageContent() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-['Fjalla_One'] mb-4">
-                Increased Orders
-              </h3>
-              <p className="text-gray-600 font-['Fjalla_One']">
+              <h3 className="text-xl font-semibold mb-4">Increased Orders</h3>
+              <p className="text-gray-600 font-medium">
                 Customers are more likely to order when they can see what
                 they&apos;re getting.
               </p>
@@ -523,10 +607,8 @@ export default function LandingPageContent() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-['Fjalla_One'] mb-4">
-                Easy Management
-              </h3>
-              <p className="text-gray-600 font-['Fjalla_One']">
+              <h3 className="text-xl font-semibold mb-4">Easy Management</h3>
+              <p className="text-gray-600 font-medium">
                 Update your menu photos instantly through our simple dashboard.
               </p>
             </div>
@@ -546,10 +628,10 @@ export default function LandingPageContent() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-['Fjalla_One'] mb-4">
+              <h3 className="text-xl font-semibold mb-4">
                 Customer Satisfaction
               </h3>
-              <p className="text-gray-600 font-['Fjalla_One']">
+              <p className="text-gray-600 font-medium">
                 Reduce order confusion and improve dining experience.
               </p>
             </div>
@@ -560,16 +642,16 @@ export default function LandingPageContent() {
       {/* CTA Section */}
       <section className="py-16 bg-[#ffffff] text-black">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-['Fjalla_One'] mb-8">
+          <h2 className="text-3xl font-semibold mb-8">
             Ready to Transform Your Menu?
           </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto font-['Fjalla_One']">
+          <p className="text-xl mb-8 max-w-2xl mx-auto font-medium">
             Join hundreds of restaurants already using our platform to showcase
             their dishes and delight their customers.
           </p>
           <button
             onClick={handleGetStarted}
-            className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-['Fjalla_One'] hover:cursor-pointer hover:bg-[#4C5B4F] transition-colors text-lg"
+            className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-medium hover:cursor-pointer hover:bg-[#4C5B4F] transition-colors text-lg"
           >
             Start Your Free Trial
           </button>
@@ -582,38 +664,38 @@ export default function LandingPageContent() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-8 md:mb-0">
               <h3 className="text-3xl font-['Notable'] mb-2">Dish Display</h3>
-              <p className="text-gray-400 font-['Fjalla_One'] text-lg">
+              <p className="text-gray-400 font-medium text-lg">
                 Bringing menus to life
               </p>
             </div>
             <div className="flex space-x-8">
               <a
                 href="/about"
-                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
+                className="hover:text-gray-300 font-medium text-lg"
               >
                 About
               </a>
               <a
                 href="/contact"
-                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
+                className="hover:text-gray-300 font-medium text-lg"
               >
                 Contact
               </a>
               <a
                 href="/privacy"
-                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
+                className="hover:text-gray-300 font-medium text-lg"
               >
                 Privacy Policy
               </a>
               <a
                 href="/terms"
-                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
+                className="hover:text-gray-300 font-medium text-lg"
               >
                 T&Cs
               </a>
               <a
                 href="/licensing"
-                className="hover:text-gray-300 font-['Fjalla_One'] text-lg"
+                className="hover:text-gray-300 font-medium text-lg"
               >
                 Licensing
               </a>

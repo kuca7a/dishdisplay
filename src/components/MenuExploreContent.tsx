@@ -3,7 +3,6 @@
 import React, { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { Fjalla_One } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -23,9 +22,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, Filter, Grid, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+import { Rubik } from "next/font/google";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -88,8 +90,13 @@ export default function MenuExploreContent() {
 
   if (isLoading || !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
+        <div className="text-center">
+          <ThreeDotsLoader size="lg" />
+          <p className="mt-4">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -97,8 +104,8 @@ export default function MenuExploreContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <div className={fjallaOne.className}>
+      <SidebarInset className={rubik.className}>
+        <div className={rubik.className}>
           <header className="flex h-16 shrink-0 items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
@@ -127,7 +134,7 @@ export default function MenuExploreContent() {
                     </p>
                   </div>
                 </div>
-                <Button className="bg-[#5F7161] hover:bg-[#4C5B4F]">
+                <Button className="bg-[#5F7161] hover:bg-[#4C5B4F] cursor-pointer">
                   <Plus className="h-4 w-4 mr-2" />
                   Add to My Menu
                 </Button>
@@ -147,15 +154,27 @@ export default function MenuExploreContent() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="cursor-pointer"
+                      >
                         <Filter className="h-4 w-4 mr-2" />
                         Filters
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="cursor-pointer"
+                      >
                         <Grid className="h-4 w-4 mr-2" />
                         Grid
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="cursor-pointer"
+                      >
                         <List className="h-4 w-4 mr-2" />
                         List
                       </Button>
@@ -178,11 +197,11 @@ export default function MenuExploreContent() {
                     key={category}
                     variant={category === "All" ? "default" : "outline"}
                     size="sm"
-                    className={
+                    className={`cursor-pointer ${
                       category === "All"
                         ? "bg-[#5F7161] hover:bg-[#4C5B4F]"
                         : ""
-                    }
+                    }`}
                   >
                     {category}
                   </Button>
@@ -223,11 +242,15 @@ export default function MenuExploreContent() {
                         <div className="flex gap-2 pt-2">
                           <Button
                             size="sm"
-                            className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F]"
+                            className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F] cursor-pointer"
                           >
                             Add to Menu
                           </Button>
-                          <Button size="sm" variant="outline">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="cursor-pointer"
+                          >
                             View Details
                           </Button>
                         </div>
@@ -239,7 +262,10 @@ export default function MenuExploreContent() {
 
               {/* Load More */}
               <div className="text-center pt-6">
-                <Button variant="outline" className="w-full md:w-auto">
+                <Button
+                  variant="outline"
+                  className="w-full md:w-auto cursor-pointer"
+                >
                   Load More Menu Ideas
                 </Button>
               </div>
