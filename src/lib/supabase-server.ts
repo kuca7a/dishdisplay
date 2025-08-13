@@ -29,7 +29,7 @@ export const supabaseServer = new Proxy({} as ReturnType<typeof createClient>, {
   get(target, prop) {
     const client = getSupabaseServer();
     const value = client[prop as keyof typeof client];
-    return typeof value === 'function' ? value.bind(client) : value;
+    return typeof value === "function" ? value.bind(client) : value;
   },
 });
 

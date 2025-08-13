@@ -1,6 +1,13 @@
 import * as React from "react"
 import Link from "next/link"
 import { type LucideIcon } from "lucide-react"
+import { Rubik } from "next/font/google";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 import {
   SidebarGroup,
@@ -21,7 +28,7 @@ export function NavSecondary({
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
-    <SidebarGroup {...props}>
+    <SidebarGroup className={rubik.className} {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (

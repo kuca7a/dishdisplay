@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Get restaurant data to verify ownership and name
     const restaurant = await restaurantService.getById(restaurantId);
-    
+
     if (!restaurant) {
       return NextResponse.json(
         { error: "Restaurant not found" },
@@ -49,12 +49,14 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Delete all uploaded images from Supabase Storage
     const imagesToDelete: string[] = [];
-    
+
     // Collect image paths from menu items
     for (const item of menuItems) {
       if (item.image_url) {
         // Extract the file path from the full URL
-        const urlParts = item.image_url.split(`/storage/v1/object/public/${BUCKET_NAME}/`);
+        const urlParts = item.image_url.split(
+          `/storage/v1/object/public/${BUCKET_NAME}/`
+        );
         if (urlParts.length > 1) {
           imagesToDelete.push(urlParts[1]);
         }
@@ -63,14 +65,18 @@ export async function POST(request: NextRequest) {
 
     // Collect image paths from restaurant profile
     if (restaurant.logo_url) {
-      const urlParts = restaurant.logo_url.split(`/storage/v1/object/public/${BUCKET_NAME}/`);
+      const urlParts = restaurant.logo_url.split(
+        `/storage/v1/object/public/${BUCKET_NAME}/`
+      );
       if (urlParts.length > 1) {
         imagesToDelete.push(urlParts[1]);
       }
     }
 
     if (restaurant.cover_image_url) {
-      const urlParts = restaurant.cover_image_url.split(`/storage/v1/object/public/${BUCKET_NAME}/`);
+      const urlParts = restaurant.cover_image_url.split(
+        `/storage/v1/object/public/${BUCKET_NAME}/`
+      );
       if (urlParts.length > 1) {
         imagesToDelete.push(urlParts[1]);
       }
@@ -117,7 +123,7 @@ export async function POST(request: NextRequest) {
     try {
       const { error: paymentError } = await supabaseServer
         .from("payments")
-        .update({ 
+        .update({
           email: `deleted-user-${Date.now()}@anonymized.local`,
           customer_name: "Deleted User",
           // Keep financial data for compliance
@@ -136,7 +142,7 @@ export async function POST(request: NextRequest) {
     // Step 6: Delete from Auth0 (optional - could be done client-side or via webhook)
     // Note: This would require Auth0 Management API integration
     // For now, we'll let Auth0 handle this through their UI or leave it
-    
+
     console.log("Account deletion completed successfully");
 
     return NextResponse.json({
@@ -146,16 +152,15 @@ export async function POST(request: NextRequest) {
         restaurant: restaurant.name,
         menuItems: menuItems.length,
         images: imagesToDelete.length,
-      }
+      },
     });
-
   } catch (error) {
     console.error("Account deletion error:", error);
-    
+
     return NextResponse.json(
-      { 
-        error: "Failed to delete account", 
-        details: error instanceof Error ? error.message : "Unknown error"
+      {
+        error: "Failed to delete account",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );

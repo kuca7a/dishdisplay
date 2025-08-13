@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { restaurantService } from "@/lib/database";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -58,11 +60,11 @@ export default function PreviewContent() {
   if (isLoading) {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
+        className={`${rubik.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Authenticating...</p>
+          <ThreeDotsLoader size="lg" />
+          <p className="text-lg text-gray-600 mt-4">Authenticating...</p>
         </div>
       </div>
     );
@@ -71,7 +73,7 @@ export default function PreviewContent() {
   if (!isAuthenticated) {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
+        className={`${rubik.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
@@ -90,7 +92,7 @@ export default function PreviewContent() {
   if (status === "no-restaurant") {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
+        className={`${rubik.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-6xl mb-4">🍽️</div>
@@ -121,7 +123,7 @@ export default function PreviewContent() {
   if (status === "error") {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
+        className={`${rubik.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-6xl mb-4">⚠️</div>
@@ -150,12 +152,12 @@ export default function PreviewContent() {
 
   return (
     <div
-      className={`${fjallaOne.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
+      className={`${rubik.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
     >
       <div className="text-center">
         <div className="animate-pulse text-6xl mb-4">👀</div>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
-        <p className="text-lg text-gray-600">
+        <ThreeDotsLoader size="md" />
+        <p className="text-lg text-gray-600 mt-4">
           Opening customer menu preview...
         </p>
         <p className="text-sm text-gray-500 mt-2">

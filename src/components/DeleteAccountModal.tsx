@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Rubik } from "next/font/google";
 import {
   Dialog,
   DialogContent,
@@ -12,8 +13,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import { Restaurant } from "@/types/database";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 interface DeleteAccountModalProps {
   isOpen: boolean;
@@ -30,7 +38,7 @@ export function DeleteAccountModal({
   isOpen,
   onClose,
   restaurant,
-  user
+  user,
 }: DeleteAccountModalProps) {
   const [confirmationText, setConfirmationText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -48,10 +56,10 @@ export function DeleteAccountModal({
       setError(null);
 
       // Call the deletion API
-      const response = await fetch('/api/account/delete', {
-        method: 'POST',
+      const response = await fetch("/api/account/delete", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           restaurantId: restaurant.id,
@@ -62,20 +70,19 @@ export function DeleteAccountModal({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete account');
+        throw new Error(errorData.error || "Failed to delete account");
       }
 
       // Account deleted successfully
       // Logout and redirect to home page
       await logout({
         logoutParams: {
-          returnTo: window.location.origin
-        }
+          returnTo: window.location.origin,
+        },
       });
-
     } catch (err) {
-      console.error('Account deletion error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to delete account');
+      console.error("Account deletion error:", err);
+      setError(err instanceof Error ? err.message : "Failed to delete account");
       setIsDeleting(false);
     }
   };
@@ -90,24 +97,29 @@ export function DeleteAccountModal({
   if (!restaurant) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className={`sm:max-w-[425px] ${rubik.className}`}>
         <DialogHeader>
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-6 w-6 text-red-500" />
-            <DialogTitle className="text-red-700">Delete Account</DialogTitle>
-          </div>
-          <DialogDescription className="text-left">
-            This action <strong>cannot be undone</strong>. This will permanently delete your account and all associated data.
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-red-600" />
+            Delete Account
+          </DialogTitle>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete your
+            restaurant account and remove all associated data.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* What will be deleted */}
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h4 className="font-medium text-red-800 mb-2">The following will be permanently deleted:</h4>
+            <h4 className="font-medium text-red-800 mb-2">
+              The following will be permanently deleted:
+            </h4>
             <ul className="text-sm text-red-700 space-y-1">
-              <li>• Restaurant profile: <strong>"{restaurant.name}"</strong></li>
+              <li>
+                • Restaurant profile: <strong>"{restaurant.name}"</strong>
+              </li>
               <li>• All menu items and categories</li>
               <li>• All uploaded images and media</li>
               <li>• QR codes (will stop working immediately)</li>
@@ -119,7 +131,8 @@ export function DeleteAccountModal({
           {/* Confirmation input */}
           <div className="space-y-2">
             <Label htmlFor="confirmation" className="text-sm font-medium">
-              To confirm deletion, type your restaurant name: <strong>{restaurantName}</strong>
+              To confirm deletion, type your restaurant name:{" "}
+              <strong>{restaurantName}</strong>
             </Label>
             <Input
               id="confirmation"
@@ -128,14 +141,15 @@ export function DeleteAccountModal({
               placeholder="Type restaurant name here"
               disabled={isDeleting}
               className={`${
-                confirmationText && !isConfirmationValid 
-                  ? "border-red-300 focus:border-red-500" 
+                confirmationText && !isConfirmationValid
+                  ? "border-red-300 focus:border-red-500"
                   : ""
               }`}
             />
             {confirmationText && !isConfirmationValid && (
               <p className="text-xs text-red-600">
-                Restaurant name doesn't match. Please type exactly: {restaurantName}
+                Restaurant name doesn't match. Please type exactly:{" "}
+                {restaurantName}
               </p>
             )}
           </div>
@@ -163,10 +177,10 @@ export function DeleteAccountModal({
               className="bg-red-600 hover:bg-red-700 min-w-[120px]"
             >
               {isDeleting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
+                <div className="flex items-center">
+                  <ThreeDotsLoader size="sm" color="white" />
+                  <span className="ml-2">Deleting...</span>
+                </div>
               ) : (
                 <>
                   <AlertTriangle className="mr-2 h-4 w-4" />
@@ -179,8 +193,9 @@ export function DeleteAccountModal({
           {/* Additional warning */}
           <div className="text-xs text-gray-500 border-t pt-3">
             <p>
-              <strong>Note:</strong> Payment records may be retained for legal and tax compliance requirements. 
-              All personal identifying information will be removed from these records.
+              <strong>Note:</strong> Payment records may be retained for legal
+              and tax compliance requirements. All personal identifying
+              information will be removed from these records.
             </p>
           </div>
         </div>

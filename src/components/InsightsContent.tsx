@@ -4,7 +4,6 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Fjalla_One } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -29,8 +28,12 @@ import {
 } from "@/components/ui/card";
 import { BarChart, TrendingUp, Users, Eye, Clock, Star } from "lucide-react";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+import { Rubik } from "next/font/google";
+
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -47,8 +50,13 @@ export default function InsightsContent() {
 
   if (isLoading || !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
+        <div className="text-center">
+          <ThreeDotsLoader size="lg" />
+          <p className="mt-4">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -56,8 +64,8 @@ export default function InsightsContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <div className={fjallaOne.className}>
+      <SidebarInset className={rubik.className}>
+        <div className={rubik.className}>
           <header className="flex h-16 shrink-0 items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />

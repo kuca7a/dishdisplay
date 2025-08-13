@@ -4,7 +4,7 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -23,8 +23,10 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Sticker, ThumbsUp, MessageSquare, Lightbulb } from "lucide-react";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -41,8 +43,13 @@ export default function FeedbackContent() {
 
   if (isLoading || !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
+        <div className="text-center">
+          <ThreeDotsLoader size="lg" />
+          <p className="mt-4">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -50,7 +57,7 @@ export default function FeedbackContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className={rubik.className}>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -72,7 +79,7 @@ export default function FeedbackContent() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="flex items-center gap-2">
             <Sticker className="h-8 w-8 text-[#5F7161]" />
-            <h1 className={`${fjallaOne.className} text-3xl text-gray-800`}>
+            <h1 className="font-semibold text-3xl text-gray-800">
               Feedback Center
             </h1>
           </div>

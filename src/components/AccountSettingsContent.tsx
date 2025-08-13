@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -32,8 +32,10 @@ import { DeleteAccountModal } from "@/components/DeleteAccountModal";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -41,7 +43,7 @@ const fjallaOne = Fjalla_One({
 export default function AccountSettingsContent() {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
-  
+
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -56,7 +58,9 @@ export default function AccountSettingsContent() {
       if (!isAuthenticated || !user?.email) return;
 
       try {
-        const restaurantData = await restaurantService.getByOwnerEmail(user.email);
+        const restaurantData = await restaurantService.getByOwnerEmail(
+          user.email
+        );
         setRestaurant(restaurantData);
       } catch (err) {
         console.error("Error loading restaurant data:", err);
@@ -70,10 +74,10 @@ export default function AccountSettingsContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${rubik.className}`}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
-          <p>Loading...</p>
+          <ThreeDotsLoader size="lg" />
+          <p className="mt-4">Loading...</p>
         </div>
       </div>
     );
@@ -81,7 +85,7 @@ export default function AccountSettingsContent() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${rubik.className}`}>
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Please sign in</h1>
           <p>You need to be authenticated to access this page.</p>
@@ -93,7 +97,7 @@ export default function AccountSettingsContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className={rubik.className}>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -115,7 +119,7 @@ export default function AccountSettingsContent() {
         <div className="flex flex-1 flex-col gap-6 p-6">
           <div className="flex items-center gap-2">
             <Settings className="h-8 w-8 text-[#5F7161]" />
-            <h1 className={`${fjallaOne.className} text-3xl text-gray-800`}>
+            <h1 className={`${rubik.className} font-semibold text-3xl text-gray-800`}>
               Account Settings
             </h1>
           </div>
@@ -134,16 +138,24 @@ export default function AccountSettingsContent() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Email</label>
+                  <label className="text-sm font-medium text-gray-500">
+                    Email
+                  </label>
                   <p className="text-sm">{user?.email}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Name</label>
-                  <p className="text-sm">{user?.name || user?.nickname || 'Not provided'}</p>
+                  <label className="text-sm font-medium text-gray-500">
+                    Name
+                  </label>
+                  <p className="text-sm">
+                    {user?.name || user?.nickname || "Not provided"}
+                  </p>
                 </div>
                 {restaurant && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Restaurant</label>
+                    <label className="text-sm font-medium text-gray-500">
+                      Restaurant
+                    </label>
                     <p className="text-sm">{restaurant.name}</p>
                   </div>
                 )}
@@ -171,10 +183,16 @@ export default function AccountSettingsContent() {
                       Managed through Auth0 authentication
                     </p>
                   </div>
-                  <Button variant="outline" onClick={() => {
-                    // Auth0 change password flow would go here
-                    window.open('https://auth0.com/docs/connections/database/password-change', '_blank');
-                  }}>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      // Auth0 change password flow would go here
+                      window.open(
+                        "https://auth0.com/docs/connections/database/password-change",
+                        "_blank"
+                      );
+                    }}
+                  >
                     Change Password
                   </Button>
                 </div>
@@ -197,9 +215,12 @@ export default function AccountSettingsContent() {
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h4 className="font-medium text-red-800 mb-1">Delete Account</h4>
+                    <h4 className="font-medium text-red-800 mb-1">
+                      Delete Account
+                    </h4>
                     <p className="text-sm text-red-600 mb-3">
-                      Permanently delete your account and all associated data. This action cannot be undone.
+                      Permanently delete your account and all associated data.
+                      This action cannot be undone.
                     </p>
                     <ul className="text-xs text-red-600 space-y-1 mb-4">
                       <li>• All restaurant data will be permanently deleted</li>
@@ -207,7 +228,9 @@ export default function AccountSettingsContent() {
                       <li>• QR codes will stop working immediately</li>
                       <li>• Analytics and insights will be lost</li>
                       {restaurant && (
-                        <li>• Restaurant "{restaurant.name}" will be deleted</li>
+                        <li>
+                          • Restaurant "{restaurant.name}" will be deleted
+                        </li>
                       )}
                     </ul>
                   </div>

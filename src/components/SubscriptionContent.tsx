@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -30,20 +30,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useSubscription } from "@/hooks/use-subscription";
 import { PaymentSuccessModal } from "@/components/PaymentSuccessModal";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import {
   CreditCard,
   Calendar,
   CheckCircle,
   XCircle,
   Crown,
-  Loader2,
   Settings,
   Receipt,
   Clock,
 } from "lucide-react";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -266,8 +266,13 @@ export default function SubscriptionContent() {
 
   if (isLoading || !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
+        <div className="text-center">
+          <ThreeDotsLoader size="lg" color="#5F7161" className="mb-4" />
+          <p>Loading...</p>
+        </div>
       </div>
     );
   }
@@ -275,7 +280,7 @@ export default function SubscriptionContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className={rubik.className}>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -299,9 +304,7 @@ export default function SubscriptionContent() {
           onClose={() => setShowSuccessModal(false)}
         />
 
-        <div
-          className={`${fjallaOne.className} flex flex-1 flex-col gap-4 p-4 pt-0`}
-        >
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="max-w-4xl mx-auto w-full space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -318,7 +321,7 @@ export default function SubscriptionContent() {
 
             {subscription.loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-[#5F7161]" />
+                <ThreeDotsLoader size="lg" color="#5F7161" />
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2">
@@ -385,11 +388,11 @@ export default function SubscriptionContent() {
                             handleUpgrade("price_1RuwrXAluVLbiFnm14DNsfhz")
                           }
                           disabled={actionLoading}
-                          className="w-full bg-[#5F7161] hover:bg-[#4C5B4F]"
+                          className="w-full bg-[#5F7161] hover:bg-[#4C5B4F] cursor-pointer"
                         >
                           {actionLoading ? (
                             <>
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              <ThreeDotsLoader size="sm" color="white" className="mr-2" />
                               Processing...
                             </>
                           ) : (
@@ -409,11 +412,11 @@ export default function SubscriptionContent() {
                           onClick={handleManageBilling}
                           disabled={actionLoading || !subscription.customerId}
                           variant="outline"
-                          className="w-full"
+                          className="w-full cursor-pointer"
                         >
                           {actionLoading ? (
                             <>
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              <ThreeDotsLoader size="sm" className="mr-2" />
                               Opening...
                             </>
                           ) : (
@@ -431,11 +434,11 @@ export default function SubscriptionContent() {
                           }
                           disabled={actionLoading}
                           variant="secondary"
-                          className="w-full"
+                          className="w-full cursor-pointer"
                         >
                           {actionLoading ? (
                             <>
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              <ThreeDotsLoader size="sm" className="mr-2" />
                               Processing...
                             </>
                           ) : (

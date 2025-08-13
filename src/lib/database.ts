@@ -12,33 +12,25 @@ import {
 export const restaurantService = {
   // Get restaurant by owner email
   async getByOwnerEmail(email: string): Promise<Restaurant | null> {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      console.error("Database: Supabase client not available");
-      return null;
-    }
+    console.log("Database: Getting restaurant via API for email:", email);
 
-    console.log("Database: Searching for restaurant with owner_email:", email);
+    try {
+      const response = await fetch(
+        `/api/restaurants?owner_email=${encodeURIComponent(email)}`
+      );
 
-    const { data, error } = await supabase
-      .from("restaurants")
-      .select("*")
-      .eq("owner_email", email)
-      .single();
-
-    console.log("Database: Query result:", { data, error });
-
-    if (error) {
-      if (error.code === "PGRST116") {
-        console.log("Database: No restaurant found for email:", email);
-        return null; // No rows returned
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to get restaurant");
       }
-      console.error("Database: Error querying restaurant:", error);
+
+      const data = await response.json();
+      console.log("Database: Got restaurant via API:", data);
+      return data;
+    } catch (error) {
+      console.error("Database: API get error:", error);
       throw error;
     }
-
-    console.log("Database: Found restaurant:", data);
-    return data;
   },
 
   // Get restaurant by ID
@@ -81,20 +73,30 @@ export const restaurantService = {
 
   // Update restaurant
   async update(id: string, updates: UpdateRestaurantData): Promise<Restaurant> {
-    const supabase = getSupabaseClient();
-    if (!supabase) {
-      throw new Error("Database not available");
+    console.log("Database: Updating restaurant via API with ID:", id);
+    console.log("Database: Update data:", updates);
+
+    try {
+      const response = await fetch(`/api/restaurants/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update restaurant");
+      }
+
+      const data = await response.json();
+      console.log("Database: Update successful via API:", data);
+      return data;
+    } catch (error) {
+      console.error("Database: API update error:", error);
+      throw error;
     }
-
-    const { data, error } = await supabase
-      .from("restaurants")
-      .update(updates)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
   },
 
   // Delete restaurant

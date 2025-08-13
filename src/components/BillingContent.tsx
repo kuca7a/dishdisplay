@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -34,16 +34,16 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Loader2,
   Crown,
   Zap,
 } from "lucide-react";
 import { restaurantService } from "@/lib/database";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import { Restaurant } from "@/types/database";
 import { loadStripe } from "@stripe/stripe-js";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -188,8 +188,13 @@ export default function BillingContent() {
 
   if (isLoading || !isAuthenticated || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161]"></div>
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
+        <div className="text-center">
+          <ThreeDotsLoader size="lg" />
+          <p className="mt-4">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -198,21 +203,19 @@ export default function BillingContent() {
     return (
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
-          <div className={fjallaOne.className}>
-            <div className="flex items-center justify-center h-screen">
-              <Card className="w-96">
-                <CardHeader>
-                  <CardTitle>No Restaurant Found</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="mb-4">Please create your restaurant first.</p>
-                  <Button onClick={() => router.push("/profile/menu/manage")}>
-                    Create Restaurant
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+        <SidebarInset className={rubik.className}>
+          <div className="flex items-center justify-center h-screen">
+            <Card className="w-96">
+              <CardHeader>
+                <CardTitle>No Restaurant Found</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">Please create your restaurant first.</p>
+                <Button onClick={() => router.push("/profile/menu/manage")}>
+                  Create Restaurant
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </SidebarInset>
       </SidebarProvider>
@@ -230,7 +233,7 @@ export default function BillingContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className={rubik.className}>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -395,10 +398,14 @@ export default function BillingContent() {
                         disabled={actionLoading === "upgrade"}
                         className="bg-[#5F7161] hover:bg-[#4C5B4F]"
                       >
-                        {actionLoading === "upgrade" && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {actionLoading === "upgrade" ? (
+                          <div className="flex items-center">
+                            <ThreeDotsLoader size="sm" />
+                            <span className="ml-2">Upgrading...</span>
+                          </div>
+                        ) : (
+                          "Upgrade to Pro Monthly (£19.99/month)"
                         )}
-                        Upgrade to Pro Monthly (£19.99/month)
                       </Button>
                       <Button
                         onClick={() =>
@@ -409,10 +416,14 @@ export default function BillingContent() {
                         disabled={actionLoading === "upgrade"}
                         variant="outline"
                       >
-                        {actionLoading === "upgrade" && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {actionLoading === "upgrade" ? (
+                          <div className="flex items-center">
+                            <ThreeDotsLoader size="sm" />
+                            <span className="ml-2">Upgrading...</span>
+                          </div>
+                        ) : (
+                          "Pro Yearly (£199.99/year - Save 17%)"
                         )}
-                        Pro Yearly (£199.99/year - Save 17%)
                       </Button>
                     </div>
                   ) : (
@@ -422,11 +433,17 @@ export default function BillingContent() {
                         disabled={actionLoading === "portal"}
                         variant="outline"
                       >
-                        {actionLoading === "portal" && (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {actionLoading === "portal" ? (
+                          <div className="flex items-center">
+                            <ThreeDotsLoader size="sm" />
+                            <span className="ml-2">Opening...</span>
+                          </div>
+                        ) : (
+                          <>
+                            <Calendar className="mr-2 h-4 w-4" />
+                            Manage Billing
+                          </>
                         )}
-                        <Calendar className="mr-2 h-4 w-4" />
-                        Manage Billing
                       </Button>
                     )
                   )}

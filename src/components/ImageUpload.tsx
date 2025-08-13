@@ -9,12 +9,12 @@ import {
   Upload,
   X,
   Image as ImageIcon,
-  Loader2,
   AlertCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { uploadMenuImage, compressImage } from "@/lib/storage";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ThreeDotsLoader } from "./ui/three-dots-loader";
 
 interface ImageUploadProps {
   onImageUploaded: (url: string) => void;
@@ -147,7 +147,7 @@ export function ImageUpload({
           {uploading && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
               <div className="text-center text-white space-y-2">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+                <ThreeDotsLoader size="md" color="white" />
                 <div className="text-sm">Uploading...</div>
                 <Progress value={progress} className="w-32" />
               </div>
@@ -176,7 +176,7 @@ export function ImageUpload({
         >
           {uploading ? (
             <div className="space-y-3">
-              <Loader2 className="h-12 w-12 animate-spin mx-auto text-blue-600" />
+              <ThreeDotsLoader size="lg" />
               <div>
                 <div className="text-sm font-medium">Uploading image...</div>
                 <Progress value={progress} className="w-48 mx-auto mt-2" />

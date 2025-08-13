@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Trash2, AlertTriangle } from "lucide-react";
 
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+
 interface DeleteRestaurantModalProps {
   restaurantName: string;
   menuItemCount: number;
@@ -116,10 +118,10 @@ export function DeleteRestaurantModal({
             className="bg-red-600 hover:bg-red-700"
           >
             {loading ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Deleting...
-              </>
+              <div className="flex items-center">
+                <ThreeDotsLoader size="sm" color="white" />
+                <span className="ml-2">Deleting...</span>
+              </div>
             ) : (
               <>
                 <Trash2 className="h-4 w-4 mr-2" />

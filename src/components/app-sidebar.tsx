@@ -1,5 +1,6 @@
 "use client";
 
+import { Rubik } from "next/font/google";
 import {
   UserRoundPen,
   Utensils,
@@ -13,6 +14,12 @@ import {
   QrCode,
   CreditCard,
 } from "lucide-react";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
 import {
   Sidebar,
   SidebarHeader,
@@ -137,8 +144,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         };
 
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar variant="inset" className={rubik.className} {...props}>
       <SidebarHeader>
+        <div className="flex items-center px-6 py-4">
+          <h1 className="text-xl font-['Notable'] text-[#5F7161]">
+            DISH DISPLAY
+          </h1>
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild></SidebarMenuButton>

@@ -1,7 +1,7 @@
-import { getSupabaseClient } from './supabase';
+import { getSupabaseClient } from "./supabase";
 
 const supabase = getSupabaseClient();
-const BUCKET_NAME = 'menu-images';
+const BUCKET_NAME = "menu-images";
 
 export interface UploadResult {
   url: string;
@@ -16,42 +16,52 @@ export interface UploadError {
 /**
  * Initialize storage bucket (create if doesn't exist)
  */
-export const initializeStorageBucket = async (): Promise<{ success: boolean; error?: string }> => {
+export const initializeStorageBucket = async (): Promise<{
+  success: boolean;
+  error?: string;
+}> => {
   try {
     if (!supabase) {
-      return { success: false, error: 'Supabase client not available' };
+      return { success: false, error: "Supabase client not available" };
     }
 
     // Check if bucket exists
-    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-    
+    const { data: buckets, error: listError } =
+      await supabase.storage.listBuckets();
+
     if (listError) {
-      console.error('Error listing buckets:', listError);
+      console.error("Error listing buckets:", listError);
       return { success: false, error: listError.message };
     }
 
-    const bucketExists = buckets?.some(bucket => bucket.name === BUCKET_NAME);
+    const bucketExists = buckets?.some((bucket) => bucket.name === BUCKET_NAME);
 
     if (!bucketExists) {
       // Create bucket with public access
-      const { data, error: createError } = await supabase.storage.createBucket(BUCKET_NAME, {
-        public: true,
-        allowedMimeTypes: ['image/*'],
-        fileSizeLimit: 5242880 // 5MB
-      });
+      const { data, error: createError } = await supabase.storage.createBucket(
+        BUCKET_NAME,
+        {
+          public: true,
+          allowedMimeTypes: ["image/*"],
+          fileSizeLimit: 5242880, // 5MB
+        }
+      );
 
       if (createError) {
-        console.error('Error creating bucket:', createError);
+        console.error("Error creating bucket:", createError);
         return { success: false, error: createError.message };
       }
 
-      console.log('Storage bucket created successfully:', data);
+      console.log("Storage bucket created successfully:", data);
     }
 
     return { success: true };
   } catch (error) {
-    console.error('Storage initialization error:', error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    console.error("Storage initialization error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 };
 
@@ -64,61 +74,60 @@ export const uploadMenuImage = async (
 ): Promise<UploadResult | UploadError> => {
   try {
     // Validate file
-    if (!file.type.startsWith('image/')) {
-      return { error: 'Please select an image file' };
+    if (!file.type.startsWith("image/")) {
+      return { error: "Please select an image file" };
     }
 
     // Check file size (5MB limit)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      return { error: 'Image must be smaller than 5MB' };
+      return { error: "Image must be smaller than 5MB" };
     }
 
-    console.log('Uploading image via API route:', {
+    console.log("Uploading image via API route:", {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
-      restaurantId
+      restaurantId,
     });
 
     // Create form data for API request
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('restaurantId', restaurantId);
+    formData.append("file", file);
+    formData.append("restaurantId", restaurantId);
 
     // Upload via API route
-    const response = await fetch('/api/upload-image', {
-      method: 'POST',
+    const response = await fetch("/api/upload-image", {
+      method: "POST",
       body: formData,
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      console.error('API upload error:', result);
-      return { 
-        error: result.error || 'Failed to upload image',
-        details: result.details 
+      console.error("API upload error:", result);
+      return {
+        error: result.error || "Failed to upload image",
+        details: result.details,
       };
     }
 
     if (!result.success) {
-      return { 
-        error: result.error || 'Upload failed',
-        details: result.details 
+      return {
+        error: result.error || "Upload failed",
+        details: result.details,
       };
     }
 
-    console.log('Upload successful:', result.url);
+    console.log("Upload successful:", result.url);
 
     return {
       url: result.url,
-      path: result.path
+      path: result.path,
     };
-
   } catch (error) {
-    console.error('Upload error:', error);
-    return { error: 'Failed to upload image' };
+    console.error("Upload error:", error);
+    return { error: "Failed to upload image" };
   }
 };
 
@@ -130,22 +139,20 @@ export const deleteMenuImage = async (imagePath: string): Promise<boolean> => {
     if (!imagePath) return true;
 
     // Extract path from full URL if needed
-    const path = imagePath.includes(BUCKET_NAME) 
-      ? imagePath.split(`${BUCKET_NAME}/`)[1] 
+    const path = imagePath.includes(BUCKET_NAME)
+      ? imagePath.split(`${BUCKET_NAME}/`)[1]
       : imagePath;
 
-    const { error } = await supabase.storage
-      .from(BUCKET_NAME)
-      .remove([path]);
+    const { error } = await supabase.storage.from(BUCKET_NAME).remove([path]);
 
     if (error) {
-      console.error('Error deleting image:', error);
+      console.error("Error deleting image:", error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Error deleting image:', error);
+    console.error("Error deleting image:", error);
     return false;
   }
 };
@@ -164,24 +171,28 @@ export const getOptimizedImageUrl = (
   if (!originalUrl) return originalUrl;
 
   const { width = 400, height = 300, quality = 80 } = options;
-  
+
   // Supabase automatically optimizes images with transform parameters
   const url = new URL(originalUrl);
-  url.searchParams.set('width', width.toString());
-  url.searchParams.set('height', height.toString());
-  url.searchParams.set('resize', 'cover');
-  url.searchParams.set('quality', quality.toString());
-  
+  url.searchParams.set("width", width.toString());
+  url.searchParams.set("height", height.toString());
+  url.searchParams.set("resize", "cover");
+  url.searchParams.set("quality", quality.toString());
+
   return url.toString();
 };
 
 /**
  * Compress image file before upload (client-side)
  */
-export const compressImage = (file: File, maxWidth = 800, quality = 0.8): Promise<File> => {
+export const compressImage = (
+  file: File,
+  maxWidth = 800,
+  quality = 0.8
+): Promise<File> => {
   return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d')!;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d")!;
     const img = new Image();
 
     img.onload = () => {
@@ -196,12 +207,12 @@ export const compressImage = (file: File, maxWidth = 800, quality = 0.8): Promis
 
       // Draw and compress
       ctx.drawImage(img, 0, 0, newWidth, newHeight);
-      
+
       canvas.toBlob(
         (blob) => {
           const compressedFile = new File([blob!], file.name, {
             type: file.type,
-            lastModified: Date.now()
+            lastModified: Date.now(),
           });
           resolve(compressedFile);
         },

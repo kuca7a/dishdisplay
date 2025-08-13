@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Star, ChefHat, Utensils } from "lucide-react";
 import { restaurantService, menuItemService } from "@/lib/database";
 import { Restaurant, MenuItem } from "@/types/database";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
 const fjallaOne = Fjalla_One({
   weight: "400",
@@ -93,8 +94,8 @@ export default function CustomerMenuPage() {
       >
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-            <p className="text-lg text-gray-600">Loading menu...</p>
+            <ThreeDotsLoader size="lg" />
+            <p className="text-lg text-gray-600 mt-4">Loading menu...</p>
           </div>
         </div>
       </div>

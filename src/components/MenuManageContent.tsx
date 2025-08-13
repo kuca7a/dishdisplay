@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -44,12 +44,13 @@ import { menuItemService, restaurantService } from "@/lib/database";
 import { Restaurant, MenuItem } from "@/types/database";
 import { AddMenuItemForm } from "@/components/AddMenuItemForm";
 import { EditMenuItemForm } from "@/components/EditMenuItemForm";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import { DeleteConfirmationModal } from "@/components/DeleteConfirmationModal";
 import { EditRestaurantForm } from "@/components/EditRestaurantForm";
 import { DeleteRestaurantModal } from "@/components/DeleteRestaurantModal";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -108,7 +109,11 @@ function QuickRestaurantForm({
           rows={3}
         />
       </div>
-      <Button type="submit" disabled={loading || !name.trim()}>
+      <Button
+        type="submit"
+        disabled={loading || !name.trim()}
+        className="cursor-pointer"
+      >
         {loading ? "Creating..." : "Create Restaurant"}
       </Button>
     </form>
@@ -296,15 +301,16 @@ export default function MenuManageContent() {
 
   // Get unique categories from menu items
   const getCategories = () => {
-    const categories = [...new Set(menuItems.map(item => item.category))];
+    const categories = [...new Set(menuItems.map((item) => item.category))];
     return categories.sort();
   };
 
   // Filter and sort menu items
   const getFilteredAndSortedItems = () => {
-    let filtered = selectedCategory === "all" 
-      ? menuItems 
-      : menuItems.filter(item => item.category === selectedCategory);
+    let filtered =
+      selectedCategory === "all"
+        ? menuItems
+        : menuItems.filter((item) => item.category === selectedCategory);
 
     // Sort items
     filtered = [...filtered].sort((a, b) => {
@@ -335,10 +341,11 @@ export default function MenuManageContent() {
     return (
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
-          <div className={fjallaOne.className}>
-            <div className="flex items-center justify-center h-screen">
-              <div className="text-xl">Loading your menu...</div>
+        <SidebarInset className={rubik.className}>
+          <div className="flex items-center justify-center h-screen">
+            <div className="text-center">
+              <ThreeDotsLoader size="lg" />
+              <p className="mt-4">Loading your menu...</p>
             </div>
           </div>
         </SidebarInset>
@@ -350,21 +357,22 @@ export default function MenuManageContent() {
     return (
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
-          <div className={fjallaOne.className}>
-            <div className="flex items-center justify-center h-screen">
-              <Card className="w-96">
-                <CardHeader>
-                  <CardTitle className="text-red-600">Error</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>{error}</p>
-                  <Button onClick={loadRestaurantData} className="mt-4">
-                    Try Again
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+        <SidebarInset className={rubik.className}>
+          <div className="flex items-center justify-center h-screen">
+            <Card className="w-96">
+              <CardHeader>
+                <CardTitle className="text-red-600">Error</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>{error}</p>
+                <Button
+                  onClick={loadRestaurantData}
+                  className="mt-4 cursor-pointer"
+                >
+                  Try Again
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </SidebarInset>
       </SidebarProvider>
@@ -375,52 +383,50 @@ export default function MenuManageContent() {
     return (
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
-          <div className={fjallaOne.className}>
-            <header className="flex flex-col gap-2 h-auto shrink-0 items-start px-4 pt-4">
-              <span className="text-xl font-semibold">
-                Create Your Restaurant
-              </span>
-              <div className="flex h-16 items-center gap-2 w-full">
-                <SidebarTrigger className="-ml-1" />
-                <Separator
-                  orientation="vertical"
-                  className="mr-2 data-[orientation=vertical]:h-4"
-                />
-                <Breadcrumb>
-                  <BreadcrumbList>
-                    <BreadcrumbItem>
-                      <BreadcrumbLink href="/profile">Dashboard</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                      <BreadcrumbPage>Setup Restaurant</BreadcrumbPage>
-                    </BreadcrumbItem>
-                  </BreadcrumbList>
-                </Breadcrumb>
-              </div>
-            </header>
-
-            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-              <Card className="max-w-2xl mx-auto">
-                <CardHeader>
-                  <CardTitle>Welcome to Dish Display!</CardTitle>
-                  <CardDescription>
-                    Let's create your restaurant profile so you can start
-                    managing your menu.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <QuickRestaurantForm
-                    userEmail={user!.email!}
-                    onSuccess={(restaurant: Restaurant) => {
-                      setRestaurant(restaurant);
-                      setMenuItems([]);
-                    }}
-                  />
-                </CardContent>
-              </Card>
+        <SidebarInset className={rubik.className}>
+          <header className="flex flex-col gap-2 h-auto shrink-0 items-start px-4 pt-4">
+            <span className="text-xl font-semibold">
+              Create Your Restaurant
+            </span>
+            <div className="flex h-16 items-center gap-2 w-full">
+              <SidebarTrigger className="-ml-1" />
+              <Separator
+                orientation="vertical"
+                className="mr-2 data-[orientation=vertical]:h-4"
+              />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/profile">Dashboard</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Setup Restaurant</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
             </div>
+          </header>
+
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            <Card className="max-w-2xl mx-auto">
+              <CardHeader>
+                <CardTitle>Welcome to Dish Display!</CardTitle>
+                <CardDescription>
+                  Let's create your restaurant profile so you can start managing
+                  your menu.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <QuickRestaurantForm
+                  userEmail={user!.email!}
+                  onSuccess={(restaurant: Restaurant) => {
+                    setRestaurant(restaurant);
+                    setMenuItems([]);
+                  }}
+                />
+              </CardContent>
+            </Card>
           </div>
         </SidebarInset>
       </SidebarProvider>
@@ -430,8 +436,8 @@ export default function MenuManageContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <div className={fjallaOne.className}>
+      <SidebarInset className={rubik.className}>
+        <div>
           <header className="flex flex-col gap-2 h-auto shrink-0 items-start px-4 pt-4">
             <span className="text-xl font-semibold">Menu Management</span>
             <div className="flex h-16 items-center gap-2 w-full">
@@ -488,11 +494,10 @@ export default function MenuManageContent() {
             {/* Add New Item Button */}
             <div className="flex justify-between items-center py-2">
               <div className="space-y-1">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Menu Items
-                </h2>
+                <h2 className="text-2xl font-bold text-gray-900">Menu Items</h2>
                 <p className="text-gray-600">
-                  {menuItems.length} {menuItems.length === 1 ? 'item' : 'items'} in your menu
+                  {menuItems.length} {menuItems.length === 1 ? "item" : "items"}{" "}
+                  in your menu
                 </p>
               </div>
               <AddMenuItemForm
@@ -506,12 +511,22 @@ export default function MenuManageContent() {
               <div className="flex gap-4 items-center p-4 bg-gray-50 rounded-lg border">
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm font-medium text-gray-700">Filter & Sort:</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Filter & Sort:
+                  </span>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="category-filter" className="text-sm text-gray-600">Category:</Label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <Label
+                    htmlFor="category-filter"
+                    className="text-sm text-gray-600"
+                  >
+                    Category:
+                  </Label>
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                  >
                     <SelectTrigger className="w-32">
                       <SelectValue placeholder="All" />
                     </SelectTrigger>
@@ -527,7 +542,12 @@ export default function MenuManageContent() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="sort-select" className="text-sm text-gray-600">Sort by:</Label>
+                  <Label
+                    htmlFor="sort-select"
+                    className="text-sm text-gray-600"
+                  >
+                    Sort by:
+                  </Label>
                   <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger className="w-36">
                       <SelectValue placeholder="Name" />
@@ -542,7 +562,8 @@ export default function MenuManageContent() {
                 </div>
 
                 <div className="text-xs text-gray-500">
-                  Showing {filteredAndSortedItems.length} of {menuItems.length} items
+                  Showing {filteredAndSortedItems.length} of {menuItems.length}{" "}
+                  items
                 </div>
               </div>
             )}
@@ -562,7 +583,7 @@ export default function MenuManageContent() {
                       restaurantId={restaurant.id}
                       onSuccess={handleAddMenuItem}
                       trigger={
-                        <Button>
+                        <Button className="cursor-pointer">
                           <Plus className="h-4 w-4 mr-2" />
                           Add Your First Item
                         </Button>
@@ -576,9 +597,12 @@ export default function MenuManageContent() {
                 <CardContent>
                   <div className="flex flex-col items-center space-y-4">
                     <Filter className="h-12 w-12 text-gray-400" />
-                    <h3 className="text-xl font-semibold">No items match your filter</h3>
+                    <h3 className="text-xl font-semibold">
+                      No items match your filter
+                    </h3>
                     <p className="text-gray-600 max-w-md">
-                      Try adjusting your category filter or sort options to see more items.
+                      Try adjusting your category filter or sort options to see
+                      more items.
                     </p>
                     <Button
                       variant="outline"
@@ -586,6 +610,7 @@ export default function MenuManageContent() {
                         setSelectedCategory("all");
                         setSortBy("name");
                       }}
+                      className="cursor-pointer"
                     >
                       Clear Filters
                     </Button>
@@ -595,7 +620,10 @@ export default function MenuManageContent() {
             ) : (
               <div className="space-y-4">
                 {filteredAndSortedItems.map((item) => (
-                  <Card key={item.id} className="group hover:shadow-lg transition-shadow duration-200 overflow-hidden bg-white border border-gray-200">
+                  <Card
+                    key={item.id}
+                    className="group hover:shadow-lg transition-shadow duration-200 overflow-hidden bg-white border border-gray-200"
+                  >
                     <div className="flex min-h-32">
                       {/* Left side - Image (1/3 of space) */}
                       <div className="w-1/3 bg-gray-50 relative overflow-hidden">
@@ -614,7 +642,9 @@ export default function MenuManageContent() {
                         {/* Availability indicator */}
                         <div className="absolute top-2 right-2">
                           <Badge
-                            variant={item.is_available ? "default" : "secondary"}
+                            variant={
+                              item.is_available ? "default" : "secondary"
+                            }
                             className="text-xs"
                           >
                             {item.is_available ? "Available" : "Unavailable"}
@@ -637,7 +667,11 @@ export default function MenuManageContent() {
 
                           {/* Category and Price */}
                           <div className="flex items-center gap-3">
-                            <Badge className={`${getCategoryColor(item.category)} text-xs`}>
+                            <Badge
+                              className={`${getCategoryColor(
+                                item.category
+                              )} text-xs`}
+                            >
                               {item.category}
                             </Badge>
                             <div className="text-xl font-bold text-gray-900">
@@ -659,6 +693,7 @@ export default function MenuManageContent() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleToggleAvailability(item.id)}
+                            className="cursor-pointer"
                           >
                             {item.is_available ? (
                               <EyeOff className="h-3 w-3 mr-1" />

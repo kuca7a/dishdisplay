@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { Fjalla_One } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
@@ -29,12 +29,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Loader2 } from "lucide-react";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+import { MapPin, Clock } from "lucide-react";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -195,17 +196,24 @@ export default function LocationHoursContent() {
         message?: string;
         details?: string;
         hint?: string;
+        code?: string;
       };
       console.error(
         "Error details:",
         errorObj.message,
         errorObj.details,
-        errorObj.hint
+        errorObj.hint,
+        errorObj.code
       );
 
       let errorMessage = "Failed to update location & hours. ";
 
-      if (
+      if (errorObj.code === "PGRST116") {
+        errorMessage += "Restaurant not found. Please try again.";
+      } else if (errorObj.message?.includes("coerce")) {
+        errorMessage +=
+          "Database query issue. Please check if there are duplicate restaurants.";
+      } else if (
         errorObj.message?.includes("column") &&
         errorObj.message?.includes("does not exist")
       ) {
@@ -226,9 +234,11 @@ export default function LocationHoursContent() {
   // Simple loading check
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto mb-4"></div>
+          <ThreeDotsLoader size="lg" color="#5F7161" className="mb-4" />
           <p>Loading...</p>
         </div>
       </div>
@@ -238,7 +248,9 @@ export default function LocationHoursContent() {
   // Simple auth check
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Please sign in</h1>
           <p>You need to be authenticated to access this page.</p>
@@ -250,7 +262,7 @@ export default function LocationHoursContent() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className={rubik.className}>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -272,7 +284,9 @@ export default function LocationHoursContent() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="flex items-center gap-2">
             <MapPin className="h-8 w-8 text-[#5F7161]" />
-            <h1 className={`${fjallaOne.className} text-3xl text-gray-800`}>
+            <h1
+              className={`${rubik.className} font-semibold text-3xl text-gray-800`}
+            >
               Location & Hours
             </h1>
           </div>
@@ -282,8 +296,8 @@ export default function LocationHoursContent() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#5F7161]" />
-                  <span className="ml-2">Loading location data...</span>
+                  <ThreeDotsLoader size="md" color="#5F7161" className="mr-2" />
+                  <span>Loading location data...</span>
                 </div>
               </CardContent>
             </Card>
@@ -438,18 +452,22 @@ export default function LocationHoursContent() {
                 <Button
                   type="submit"
                   disabled={saving || loading}
-                  className="bg-[#5F7161] hover:bg-[#4C5B4F]"
+                  className="bg-[#5F7161] hover:bg-[#4C5B4F] cursor-pointer"
                 >
                   {saving ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <ThreeDotsLoader size="sm" color="white" className="mr-2" />
                       Saving Changes...
                     </>
                   ) : (
                     "Save Location & Hours"
                   )}
                 </Button>
-                <Button type="button" variant="outline">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="cursor-pointer"
+                >
                   Cancel
                 </Button>
               </div>
