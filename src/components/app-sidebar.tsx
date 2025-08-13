@@ -47,6 +47,10 @@ const data = {
           title: "Media & Branding",
           url: "/profile/media-branding",
         },
+        {
+          title: "Account Settings",
+          url: "/profile/account",
+        },
       ],
     },
     {
