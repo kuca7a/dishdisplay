@@ -19,16 +19,33 @@ export const restaurantService = {
         `/api/restaurants?owner_email=${encodeURIComponent(email)}`
       );
 
+      console.log("Database: API response status:", response.status);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to get restaurant");
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.error("Database: Failed to parse error response:", parseError);
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        console.error("Database: API error response:", errorData);
+        throw new Error(
+          errorData.error || 
+          errorData.message || 
+          `HTTP ${response.status}: ${response.statusText}`
+        );
       }
 
       const data = await response.json();
       console.log("Database: Got restaurant via API:", data);
       return data;
     } catch (error) {
-      console.error("Database: API get error:", error);
+      console.error("Database: API get error:", {
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
       throw error;
     }
   },
