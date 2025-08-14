@@ -53,6 +53,7 @@ export function AddMenuItemForm({
     category: "",
     image_url: "",
     is_available: true,
+    time_to_make: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -84,6 +85,7 @@ export function AddMenuItemForm({
           | "drink",
         image_url: formData.image_url.trim() || undefined,
         is_available: formData.is_available,
+        time_to_make: formData.time_to_make.trim() || undefined,
       };
 
       const newItem = await menuItemService.create(menuItemData);
@@ -96,6 +98,7 @@ export function AddMenuItemForm({
         category: "",
         image_url: "",
         is_available: true,
+        time_to_make: "",
       });
 
       setOpen(false);
@@ -138,6 +141,17 @@ export function AddMenuItemForm({
               }
               placeholder="e.g., Margherita Pizza"
               required
+            />
+          </div>
+          <div>
+            <Label htmlFor="item-time-to-make">Time to Make</Label>
+            <Input
+              id="item-time-to-make"
+              value={formData.time_to_make}
+              onChange={(e) =>
+                setFormData({ ...formData, time_to_make: e.target.value })
+              }
+              placeholder="e.g., 20 minutes"
             />
           </div>
 

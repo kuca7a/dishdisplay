@@ -1,6 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { Rubik } from "next/font/google";
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,11 +45,12 @@ const categories = [
   { value: "drink", label: "Drink" },
 ];
 
-export function EditMenuItemForm({
-  item,
-  onSuccess,
-  trigger,
-}: EditMenuItemFormProps) {
+export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormProps) {
+  const defaultTrigger = (
+    <Button variant="outline" size="sm">
+      <Edit className="h-4 w-4" />
+    </Button>
+  );
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -53,6 +60,7 @@ export function EditMenuItemForm({
     category: item.category,
     image_url: item.image_url || "",
     is_available: item.is_available,
+    time_to_make: item.time_to_make || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,86 +84,62 @@ export function EditMenuItemForm({
         name: formData.name.trim(),
         description: formData.description.trim() || undefined,
         price: price,
-        category: formData.category as
-          | "appetizer"
-          | "main"
-          | "dessert"
-          | "drink",
+        category: formData.category as "appetizer" | "main" | "dessert" | "drink",
         image_url: formData.image_url.trim() || undefined,
         is_available: formData.is_available,
+        time_to_make: formData.time_to_make.trim() || undefined,
       };
 
       const updatedItem = await menuItemService.update(item.id, updateData);
-
-      setOpen(false);
       onSuccess(updatedItem);
+      setOpen(false);
     } catch (error) {
-      console.error("Error updating menu item:", error);
-      alert("Failed to update menu item. Please try again.");
+      alert("Failed to update menu item");
     } finally {
       setLoading(false);
     }
   };
 
-  // Reset form data when item changes or dialog opens
-  React.useEffect(() => {
-    if (open) {
-      setFormData({
-        name: item.name,
-        description: item.description || "",
-        price: item.price.toString(),
-        category: item.category,
-        image_url: item.image_url || "",
-        is_available: item.is_available,
-      });
-    }
-  }, [open, item]);
-
-  const defaultTrigger = (
-    <Button variant="outline" size="sm">
-      <Edit className="h-4 w-4" />
-    </Button>
-  );
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className={`max-w-md ${rubik.className}`}>
         <DialogHeader>
           <DialogTitle>Edit Menu Item</DialogTitle>
           <DialogDescription>
-            Update the details of your menu item. All fields marked with * are
-            required.
+            Update the details of your menu item. All fields marked with * are required.
           </DialogDescription>
         </DialogHeader>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="edit-item-name">Item Name *</Label>
             <Input
               id="edit-item-name"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Margherita Pizza"
               required
             />
           </div>
-
+          <div>
+            <Label htmlFor="edit-item-time-to-make">Time to Make</Label>
+            <Input
+              id="edit-item-time-to-make"
+              value={formData.time_to_make}
+              onChange={(e) => setFormData({ ...formData, time_to_make: e.target.value })}
+              placeholder="e.g., 20 minutes"
+            />
+          </div>
           <div>
             <Label htmlFor="edit-item-description">Description</Label>
             <Textarea
               id="edit-item-description"
               value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe your dish..."
               rows={2}
             />
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="edit-item-price">Price (£) *</Label>
@@ -165,24 +149,16 @@ export function EditMenuItemForm({
                 step="0.01"
                 min="0"
                 value={formData.price}
-                onChange={(e) =>
-                  setFormData({ ...formData, price: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 placeholder="12.99"
                 required
               />
             </div>
-
             <div>
               <Label htmlFor="edit-item-category">Category *</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    category: value as MenuItem["category"],
-                  })
-                }
+                onValueChange={(value) => setFormData({ ...formData, category: value as "appetizer" | "main" | "dessert" | "drink" })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -197,27 +173,20 @@ export function EditMenuItemForm({
               </Select>
             </div>
           </div>
-
           {/* Image Upload */}
           <ImageUpload
-            onImageUploaded={(url) =>
-              setFormData({ ...formData, image_url: url })
-            }
+            onImageUploaded={(url) => setFormData({ ...formData, image_url: url })}
             restaurantId={item.restaurant_id}
             currentImageUrl={formData.image_url}
           />
-
           <div className="flex items-center space-x-2">
             <Switch
               id="edit-item-available"
               checked={formData.is_available}
-              onCheckedChange={(checked) =>
-                setFormData({ ...formData, is_available: checked })
-              }
+              onCheckedChange={(checked) => setFormData({ ...formData, is_available: checked })}
             />
             <Label htmlFor="edit-item-available">Available for order</Label>
           </div>
-
           <div className="flex gap-2 pt-2">
             <Button
               type="button"
@@ -229,15 +198,10 @@ export function EditMenuItemForm({
             </Button>
             <Button
               type="submit"
-              disabled={
-                loading ||
-                !formData.name.trim() ||
-                !formData.price ||
-                !formData.category
-              }
+              disabled={loading || !formData.name.trim() || !formData.price || !formData.category}
               className="flex-1"
             >
-              {loading ? "Updating..." : "Update Item"}
+              {loading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>

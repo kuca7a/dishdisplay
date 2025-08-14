@@ -52,9 +52,8 @@ export default function LandingPageContent() {
                 Get Started Free
               </button>
             </div>
-            <div className="w-full md:w-1/2 flex justify-center">
-              <Carousel />
-            </div>
+            {/* Slideshow removed as requested */}
+            <div className="w-full md:w-1/2 flex justify-center"></div>
           </div>
         </div>
       </section>
