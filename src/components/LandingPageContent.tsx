@@ -4,7 +4,6 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Rubik } from "next/font/google";
 import Navbar from "@/components/Navbar";
-import Carousel from "@/components/Carousel";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
