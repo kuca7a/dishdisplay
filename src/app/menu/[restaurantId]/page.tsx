@@ -1,18 +1,28 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Carousel from "@/components/Carousel";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Fjalla_One } from "next/font/google";
-import { Card, CardContent } from "@/components/ui/card";
+import { Inter, Playfair_Display, Rubik } from "next/font/google";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Star, ChefHat, Utensils } from "lucide-react";
+import { Utensils, Search } from "lucide-react";
 import { restaurantService, menuItemService } from "@/lib/database";
 import { Restaurant, MenuItem } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
-const fjallaOne = Fjalla_One({
-  weight: "400",
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -26,6 +36,8 @@ export default function CustomerMenuPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  // Removed previous slideshow state
 
   useEffect(() => {
     const loadMenuData = async () => {
@@ -59,44 +71,35 @@ export default function CustomerMenuPage() {
     loadMenuData();
   }, [restaurantId]);
 
+  // Removed featured items slideshow logic
+
   const categories = [
-    { value: "all", label: "All Items", icon: ChefHat },
-    { value: "appetizer", label: "Appetizers", icon: "🥗" },
-    { value: "main", label: "Main Courses", icon: "🍽️" },
-    { value: "dessert", label: "Desserts", icon: "🍰" },
-    { value: "drink", label: "Drinks", icon: "🥤" },
+    { value: "all", label: "All Items" },
+    { value: "appetizer", label: "Appetizers" },
+    { value: "main", label: "Main Courses" },
+    { value: "dessert", label: "Desserts" },
+    { value: "drink", label: "Drinks" },
   ];
 
-  const filteredItems =
-    selectedCategory === "all"
-      ? menuItems
-      : menuItems.filter((item) => item.category === selectedCategory);
+  const filteredItems = menuItems.filter((item) => {
+    const matchesCategory =
+      selectedCategory === "all" || item.category === selectedCategory;
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "appetizer":
-        return "bg-green-50 text-green-700 border-green-200";
-      case "main":
-        return "bg-blue-50 text-blue-700 border-blue-200";
-      case "dessert":
-        return "bg-pink-50 text-pink-700 border-pink-200";
-      case "drink":
-        return "bg-yellow-50 text-yellow-700 border-yellow-200";
-      default:
-        return "bg-gray-50 text-gray-700 border-gray-200";
-    }
-  };
+  // Removed previous slideshow handlers
 
   if (loading) {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen bg-gradient-to-br from-orange-50 to-red-50`}
+        className={`${inter.className} min-h-screen bg-gray-50 flex items-center justify-center`}
       >
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <ThreeDotsLoader size="lg" />
-            <p className="text-lg text-gray-600 mt-4">Loading menu...</p>
-          </div>
+        <div className="text-center">
+          <ThreeDotsLoader size="lg" color="#5F7161" />
+          <p className="text-lg text-gray-600 mt-4">Loading menu...</p>
         </div>
       </div>
     );
@@ -105,203 +108,218 @@ export default function CustomerMenuPage() {
   if (error || !restaurant) {
     return (
       <div
-        className={`${fjallaOne.className} min-h-screen bg-gradient-to-br from-orange-50 to-red-50`}
+        className={`${inter.className} min-h-screen bg-gray-50 flex items-center justify-center p-4`}
       >
-        <div className="flex items-center justify-center min-h-screen p-4">
-          <Card className="w-full max-w-md">
-            <CardContent className="p-6 text-center">
-              <div className="text-6xl mb-4">🍽️</div>
-              <h1 className="text-2xl font-bold mb-2">Menu Not Available</h1>
-              <p className="text-gray-600 mb-4">
-                {error || "Sorry, we couldn't find this restaurant's menu."}
-              </p>
-              <p className="text-sm text-gray-500">
-                Please check with the restaurant staff or try again later.
-              </p>
-            </CardContent>
-          </Card>
+        <div className="w-full max-w-md bg-white shadow-lg rounded-lg">
+          <div className="p-8 text-center">
+            <div className="text-6xl mb-4">🍽️</div>
+            <h1 className="text-2xl font-bold mb-2 text-gray-800">
+              Menu Not Available
+            </h1>
+            <p className="text-gray-600 mb-4">
+              {error || "Sorry, we couldn't find this restaurant's menu."}
+            </p>
+            <p className="text-sm text-gray-500">
+              Please check with the restaurant staff or try again later.
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className={`${fjallaOne.className} min-h-screen bg-gradient-to-br from-orange-50 to-red-50`}
-    >
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="text-center">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
-              {restaurant.name}
-            </h1>
-            {restaurant.description && (
-              <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">
-                {restaurant.description}
-              </p>
-            )}
-            <div className="flex items-center justify-center gap-4 mt-3 text-sm text-gray-500">
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span>Digital Menu</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Clock className="h-4 w-4" />
-                <span>Updated Daily</span>
-              </div>
+    <div className={`${inter.className} ${rubik.className} min-h-screen bg-white`}>
+      {/* Header with Restaurant Name */}
+      <div className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-20">
+        <div className="px-4 py-4">
+          <h1
+            className={`${playfair.className} text-xl font-bold text-gray-900`}
+          >
+            {restaurant.name}
+          </h1>
+          {restaurant.description && (
+            <p className="text-gray-600 text-sm mt-1">
+              {restaurant.description}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Menu Slideshow Feature (moved from landing page) */}
+      <div className="flex justify-center py-6 px-4">
+        <div className="w-full max-w-[500px]">
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <div className="aspect-[2/0.5]">
+              <Carousel />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Category Filter - Mobile Optimized */}
-      <div className="bg-white border-b">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((category) => {
-              const count =
-                category.value === "all"
-                  ? menuItems.length
-                  : menuItems.filter((item) => item.category === category.value)
-                      .length;
+      {/* Search Bar */}
+      <div className="bg-white px-4 py-4 border-b border-gray-100">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search menu items..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#5F7161] focus:border-transparent outline-none text-sm bg-gray-50"
+          />
+        </div>
+      </div>
 
-              if (count === 0 && category.value !== "all") return null;
+      {/* Category Selection */}
+      <div className="bg-white px-4 py-4 border-b border-gray-100">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {categories.map((category) => {
+            const count =
+              category.value === "all"
+                ? menuItems.length
+                : menuItems.filter((item) => item.category === category.value)
+                    .length;
 
-              return (
-                <button
-                  key={category.value}
-                  onClick={() => setSelectedCategory(category.value)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors border ${
+            if (count === 0 && category.value !== "all") return null;
+
+            return (
+              <button
+                key={category.value}
+                onClick={() => setSelectedCategory(category.value)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${
+                  selectedCategory === category.value
+                    ? "bg-[#5F7161] text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                <span>{category.label}</span>
+                <span
+                  className={`text-xs px-2 py-1 rounded-full ${
                     selectedCategory === category.value
-                      ? "bg-orange-500 text-white border-orange-500"
-                      : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                      ? "bg-white/20 text-white"
+                      : "bg-white/80 text-gray-600"
                   }`}
                 >
-                  {typeof category.icon === "string" ? (
-                    <span className="text-lg">{category.icon}</span>
-                  ) : (
-                    <category.icon className="h-4 w-4" />
-                  )}
-                  <span>{category.label}</span>
-                  <Badge variant="secondary" className="ml-1 text-xs">
-                    {count}
-                  </Badge>
-                </button>
-              );
-            })}
-          </div>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Menu Items */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="px-4 py-6">
         {filteredItems.length === 0 ? (
-          <Card className="text-center p-8">
-            <CardContent className="space-y-4">
-              <div className="text-6xl">🍽️</div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">
-                  No items available
-                </h3>
-                <p className="text-gray-600">
-                  {selectedCategory === "all"
-                    ? "This restaurant hasn't added any menu items yet."
-                    : `No ${selectedCategory} items are currently available.`}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                No items found
+              </h3>
+              <p className="text-gray-600">
+                {searchTerm
+                  ? `No items match "${searchTerm}"`
+                  : selectedCategory === "all"
+                  ? "This restaurant hasn't added any menu items yet."
+                  : `No ${selectedCategory} items are currently available.`}
+              </p>
+            </div>
+          </div>
         ) : (
-          <div className="grid gap-4 md:gap-6">
-            {filteredItems.map((item) => (
-              <Card
-                key={item.id}
-                className="overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <CardContent className="p-0">
-                  <div className="flex flex-col sm:flex-row">
-                    {/* Item Image */}
-                    <div className="w-full sm:w-32 h-32 sm:h-24 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center relative overflow-hidden">
-                      {item.image_url ? (
-                        <Image
-                          src={item.image_url}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center w-full h-full">
-                          <Utensils className="h-6 w-6 sm:h-5 sm:w-5 text-orange-400" />
-                        </div>
-                      )}
-                    </div>
+          <div className="bg-white">
+            {filteredItems.map((item, index) => (
+              <div key={item.id}>
+                <div className={`flex px-4 py-4 hover:bg-gray-50 transition-colors duration-200 ${rubik.className}`}> 
+                  {/* Item Image */}
+                  <div className="w-32 h-32 bg-gray-100 flex items-center justify-center relative overflow-hidden flex-shrink-0">
+                    {item.image_url ? (
+                      <Image
+                        src={item.image_url}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-[#5F7161]/10 flex items-center justify-center">
+                        <Utensils className="h-6 w-6 text-[#5F7161]" />
+                      </div>
+                    )}
+                  </div>
 
-                    {/* Item Details */}
-                    <div className="flex-1 p-4">
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-semibold text-gray-900 truncate">
-                              {item.name}
-                            </h3>
-                            <Badge
-                              variant="outline"
-                              className={`text-xs px-2 py-0.5 ${getCategoryColor(
-                                item.category
-                              )}`}
-                            >
-                              {item.category}
-                            </Badge>
-                          </div>
+                  {/* Item Details */}
+                  <div className="flex-1 ml-4 min-w-0">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3
+                          className={`${rubik.className} text-lg font-semibold text-gray-900 truncate`}
+                        >
+                          {item.name}
+                        </h3>
 
-                          {item.description && (
-                            <p className="text-gray-600 text-sm mb-2 line-clamp-2">
-                              {item.description}
-                            </p>
-                          )}
+                        {item.description && (
+                          <p className="text-gray-600 text-sm leading-relaxed mb-2 line-clamp-2">
+                            {item.description}
+                          </p>
+                        )}
 
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              Fresh daily
+                        <Badge
+                          variant="outline"
+                          className="text-xs px-2 py-1 bg-[#5F7161]/10 text-[#5F7161] border-[#5F7161]/20"
+                        >
+                          {item.category}
+                        </Badge>
+                        {item.time_to_make && (
+                          <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2"/></svg>
+                            <span>
+                              {(() => {
+                                const val = item.time_to_make.trim();
+                                const lower = val.toLowerCase();
+                                if (lower.endsWith("minute") || lower.endsWith("minutes")) {
+                                  return val;
+                                }
+                                // If only a number, add 'minutes'
+                                return val + " minutes";
+                              })()}
                             </span>
                           </div>
-                        </div>
+                        )}
+                      </div>
 
-                        <div className="text-right flex-shrink-0">
-                          <div className="text-xl font-bold text-orange-600">
-                            £{Number(item.price).toFixed(2)}
-                          </div>
+                      <div className="flex-shrink-0">
+                        <div
+                          className={`${rubik.className} text-lg font-bold text-[#5F7161]`}
+                        >
+                          £{Number(item.price).toFixed(2)}
                         </div>
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+                {/* Divider line - hide for last item */}
+                {index < filteredItems.length - 1 && (
+                  <div className="border-b border-gray-200 mx-4"></div>
+                )}
+              </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Footer */}
-      <div className="bg-white border-t mt-12">
-        <div className="max-w-4xl mx-auto px-4 py-6 text-center">
-          <div className="text-sm text-gray-500 space-y-2">
-            <p>Powered by DishDisplay - Digital Menu Solution</p>
-            <div className="flex items-center justify-center gap-4 text-xs">
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                Menu updated in real-time
-              </span>
-              <span className="flex items-center gap-1">
-                <Star className="h-3 w-3" />
-                Contactless dining
-              </span>
-            </div>
+      {/* Footer - matches landing page, black on white, Playfair font */}
+      {/* Divider above footer */}
+      <div className="w-full border-t border-gray-200 mt-8"></div>
+      {/* Footer - no links, black text on white background */}
+      <footer className="bg-white text-black py-16">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col items-center justify-center">
+            <h3 className="text-3xl font-['Notable'] mb-2">Dish Display</h3>
+            <p className="text-gray-700 font-medium text-lg">Bringing menus to life</p>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

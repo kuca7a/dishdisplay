@@ -66,6 +66,7 @@ export interface MenuItem {
   category: "appetizer" | "main" | "dessert" | "drink";
   image_url?: string;
   is_available: boolean;
+  time_to_make?: string;
   created_at: string;
   updated_at: string;
 }
@@ -157,6 +158,7 @@ export interface CreateMenuItemData {
   category: "appetizer" | "main" | "dessert" | "drink";
   image_url?: string;
   is_available?: boolean;
+  time_to_make?: string;
 }
 
 export interface UpdateMenuItemData {
@@ -166,6 +168,7 @@ export interface UpdateMenuItemData {
   category?: "appetizer" | "main" | "dessert" | "drink";
   image_url?: string;
   is_available?: boolean;
+  time_to_make?: string;
 }
 
 // Stripe & Payment types
