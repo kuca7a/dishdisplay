@@ -93,7 +93,7 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
       const updatedItem = await menuItemService.update(item.id, updateData);
       onSuccess(updatedItem);
       setOpen(false);
-    } catch (error) {
+    } catch {
       alert("Failed to update menu item");
     } finally {
       setLoading(false);
