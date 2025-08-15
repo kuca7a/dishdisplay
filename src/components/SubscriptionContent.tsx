@@ -311,7 +311,7 @@ export default function SubscriptionContent() {
               <div>
                 <h1 className="text-3xl font-bold">Subscription Management</h1>
                 <p className="text-gray-600 mt-1">
-                  Manage your DishDisplay subscription and billing settings
+                  Manage your Dish Display subscription and billing settings
                 </p>
               </div>
               {subscription.plan === "pro" && (
@@ -340,7 +340,7 @@ export default function SubscriptionContent() {
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold capitalize">
                         {subscription.plan === "pro"
-                          ? "DishDisplay Pro"
+                          ? "Dish Display Pro"
                           : "Free Plan"}
                       </span>
                       {getStatusBadge(subscription.status)}
@@ -392,7 +392,11 @@ export default function SubscriptionContent() {
                         >
                           {actionLoading ? (
                             <>
-                              <ThreeDotsLoader size="sm" color="white" className="mr-2" />
+                              <ThreeDotsLoader
+                                size="sm"
+                                color="white"
+                                className="mr-2"
+                              />
                               Processing...
                             </>
                           ) : (

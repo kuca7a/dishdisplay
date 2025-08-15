@@ -74,9 +74,11 @@ export default function AccountSettingsContent() {
 
   if (isLoading) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${rubik.className}`}>
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" />
+          <ThreeDotsLoader size="md" />
           <p className="mt-4">Loading...</p>
         </div>
       </div>
@@ -85,7 +87,9 @@ export default function AccountSettingsContent() {
 
   if (!isAuthenticated) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${rubik.className}`}>
+      <div
+        className={`min-h-screen flex items-center justify-center ${rubik.className}`}
+      >
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Please sign in</h1>
           <p>You need to be authenticated to access this page.</p>
@@ -119,7 +123,9 @@ export default function AccountSettingsContent() {
         <div className="flex flex-1 flex-col gap-6 p-6">
           <div className="flex items-center gap-2">
             <Settings className="h-8 w-8 text-[#5F7161]" />
-            <h1 className={`${rubik.className} font-semibold text-3xl text-gray-800`}>
+            <h1
+              className={`${rubik.className} font-semibold text-3xl text-gray-800`}
+            >
               Account Settings
             </h1>
           </div>

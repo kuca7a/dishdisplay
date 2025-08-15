@@ -54,7 +54,7 @@ export default function InsightsContent() {
         className={`min-h-screen flex items-center justify-center ${rubik.className}`}
       >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" />
+          <ThreeDotsLoader size="md" />
           <p className="mt-4">Loading...</p>
         </div>
       </div>

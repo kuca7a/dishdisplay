@@ -63,7 +63,7 @@ export default function PreviewContent() {
         className={`${rubik.className} min-h-screen flex items-center justify-center bg-gradient-to-br from-[#5F7161]/5 to-gray-50`}
       >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" />
+          <ThreeDotsLoader size="md" />
           <p className="text-lg text-gray-600 mt-4">Authenticating...</p>
         </div>
       </div>

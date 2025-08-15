@@ -31,7 +31,7 @@ export function PaymentSuccessModal({
             Payment Successful!
           </AlertDialogTitle>
           <AlertDialogDescription className="text-base">
-            Welcome to DishDisplay Pro! Your subscription is now active and you
+            Welcome to Dish Display Pro! Your subscription is now active and you
             have access to all premium features.
           </AlertDialogDescription>
         </AlertDialogHeader>

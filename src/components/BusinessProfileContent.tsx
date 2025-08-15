@@ -169,7 +169,7 @@ export default function BusinessProfileContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <ThreeDotsLoader size="lg" />
+          <ThreeDotsLoader size="md" />
           <p className="mt-4">Loading...</p>
         </div>
       </div>
@@ -213,7 +213,9 @@ export default function BusinessProfileContent() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="flex items-center gap-2">
             <Building2 className="h-8 w-8 text-[#5F7161]" />
-            <h1 className={`${rubik.className} text-3xl text-gray-800 font-medium`}>
+            <h1
+              className={`${rubik.className} text-3xl text-gray-800 font-medium`}
+            >
               Business Profile
             </h1>
           </div>

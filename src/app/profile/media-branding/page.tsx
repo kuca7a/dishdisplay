@@ -1,21 +1,24 @@
 "use client";
 
-import dynamic from 'next/dynamic';
-import React from 'react';
-import { ThreeDotsLoader } from '@/components/ui/three-dots-loader';
+import dynamic from "next/dynamic";
+import React from "react";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
 // Dynamic import to prevent Auth0 SSR issues
-const MediaBrandingContent = dynamic(() => import('@/components/MediaBrandingContent'), {
-  ssr: false,
-  loading: () => (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <ThreeDotsLoader size="lg" />
-        <p className="mt-4">Loading Media & Branding...</p>
+const MediaBrandingContent = dynamic(
+  () => import("@/components/MediaBrandingContent"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <ThreeDotsLoader size="md" />
+          <p className="mt-4">Loading Media & Branding...</p>
+        </div>
       </div>
-    </div>
-  )
-});
+    ),
+  }
+);
 
 export default function MediaBrandingPage() {
   return <MediaBrandingContent />;

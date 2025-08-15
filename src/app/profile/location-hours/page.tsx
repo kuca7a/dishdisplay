@@ -12,7 +12,7 @@ const LocationHoursContent = dynamic(
     loading: () => (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <ThreeDotsLoader size="lg" />
+          <ThreeDotsLoader size="md" />
           <p className="mt-4">Loading Location & Hours...</p>
         </div>
       </div>

@@ -344,7 +344,7 @@ export default function MenuManageContent() {
         <SidebarInset className={rubik.className}>
           <div className="flex items-center justify-center h-screen">
             <div className="text-center">
-              <ThreeDotsLoader size="lg" />
+              <ThreeDotsLoader size="md" />
               <p className="mt-4">Loading your menu...</p>
             </div>
           </div>
