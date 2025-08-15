@@ -134,7 +134,7 @@ export const subscriptionService = {
   async createPortalConfiguration(): Promise<Stripe.BillingPortal.Configuration> {
     return await stripe.billingPortal.configurations.create({
       business_profile: {
-        headline: "DishDisplay - Manage your subscription",
+        headline: "Dish Display - Manage your subscription",
       },
       features: {
         subscription_cancel: {

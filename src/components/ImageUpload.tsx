@@ -176,7 +176,7 @@ export function ImageUpload({
         >
           {uploading ? (
             <div className="space-y-3">
-              <ThreeDotsLoader size="lg" />
+              <ThreeDotsLoader size="md" />
               <div>
                 <div className="text-sm font-medium">Uploading image...</div>
                 <Progress value={progress} className="w-48 mx-auto mt-2" />

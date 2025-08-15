@@ -47,7 +47,7 @@ export default function SupportContent() {
         className={`min-h-screen flex items-center justify-center ${rubik.className}`}
       >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" />
+          <ThreeDotsLoader size="md" />
           <p className="mt-4">Loading...</p>
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function SupportContent() {
                 <p className="text-gray-600 mb-6">
                   We're building a comprehensive support center with FAQs,
                   tutorials, and direct support options to help you get the most
-                  out of DishDisplay.
+                  out of Dish Display.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">

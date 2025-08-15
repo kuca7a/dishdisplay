@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Rubik } from "next/font/google";
 import Navbar from "@/components/Navbar";
@@ -51,10 +52,9 @@ export default function LandingPageContent() {
                 Get Started Free
               </button>
             </div>
-            {/* Slideshow removed as requested */}
-            <div className="w-full md:w-1/2 flex justify-center"></div>
           </div>
         </div>
+        {/* ...existing code... */}
       </section>
 
       {/* How It Works Section */}
@@ -154,6 +154,11 @@ export default function LandingPageContent() {
               </div>
             </div>
           </div>
+        </div>
+        {/* Product mockups: phone and laptop, no tile background */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-16 bg-gray-50 py-8 rounded-xl">
+          <Image src="/mockupPhone.png" alt="Dish Display on phone" width={500} height={1000} className="md:w-[500px] w-[400px] h-auto" priority style={{ background: 'transparent' }} />
+          <Image src="/mockupLaptop.png" alt="Dish Display on laptop" width={500} height={320} className="md:w-[500px] w-[400px] h-auto" priority style={{ background: 'transparent' }} />
         </div>
       </section>
 

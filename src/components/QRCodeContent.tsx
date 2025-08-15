@@ -80,7 +80,7 @@ export default function QRCodeContent() {
         className={`min-h-screen flex items-center justify-center ${rubik.className}`}
       >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" />
+          <ThreeDotsLoader size="md" />
           <p className="mt-4">Loading...</p>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function QRCodeContent() {
               {loading && (
                 <div className="flex items-center justify-center py-12">
                   <div className="text-center">
-                    <ThreeDotsLoader size="lg" />
+                    <ThreeDotsLoader size="md" />
                     <p className="mt-4">Loading...</p>
                   </div>
                 </div>

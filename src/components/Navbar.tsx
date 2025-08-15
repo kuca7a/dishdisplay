@@ -4,10 +4,16 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
 import { useState } from "react";
 import { CircleUser } from "lucide-react";
-import { Rubik } from "next/font/google";
+import { Rubik, Notable } from "next/font/google";
 
 const rubik = Rubik({
   weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const notable = Notable({
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -20,7 +26,7 @@ const Navbar = () => {
     <nav className={`bg-[#ffffff] shadow-lg ${rubik.className}`}>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-semibold text-black font-sans">
+          <Link href="/" className={`text-2xl font-semibold text-black ${notable.className}`}>
             DISH DISPLAY
           </Link>
 

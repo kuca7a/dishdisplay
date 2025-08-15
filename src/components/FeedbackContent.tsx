@@ -47,7 +47,7 @@ export default function FeedbackContent() {
         className={`min-h-screen flex items-center justify-center ${rubik.className}`}
       >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" />
+          <ThreeDotsLoader size="md" />
           <p className="mt-4">Loading...</p>
         </div>
       </div>
@@ -96,8 +96,8 @@ export default function FeedbackContent() {
                 </h2>
                 <p className="text-gray-600 mb-6">
                   We&apos;re building a comprehensive feedback system where you
-                  can share suggestions, report issues, and help us improve
-                  DishDisplay for all restaurant owners.
+                  can share suggestions, report issues, and help us improve Dish
+                  Display for all restaurant owners.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
