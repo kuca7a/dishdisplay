@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Inter, Playfair_Display, Rubik } from "next/font/google";
 import { Badge } from "@/components/ui/badge";
 import { Utensils, Search } from "lucide-react";
-import { restaurantService, menuItemService } from "@/lib/database";
+import { cachedDataService } from "@/lib/cache";
 import { Restaurant, MenuItem } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
@@ -44,19 +44,17 @@ export default function CustomerMenuPage() {
       try {
         setLoading(true);
 
-        // Get restaurant details
-        const restaurantData = await restaurantService.getById(restaurantId);
+        // Get restaurant details using cached service
+        const restaurantData = await cachedDataService.getRestaurantById(restaurantId);
 
         if (!restaurantData) {
           setError("Restaurant not found");
           return;
         }
 
-        // Get menu items (only available ones for customers)
-        const allMenuItems = await menuItemService.getByRestaurantId(
-          restaurantId
-        );
-        const availableItems = allMenuItems.filter((item) => item.is_available);
+        // Get menu items (only available ones for customers) using cached service
+        const allMenuItems = await cachedDataService.getMenuItemsByRestaurantId(restaurantId);
+        const availableItems = allMenuItems.filter((item: MenuItem) => item.is_available);
 
         setRestaurant(restaurantData);
         setMenuItems(availableItems);

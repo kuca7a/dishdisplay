@@ -41,13 +41,14 @@ import {
 } from "@/components/ui/select";
 import { Plus, Eye, EyeOff, Utensils, Filter } from "lucide-react";
 import { menuItemService, restaurantService } from "@/lib/database";
-import { Restaurant, MenuItem } from "@/types/database";
+import { Restaurant } from "@/types/database";
 import { AddMenuItemForm } from "@/components/AddMenuItemForm";
 import { EditMenuItemForm } from "@/components/EditMenuItemForm";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import { DeleteConfirmationModal } from "@/components/DeleteConfirmationModal";
 import { EditRestaurantForm } from "@/components/EditRestaurantForm";
 import { DeleteRestaurantModal } from "@/components/DeleteRestaurantModal";
+import { useRestaurantData } from "@/hooks/use-cached-data";
 
 const rubik = Rubik({
   weight: ["300", "400", "500", "600"],
@@ -123,9 +124,10 @@ function QuickRestaurantForm({
 export default function MenuManageContent() {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  // Use cached data hook
+  const { restaurant, menuItems, loading, refetch, invalidateCache } = useRestaurantData();
+  
   const [error, setError] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -137,98 +139,19 @@ export default function MenuManageContent() {
     }
   }, [isLoading, isAuthenticated, router]);
 
-  useEffect(() => {
-    if (isAuthenticated && user?.email) {
-      const loadRestaurantData = async () => {
-        try {
-          setLoading(true);
-          setError(null);
-
-          console.log("Loading restaurant data for user:", user?.email);
-          console.log("Full user object:", user);
-
-          // First try to get existing restaurant
-          const restaurant = await restaurantService.getByOwnerEmail(
-            user!.email!
-          );
-
-          if (restaurant) {
-            console.log("Found existing restaurant:", restaurant);
-            setRestaurant(restaurant);
-
-            // Load menu items for this restaurant
-            const items = await menuItemService.getByRestaurantId(
-              restaurant.id
-            );
-            console.log("Loaded menu items:", items);
-            setMenuItems(items);
-          } else {
-            console.log("No restaurant found for user");
-            setRestaurant(null);
-            setMenuItems([]);
-          }
-        } catch (err) {
-          console.error("Error loading restaurant data:", err);
-          setError("Failed to load restaurant data. Please try again.");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      loadRestaurantData();
-    }
-  }, [isAuthenticated, user]);
-
-  const loadRestaurantData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      console.log("Loading restaurant data for user:", user?.email);
-      console.log("Full user object:", user);
-
-      // First try to get existing restaurant
-      const restaurant = await restaurantService.getByOwnerEmail(user!.email!);
-
-      console.log("Found restaurant:", restaurant);
-
-      if (!restaurant) {
-        // No restaurant found - this is normal for new users
-        console.log("No restaurant found for email:", user!.email);
-        setRestaurant(null);
-        setMenuItems([]);
-        return;
-      }
-
-      // Restaurant exists, get menu items
-      const menuItems = await menuItemService.getByRestaurantId(restaurant.id);
-      console.log("Found menu items:", menuItems);
-      setRestaurant(restaurant);
-      setMenuItems(menuItems);
-    } catch (err) {
-      console.error("Error loading restaurant data:", err);
-      setError(
-        `Failed to load restaurant data: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleToggleAvailability = async (itemId: string) => {
     try {
+      setDeleteLoading(itemId);
       await menuItemService.toggleAvailability(itemId);
-      // Reload menu items
-      if (restaurant) {
-        const updatedItems = await menuItemService.getByRestaurantId(
-          restaurant.id
-        );
-        setMenuItems(updatedItems);
-      }
+      
+      // Invalidate cache and refetch data
+      invalidateCache();
+      await refetch(true); // Force fresh data
     } catch (err) {
       console.error("Error toggling availability:", err);
+      alert("Failed to update item availability");
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
@@ -236,35 +159,41 @@ export default function MenuManageContent() {
     try {
       setDeleteLoading(itemId);
       await menuItemService.delete(itemId);
-      // Remove item from state immediately for better UX
-      setMenuItems((prev) => prev.filter((item) => item.id !== itemId));
+      
+      // Invalidate cache and refetch data
+      invalidateCache();
+      await refetch(true); // Force fresh data
     } catch (err) {
       console.error("Error deleting item:", err);
-      alert("Failed to delete item. Please try again.");
+      alert("Failed to delete item");
     } finally {
       setDeleteLoading(null);
     }
   };
 
-  const handleAddMenuItem = (newItem: MenuItem) => {
-    setMenuItems((prev) => [newItem, ...prev]);
+  const handleAddMenuItem = async () => {
+    // Invalidate cache and refetch data to include new item
+    invalidateCache();
+    await refetch(true); // Force fresh data
   };
 
-  const handleUpdateMenuItem = (updatedItem: MenuItem) => {
-    setMenuItems((prev) =>
-      prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    );
+  const handleUpdateMenuItem = async () => {
+    // Invalidate cache and refetch data to include updates
+    invalidateCache();
+    await refetch(true); // Force fresh data
   };
 
-  const handleUpdateRestaurant = (updatedRestaurant: Restaurant) => {
-    setRestaurant(updatedRestaurant);
+  const handleUpdateRestaurant = async () => {
+    // Invalidate cache and refetch data
+    invalidateCache();
+    await refetch(true); // Force fresh data
   };
 
   const handleDeleteRestaurant = async () => {
     if (!restaurant) return;
 
     try {
-      setLoading(true);
+      setError(null);
       // Delete all menu items first (cascade should handle this, but let's be explicit)
       await Promise.all(
         menuItems.map((item) => menuItemService.delete(item.id))
@@ -273,15 +202,19 @@ export default function MenuManageContent() {
       // Then delete the restaurant
       await restaurantService.delete(restaurant.id);
 
-      // Reset state
-      setRestaurant(null);
-      setMenuItems([]);
+      // Invalidate cache and refetch data
+      invalidateCache();
+      await refetch(true); // Force fresh data
     } catch (err) {
       console.error("Error deleting restaurant:", err);
       alert("Failed to delete restaurant. Please try again.");
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const handleQuickCreateSuccess = async () => {
+    // Invalidate cache and refetch data to include new restaurant
+    invalidateCache();
+    await refetch(true); // Force fresh data
   };
 
   const getCategoryColor = (category: string) => {
@@ -366,7 +299,7 @@ export default function MenuManageContent() {
               <CardContent>
                 <p>{error}</p>
                 <Button
-                  onClick={loadRestaurantData}
+                  onClick={() => refetch(true)}
                   className="mt-4 cursor-pointer"
                 >
                   Try Again
@@ -420,10 +353,7 @@ export default function MenuManageContent() {
               <CardContent>
                 <QuickRestaurantForm
                   userEmail={user!.email!}
-                  onSuccess={(restaurant: Restaurant) => {
-                    setRestaurant(restaurant);
-                    setMenuItems([]);
-                  }}
+                  onSuccess={handleQuickCreateSuccess}
                 />
               </CardContent>
             </Card>

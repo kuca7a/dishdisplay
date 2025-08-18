@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -34,9 +34,9 @@ import {
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/solid";
-import { restaurantService, menuItemService } from "@/lib/database";
-import type { Restaurant, MenuItem } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+import { useRestaurantData } from "@/hooks/use-cached-data";
+import { CacheDebug } from "@/components/CacheDebug";
 
 import { Rubik } from "next/font/google";
 
@@ -59,42 +59,15 @@ interface TaskStatus {
 export default function ProfileContent() {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  
+  // Use cached data hook instead of manual state management
+  const { restaurant, menuItems, loading } = useRestaurantData();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.replace("/");
     }
   }, [isLoading, isAuthenticated, router]);
-
-  useEffect(() => {
-    async function fetchData() {
-      if (!isAuthenticated || !user?.email) return;
-
-      try {
-        setLoading(true);
-        const restaurantData = await restaurantService.getByOwnerEmail(
-          user.email
-        );
-        setRestaurant(restaurantData);
-
-        if (restaurantData) {
-          const menuData = await menuItemService.getByRestaurantId(
-            restaurantData.id
-          );
-          setMenuItems(menuData);
-        }
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [isAuthenticated, user?.email]);
 
   // Greeting logic
   const greeting = useMemo(() => {
@@ -453,6 +426,11 @@ export default function ProfileContent() {
                 </Card>
               </div>
             )}
+          </div>
+          
+          {/* Cache Debug Component - only visible in development */}
+          <div className="mt-6">
+            <CacheDebug showDetailed={process.env.NODE_ENV === 'development'} />
           </div>
         </div>
       </SidebarInset>
