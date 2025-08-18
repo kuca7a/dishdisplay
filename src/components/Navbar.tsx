@@ -4,13 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Link from "next/link";
 import { useState } from "react";
 import { CircleUser } from "lucide-react";
-import { Rubik, Notable } from "next/font/google";
-
-const rubik = Rubik({
-  weight: ["300", "400", "500", "600"],
-  subsets: ["latin"],
-  display: "swap",
-});
+import { Notable } from "next/font/google";
 
 const notable = Notable({
   weight: "400",
@@ -23,10 +17,13 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className={`bg-[#ffffff] shadow-lg ${rubik.className}`}>
+    <nav className="bg-[#ffffff] shadow-lg">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className={`text-2xl font-semibold text-black ${notable.className}`}>
+          <Link
+            href="/"
+            className={`text-2xl font-semibold text-black ${notable.className}`}
+          >
             DISH DISPLAY
           </Link>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Rubik } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,12 @@ import { Plus } from "lucide-react";
 import { menuItemService } from "@/lib/database";
 import { CreateMenuItemData, MenuItem } from "@/types/database";
 import { ImageUpload } from "@/components/ImageUpload";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 interface AddMenuItemFormProps {
   restaurantId: string;
@@ -112,7 +119,7 @@ export function AddMenuItemForm({
   };
 
   const defaultTrigger = (
-    <Button>
+    <Button className="cursor-pointer">
       <Plus className="h-4 w-4 mr-2" />
       Add New Item
     </Button>
@@ -121,7 +128,7 @@ export function AddMenuItemForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className={`max-w-md ${rubik.className}`}>
         <DialogHeader>
           <DialogTitle>Add New Menu Item</DialogTitle>
           <DialogDescription>
@@ -139,7 +146,7 @@ export function AddMenuItemForm({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              placeholder="e.g., Margherita Pizza"
+              placeholder="e.g. Margherita Pizza"
               required
             />
           </div>
@@ -151,7 +158,7 @@ export function AddMenuItemForm({
               onChange={(e) =>
                 setFormData({ ...formData, time_to_make: e.target.value })
               }
-              placeholder="e.g., 20 minutes"
+              placeholder="e.g. 20 minutes"
             />
           </div>
 
@@ -193,10 +200,10 @@ export function AddMenuItemForm({
                   setFormData({ ...formData, category: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className={`cursor-pointer ${rubik.className}`}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className={rubik.className}>
                   {categories.map((category) => (
                     <SelectItem key={category.value} value={category.value}>
                       {category.label}
@@ -232,7 +239,7 @@ export function AddMenuItemForm({
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="flex-1"
+              className="flex-1 cursor-pointer"
             >
               Cancel
             </Button>
@@ -244,7 +251,7 @@ export function AddMenuItemForm({
                 !formData.price ||
                 !formData.category
               }
-              className="flex-1"
+              className="flex-1 cursor-pointer"
             >
               {loading ? "Adding..." : "Add Item"}
             </Button>

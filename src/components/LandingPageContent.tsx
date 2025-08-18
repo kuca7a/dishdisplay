@@ -3,13 +3,13 @@
 import React from "react";
 import Image from "next/image";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Rubik } from "next/font/google";
+import { Notable } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import { CheckIcon } from "@heroicons/react/20/solid";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-const rubik = Rubik({
-  weight: ["300", "400", "500", "600"],
+const notable = Notable({
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -30,7 +30,7 @@ export default function LandingPageContent() {
   };
 
   return (
-    <div className={`min-h-screen ${rubik.className}`}>
+    <div className="min-h-screen">
       <SpeedInsights />
       <Navbar />
       {/* Hero Section */}
@@ -51,6 +51,26 @@ export default function LandingPageContent() {
               >
                 Get Started Free
               </button>
+            </div>
+            <div className="md:w-1/2 flex flex-col md:flex-row items-center justify-center gap-6">
+              <Image
+                src="/mockupPhone.png"
+                alt="Dish Display on phone"
+                width={600}
+                height={900}
+                className="w-[250px] md:w-[300px] h-auto"
+                priority
+                style={{ background: "transparent" }}
+              />
+              <Image
+                src="/mockupLaptop.png"
+                alt="Dish Display on laptop"
+                width={350}
+                height={224}
+                className="w-[300px] md:w-[350px] h-auto"
+                priority
+                style={{ background: "transparent" }}
+              />
             </div>
           </div>
         </div>
@@ -154,11 +174,6 @@ export default function LandingPageContent() {
               </div>
             </div>
           </div>
-        </div>
-        {/* Product mockups: phone and laptop, no tile background */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-16 bg-gray-50 py-8 rounded-xl">
-          <Image src="/mockupPhone.png" alt="Dish Display on phone" width={500} height={1000} className="md:w-[500px] w-[400px] h-auto" priority style={{ background: 'transparent' }} />
-          <Image src="/mockupLaptop.png" alt="Dish Display on laptop" width={500} height={320} className="md:w-[500px] w-[400px] h-auto" priority style={{ background: 'transparent' }} />
         </div>
       </section>
 
@@ -666,43 +681,45 @@ export default function LandingPageContent() {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-8 md:mb-0">
-              <h3 className="text-3xl font-['Notable'] mb-2">Dish Display</h3>
+              <h3 className={`${notable.className} text-3xl mb-2`}>Dish Display</h3>
               <p className="text-gray-400 font-medium text-lg">
                 Bringing menus to life
               </p>
             </div>
-            <div className="flex space-x-8">
-              <a
-                href="/about"
-                className="hover:text-gray-300 font-medium text-lg"
-              >
-                About
-              </a>
-              <a
-                href="/contact"
-                className="hover:text-gray-300 font-medium text-lg"
-              >
-                Contact
-              </a>
-              <a
-                href="/privacy"
-                className="hover:text-gray-300 font-medium text-lg"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="/terms"
-                className="hover:text-gray-300 font-medium text-lg"
-              >
-                T&Cs
-              </a>
-              <a
-                href="/licensing"
-                className="hover:text-gray-300 font-medium text-lg"
-              >
-                Licensing
-              </a>
-            </div>
+            <nav className="w-full max-w-sm md:w-auto">
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4 md:flex md:space-x-8 md:gap-0 justify-items-center md:justify-items-start">
+                <a
+                  href="/about"
+                  className="hover:text-gray-300 font-medium text-lg transition-colors duration-200"
+                >
+                  About
+                </a>
+                <a
+                  href="/contact"
+                  className="hover:text-gray-300 font-medium text-lg transition-colors duration-200"
+                >
+                  Contact
+                </a>
+                <a
+                  href="/privacy"
+                  className="hover:text-gray-300 font-medium text-lg transition-colors duration-200"
+                >
+                  Privacy
+                </a>
+                <a
+                  href="/licensing"
+                  className="hover:text-gray-300 font-medium text-lg transition-colors duration-200"
+                >
+                  Licensing
+                </a>
+                <a
+                  href="/terms"
+                  className="hover:text-gray-300 font-medium text-lg transition-colors duration-200"
+                >
+                  Terms
+                </a>
+              </div>
+            </nav>
           </div>
         </div>
       </footer>

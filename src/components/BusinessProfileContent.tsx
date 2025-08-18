@@ -74,9 +74,8 @@ export default function BusinessProfileContent() {
       const loadRestaurantData = async () => {
         try {
           setLoading(true);
-          const restaurantData = await cachedDataService.getRestaurantByOwnerEmail(
-            user.email!
-          );
+          const restaurantData =
+            await cachedDataService.getRestaurantByOwnerEmail(user.email!);
 
           if (restaurantData) {
             setRestaurant(restaurantData);
@@ -290,7 +289,7 @@ export default function BusinessProfileContent() {
                       name="business_type"
                       value={formData.business_type}
                       onChange={handleInputChange}
-                      placeholder="e.g., Fine Dining, Fast Casual, Cafe"
+                      placeholder="e.g. Fine Dining, Fast Casual, Cafe"
                     />
                   </div>
 

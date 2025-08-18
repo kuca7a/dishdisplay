@@ -45,9 +45,13 @@ const categories = [
   { value: "drink", label: "Drink" },
 ];
 
-export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormProps) {
+export function EditMenuItemForm({
+  item,
+  onSuccess,
+  trigger,
+}: EditMenuItemFormProps) {
   const defaultTrigger = (
-    <Button variant="outline" size="sm">
+    <Button variant="outline" size="sm" className="cursor-pointer">
       <Edit className="h-4 w-4" />
     </Button>
   );
@@ -84,7 +88,11 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
         name: formData.name.trim(),
         description: formData.description.trim() || undefined,
         price: price,
-        category: formData.category as "appetizer" | "main" | "dessert" | "drink",
+        category: formData.category as
+          | "appetizer"
+          | "main"
+          | "dessert"
+          | "drink",
         image_url: formData.image_url.trim() || undefined,
         is_available: formData.is_available,
         time_to_make: formData.time_to_make.trim() || undefined,
@@ -107,7 +115,8 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
         <DialogHeader>
           <DialogTitle>Edit Menu Item</DialogTitle>
           <DialogDescription>
-            Update the details of your menu item. All fields marked with * are required.
+            Update the details of your menu item. All fields marked with * are
+            required.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -116,8 +125,10 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
             <Input
               id="edit-item-name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g., Margherita Pizza"
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              placeholder="e.g. Margherita Pizza"
               required
             />
           </div>
@@ -126,8 +137,10 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
             <Input
               id="edit-item-time-to-make"
               value={formData.time_to_make}
-              onChange={(e) => setFormData({ ...formData, time_to_make: e.target.value })}
-              placeholder="e.g., 20 minutes"
+              onChange={(e) =>
+                setFormData({ ...formData, time_to_make: e.target.value })
+              }
+              placeholder="e.g. 20 minutes"
             />
           </div>
           <div>
@@ -135,7 +148,9 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
             <Textarea
               id="edit-item-description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Describe your dish..."
               rows={2}
             />
@@ -149,7 +164,9 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
                 step="0.01"
                 min="0"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: e.target.value })
+                }
                 placeholder="12.99"
                 required
               />
@@ -158,12 +175,21 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
               <Label htmlFor="edit-item-category">Category *</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value as "appetizer" | "main" | "dessert" | "drink" })}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    category: value as
+                      | "appetizer"
+                      | "main"
+                      | "dessert"
+                      | "drink",
+                  })
+                }
               >
-                <SelectTrigger>
+                <SelectTrigger className={`cursor-pointer ${rubik.className}`}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className={rubik.className}>
                   {categories.map((category) => (
                     <SelectItem key={category.value} value={category.value}>
                       {category.label}
@@ -175,7 +201,9 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
           </div>
           {/* Image Upload */}
           <ImageUpload
-            onImageUploaded={(url) => setFormData({ ...formData, image_url: url })}
+            onImageUploaded={(url) =>
+              setFormData({ ...formData, image_url: url })
+            }
             restaurantId={item.restaurant_id}
             currentImageUrl={formData.image_url}
           />
@@ -183,7 +211,9 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
             <Switch
               id="edit-item-available"
               checked={formData.is_available}
-              onCheckedChange={(checked) => setFormData({ ...formData, is_available: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, is_available: checked })
+              }
             />
             <Label htmlFor="edit-item-available">Available for order</Label>
           </div>
@@ -192,14 +222,19 @@ export function EditMenuItemForm({ item, onSuccess, trigger }: EditMenuItemFormP
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="flex-1"
+              className="flex-1 cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={loading || !formData.name.trim() || !formData.price || !formData.category}
-              className="flex-1"
+              disabled={
+                loading ||
+                !formData.name.trim() ||
+                !formData.price ||
+                !formData.category
+              }
+              className="flex-1 cursor-pointer"
             >
               {loading ? "Saving..." : "Save Changes"}
             </Button>
