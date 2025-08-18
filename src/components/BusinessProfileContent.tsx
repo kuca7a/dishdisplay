@@ -32,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Building2, Phone, Globe, Mail } from "lucide-react";
 import { restaurantService } from "@/lib/database";
+import { cachedDataService } from "@/lib/cache";
 import { Restaurant } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
@@ -73,7 +74,7 @@ export default function BusinessProfileContent() {
       const loadRestaurantData = async () => {
         try {
           setLoading(true);
-          const restaurantData = await restaurantService.getByOwnerEmail(
+          const restaurantData = await cachedDataService.getRestaurantByOwnerEmail(
             user.email!
           );
 
@@ -151,6 +152,9 @@ export default function BusinessProfileContent() {
       setError(null);
 
       await restaurantService.update(restaurant.id, formData);
+
+      // Invalidate cache for updated restaurant data
+      cachedDataService.invalidateRestaurantCache(restaurant.id, user?.email);
 
       setSuccessMessage("Business profile updated successfully!");
 
