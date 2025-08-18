@@ -1,11 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
+import { Rubik } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Trash2, AlertTriangle } from "lucide-react";
 
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+
+const rubik = Rubik({
+  weight: ["300", "400", "500", "600"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 interface DeleteConfirmationModalProps {
   itemName: string;
@@ -31,7 +38,7 @@ export function DeleteConfirmationModal({
     <Button
       variant="outline"
       size="sm"
-      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+      className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
     >
       <Trash2 className="h-4 w-4" />
     </Button>
@@ -42,7 +49,7 @@ export function DeleteConfirmationModal({
       <DialogTrigger asChild>
         {trigger || defaultTrigger}
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className={`max-w-md ${rubik.className}`}>
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
@@ -69,6 +76,7 @@ export function DeleteConfirmationModal({
             variant="outline" 
             onClick={() => setOpen(false)}
             disabled={loading}
+            className="cursor-pointer"
           >
             Cancel
           </Button>
@@ -76,7 +84,7 @@ export function DeleteConfirmationModal({
             variant="destructive"
             onClick={handleConfirm}
             disabled={loading}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-red-600 hover:bg-red-700 cursor-pointer"
           >
                         {loading ? (
               <div className="flex items-center">

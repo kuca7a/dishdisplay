@@ -96,7 +96,7 @@ function QuickRestaurantForm({
           id="restaurant-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="e.g., Mario's Italian Kitchen"
+          placeholder="e.g. Mario's Italian Kitchen"
           required
         />
       </div>
@@ -124,10 +124,11 @@ function QuickRestaurantForm({
 export default function MenuManageContent() {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
-  
+
   // Use cached data hook
-  const { restaurant, menuItems, loading, refetch, invalidateCache } = useRestaurantData();
-  
+  const { restaurant, menuItems, loading, refetch, invalidateCache } =
+    useRestaurantData();
+
   const [error, setError] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -143,7 +144,7 @@ export default function MenuManageContent() {
     try {
       setDeleteLoading(itemId);
       await menuItemService.toggleAvailability(itemId);
-      
+
       // Invalidate cache and refetch data
       invalidateCache();
       await refetch(true); // Force fresh data
@@ -159,7 +160,7 @@ export default function MenuManageContent() {
     try {
       setDeleteLoading(itemId);
       await menuItemService.delete(itemId);
-      
+
       // Invalidate cache and refetch data
       invalidateCache();
       await refetch(true); // Force fresh data
@@ -457,10 +458,12 @@ export default function MenuManageContent() {
                     value={selectedCategory}
                     onValueChange={setSelectedCategory}
                   >
-                    <SelectTrigger className="w-32">
+                    <SelectTrigger
+                      className={`w-32 cursor-pointer ${rubik.className}`}
+                    >
                       <SelectValue placeholder="All" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className={rubik.className}>
                       <SelectItem value="all">All</SelectItem>
                       {getCategories().map((category) => (
                         <SelectItem key={category} value={category}>
@@ -479,10 +482,12 @@ export default function MenuManageContent() {
                     Sort by:
                   </Label>
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-36">
+                    <SelectTrigger
+                      className={`w-36 cursor-pointer ${rubik.className}`}
+                    >
                       <SelectValue placeholder="Name" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className={rubik.className}>
                       <SelectItem value="name">Name</SelectItem>
                       <SelectItem value="category">Category</SelectItem>
                       <SelectItem value="price">Price</SelectItem>

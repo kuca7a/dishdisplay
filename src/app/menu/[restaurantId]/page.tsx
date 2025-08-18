@@ -4,25 +4,20 @@ import React, { useEffect, useState } from "react";
 import Carousel from "@/components/Carousel";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import { Inter, Playfair_Display, Rubik } from "next/font/google";
+import { Playfair_Display, Notable } from "next/font/google";
 import { Badge } from "@/components/ui/badge";
 import { Utensils, Search } from "lucide-react";
 import { cachedDataService } from "@/lib/cache";
 import { Restaurant, MenuItem } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
-
 const playfair = Playfair_Display({
   subsets: ["latin"],
   display: "swap",
 });
 
-const rubik = Rubik({
-  weight: ["300", "400", "500", "600"],
+const notable = Notable({
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -92,9 +87,7 @@ export default function CustomerMenuPage() {
 
   if (loading) {
     return (
-      <div
-        className={`${inter.className} min-h-screen bg-gray-50 flex items-center justify-center`}
-      >
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <ThreeDotsLoader size="lg" color="#5F7161" />
           <p className="text-lg text-gray-600 mt-4">Loading menu...</p>
@@ -105,9 +98,7 @@ export default function CustomerMenuPage() {
 
   if (error || !restaurant) {
     return (
-      <div
-        className={`${inter.className} min-h-screen bg-gray-50 flex items-center justify-center p-4`}
-      >
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white shadow-lg rounded-lg">
           <div className="p-8 text-center">
             <div className="text-6xl mb-4">🍽️</div>
@@ -127,7 +118,7 @@ export default function CustomerMenuPage() {
   }
 
   return (
-    <div className={`${inter.className} ${rubik.className} min-h-screen bg-white`}>
+    <div className="min-h-screen bg-white">
       {/* Header with Restaurant Name */}
       <div className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-20">
         <div className="px-4 py-4">
@@ -229,7 +220,7 @@ export default function CustomerMenuPage() {
           <div className="bg-white">
             {filteredItems.map((item, index) => (
               <div key={item.id}>
-                <div className={`flex px-4 py-4 hover:bg-gray-50 transition-colors duration-200 ${rubik.className}`}> 
+                <div className="flex px-4 py-4 hover:bg-gray-50 transition-colors duration-200"> 
                   {/* Item Image */}
                   <div className="w-32 h-32 bg-gray-100 flex items-center justify-center relative overflow-hidden flex-shrink-0">
                     {item.image_url ? (
@@ -250,9 +241,7 @@ export default function CustomerMenuPage() {
                   <div className="flex-1 ml-4 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <h3
-                          className={`${rubik.className} text-lg font-semibold text-gray-900 truncate`}
-                        >
+                        <h3 className="text-lg font-semibold text-gray-900 truncate">
                           {item.name}
                         </h3>
 
@@ -287,9 +276,7 @@ export default function CustomerMenuPage() {
                       </div>
 
                       <div className="flex-shrink-0">
-                        <div
-                          className={`${rubik.className} text-lg font-bold text-[#5F7161]`}
-                        >
+                        <div className="text-lg font-bold text-[#5F7161]">
                           £{Number(item.price).toFixed(2)}
                         </div>
                       </div>
@@ -313,7 +300,7 @@ export default function CustomerMenuPage() {
       <footer className="bg-white text-black py-16">
         <div className="container mx-auto px-6">
           <div className="flex flex-col items-center justify-center">
-            <h3 className="text-3xl font-['Notable'] mb-2">Dish Display</h3>
+            <h3 className={`${notable.className} text-3xl mb-2`}>Dish Display</h3>
             <p className="text-gray-700 font-medium text-lg">Bringing menus to life</p>
           </div>
         </div>

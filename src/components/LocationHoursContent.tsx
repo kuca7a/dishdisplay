@@ -437,7 +437,7 @@ export default function LocationHoursContent() {
                             onChange={(e) =>
                               handleHoursChange(day.key, e.target.value)
                             }
-                            placeholder="e.g., 9:00 AM - 9:00 PM or Closed"
+                            placeholder="e.g. 9:00 AM - 9:00 PM or Closed"
                             className="w-full"
                           />
                         </div>
@@ -456,7 +456,11 @@ export default function LocationHoursContent() {
                 >
                   {saving ? (
                     <>
-                      <ThreeDotsLoader size="sm" color="white" className="mr-2" />
+                      <ThreeDotsLoader
+                        size="sm"
+                        color="white"
+                        className="mr-2"
+                      />
                       Saving Changes...
                     </>
                   ) : (

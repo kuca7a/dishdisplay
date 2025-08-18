@@ -59,7 +59,7 @@ interface TaskStatus {
 export default function ProfileContent() {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
-  
+
   // Use cached data hook instead of manual state management
   const { restaurant, menuItems, loading } = useRestaurantData();
 
@@ -104,6 +104,9 @@ export default function ProfileContent() {
     const hasBranding = !!(restaurant.logo_url || restaurant.primary_color);
     const hasMenuItems = menuItems.length > 0;
     const hasMenuImages = menuItems.some((item) => item.image_url);
+    const menuItemsWithoutImages = menuItems.filter((item) => !item.image_url);
+    const allMenuItemsHaveImages =
+      hasMenuItems && menuItems.every((item) => item.image_url);
 
     return [
       {
@@ -156,10 +159,12 @@ export default function ProfileContent() {
         id: "menu-images",
         title: "Add Menu Photos",
         description: hasMenuImages
-          ? "Menu photos added"
+          ? allMenuItemsHaveImages
+            ? "All menu items have photos"
+            : `${menuItemsWithoutImages.length} items need photos`
           : "Upload photos for your menu items",
-        completed: hasMenuImages,
-        href: "/profile/menu",
+        completed: allMenuItemsHaveImages,
+        href: "/profile/menu/manage",
         icon: PhotoIcon,
         priority: "medium",
       },
@@ -187,22 +192,34 @@ export default function ProfileContent() {
 
     return [
       {
-        title: "Explore Menu Ideas",
-        description: "Browse sample menus for inspiration",
-        href: "/profile/menu",
+        title: "Review Your Menu",
+        description: "Preview how your menu looks to customers",
+        href: "/profile/preview",
         icon: DocumentTextIcon,
       },
       {
-        title: "View Analytics",
-        description: "Check your restaurant insights",
+        title: "Check New Insights",
+        description: "View analytics and performance data",
         href: "/profile/insights",
         icon: ChartBarIcon,
       },
       {
-        title: "Preview Your Menu",
-        description: "See how customers will view your menu",
-        href: "/profile/preview",
+        title: "Update Menu Items",
+        description: "Add new dishes or modify existing ones",
+        href: "/profile/menu",
         icon: DocumentTextIcon,
+      },
+      {
+        title: "Download QR Code",
+        description: "Get your QR code for table displays",
+        href: "/profile/qr-code",
+        icon: QrCodeIcon,
+      },
+      {
+        title: "Manage Subscription",
+        description: "View billing and upgrade options",
+        href: "/profile/subscription",
+        icon: BuildingOfficeIcon,
       },
     ];
   }, [incompleteTasks.length]);
@@ -343,6 +360,71 @@ export default function ProfileContent() {
                       </div>
                     </div>
                   ))}
+
+                  {/* Special section for menu items without images */}
+                  {restaurant &&
+                    menuItems.length > 0 &&
+                    (() => {
+                      const menuItemsWithoutImages = menuItems.filter(
+                        (item) => !item.image_url
+                      );
+                      const allMenuItemsHaveImages = menuItems.every(
+                        (item) => item.image_url
+                      );
+
+                      if (
+                        !allMenuItemsHaveImages &&
+                        menuItemsWithoutImages.length > 0
+                      ) {
+                        return (
+                          <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <div className="flex items-start gap-3">
+                              <PhotoIcon className="h-5 w-5 text-amber-600 mt-0.5" />
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-amber-800 mb-2">
+                                  Add Photos to Complete Your Menu
+                                </h4>
+                                <p className="text-sm text-amber-700 mb-3">
+                                  {menuItemsWithoutImages.length} menu{" "}
+                                  {menuItemsWithoutImages.length === 1
+                                    ? "item needs a photo"
+                                    : "items need photos"}
+                                  :
+                                </p>
+                                <div className="space-y-1 mb-3">
+                                  {menuItemsWithoutImages
+                                    .slice(0, 3)
+                                    .map((item) => (
+                                      <div
+                                        key={item.id}
+                                        className="text-sm text-amber-700"
+                                      >
+                                        • {item.name}
+                                      </div>
+                                    ))}
+                                  {menuItemsWithoutImages.length > 3 && (
+                                    <div className="text-sm text-amber-700">
+                                      • ... and{" "}
+                                      {menuItemsWithoutImages.length - 3} more
+                                    </div>
+                                  )}
+                                </div>
+                                <Link href="/profile/menu/manage">
+                                  <Button
+                                    size="sm"
+                                    className="bg-amber-600 hover:bg-amber-700 text-white cursor-pointer"
+                                  >
+                                    Add Photos Now
+                                    <ArrowRightIcon className="h-4 w-4 ml-1" />
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                 </CardContent>
               </Card>
             )}
@@ -351,12 +433,13 @@ export default function ProfileContent() {
             {suggestions.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>What's Next?</CardTitle>
+                  <CardTitle>🎉 Great Job! What's Next?</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-gray-600 mb-4">
-                    Great job! Your profile is complete. Here are some things
-                    you can do next:
+                    Excellent work! Your restaurant profile is complete and
+                    ready for customers. Here are some ways to continue
+                    improving your presence:
                   </p>
                   {suggestions.map((suggestion, index) => (
                     <Link key={index} href={suggestion.href}>
@@ -376,6 +459,13 @@ export default function ProfileContent() {
                       </div>
                     </Link>
                   ))}
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      💡 <strong>Pro tip:</strong> Keep your menu updated
+                      regularly and consider adding seasonal items to keep
+                      customers engaged!
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -427,10 +517,10 @@ export default function ProfileContent() {
               </div>
             )}
           </div>
-          
+
           {/* Cache Debug Component - only visible in development */}
           <div className="mt-6">
-            <CacheDebug showDetailed={process.env.NODE_ENV === 'development'} />
+            <CacheDebug showDetailed={process.env.NODE_ENV === "development"} />
           </div>
         </div>
       </SidebarInset>
