@@ -1,10 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
+import ReviewsSection from "@/components/ReviewsSection";
+import { restaurantService } from "@/lib/database";
+import { Restaurant } from "@/types/database";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,14 +41,36 @@ const rubik = Rubik({
 });
 
 export default function InsightsContent() {
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [loadingRestaurant, setLoadingRestaurant] = useState(true);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.replace("/");
     }
   }, [isLoading, isAuthenticated, router]);
+
+  useEffect(() => {
+    const loadRestaurantData = async () => {
+      try {
+        setLoadingRestaurant(true);
+        if (user?.email) {
+          const restaurantData = await restaurantService.getByOwnerEmail(user.email);
+          setRestaurant(restaurantData);
+        }
+      } catch (err) {
+        console.error("Error loading restaurant data:", err);
+      } finally {
+        setLoadingRestaurant(false);
+      }
+    };
+
+    if (isAuthenticated && user?.email) {
+      loadRestaurantData();
+    }
+  }, [isAuthenticated, user]);
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -93,6 +117,11 @@ export default function InsightsContent() {
                   </p>
                 </div>
               </div>
+
+              {/* Customer Reviews Section */}
+              {restaurant && !loadingRestaurant && (
+                <ReviewsSection restaurantId={restaurant.id} />
+              )}
 
               {/* Key Metrics */}
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

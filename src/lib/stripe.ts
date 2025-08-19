@@ -18,10 +18,10 @@ export const STRIPE_CONFIG = {
   priceIds: {
     proMonthly:
       process.env.STRIPE_PRICE_ID_PRO_MONTHLY ||
-      "price_1RuwrXAluVLbiFnm14DNsfhz",
+      "price_1Rxm3YAluVLbiFnm7JdALoqk",
     proYearly:
       process.env.STRIPE_PRICE_ID_PRO_YEARLY ||
-      "price_1RuwrkAluVLbiFnmfYLbQVVC",
+      "price_1Rxm3ZAluVLbiFnmnukwPAOa",
   },
   webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
 };

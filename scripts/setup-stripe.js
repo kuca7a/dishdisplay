@@ -44,7 +44,7 @@ async function setupStripeProducts() {
     const monthlyPrice = await stripe.prices.create({
       product: product.id,
       currency: 'gbp',
-      unit_amount: 1999, // £19.99 in pence
+      unit_amount: 2900, // £29.00 in pence
       recurring: {
         interval: 'month',
         trial_period_days: 14
@@ -63,7 +63,7 @@ async function setupStripeProducts() {
     const yearlyPrice = await stripe.prices.create({
       product: product.id,
       currency: 'gbp',
-      unit_amount: 19999, // £199.99 in pence (10 months price)
+      unit_amount: 29900, // £299.00 in pence
       recurring: {
         interval: 'year',
         trial_period_days: 14

@@ -25,8 +25,8 @@ const includedFeatures = [
 export default function LandingPageContent() {
   const { loginWithRedirect } = useAuth0();
 
-  const handleGetStarted = () => {
-    loginWithRedirect({ screen_hint: "signup" });
+  const handleRestaurantOwnerSignup = () => {
+    loginWithRedirect({ screen_hint: "signup", appState: { returnTo: '/profile' } });
   };
 
   return (
@@ -46,7 +46,7 @@ export default function LandingPageContent() {
                 photos of every dish on your menu.
               </p>
               <button
-                onClick={handleGetStarted}
+                onClick={handleRestaurantOwnerSignup}
                 className="bg-[#5F7161] hover:bg-[#4C5B4F] text-white px-8 py-4 rounded-lg font-medium hover:cursor-pointer transition-colors text-lg w-full"
               >
                 Get Started Free
@@ -222,16 +222,16 @@ export default function LandingPageContent() {
             <div className="p-2 lg:mt-0 lg:w-full lg:max-w-md lg:shrink-0">
               <div className="rounded-2xl bg-white py-10 text-center ring-2 ring-[#5F7161] shadow-2xl lg:flex lg:flex-col lg:justify-center lg:py-16">
                 <div className="mx-auto max-w-xs px-8">
-                  <p className="text-base text-gray-600">
-                    No contracts. No setup fees.
-                  </p>
                   <p className="mt-6 flex items-baseline justify-center gap-x-2">
                     <span className="text-5xl tracking-tight text-gray-900">
-                      £19.99
+                      £29
                     </span>
                     <span className="text-sm  tracking-wide text-gray-600">
                       / month
                     </span>
+                  </p>
+                  <p className="mt-2 text-center text-sm text-gray-600">
+                    or £299/year (Save 14%)
                   </p>
                   <a
                     href="/profile/subscription"
@@ -383,7 +383,7 @@ export default function LandingPageContent() {
               to access detailed insights!
             </p>
             <button
-              onClick={handleGetStarted}
+              onClick={handleRestaurantOwnerSignup}
               className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-medium hover:bg-[#4C5B4F] transition-colors text-lg"
             >
               Get Early Access to Analytics
@@ -668,7 +668,7 @@ export default function LandingPageContent() {
             their dishes and delight their customers.
           </p>
           <button
-            onClick={handleGetStarted}
+            onClick={handleRestaurantOwnerSignup}
             className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-medium hover:cursor-pointer hover:bg-[#4C5B4F] transition-colors text-lg"
           >
             Start Your Free Trial
@@ -681,7 +681,9 @@ export default function LandingPageContent() {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-8 md:mb-0">
-              <h3 className={`${notable.className} text-3xl mb-2`}>Dish Display</h3>
+              <h3 className={`${notable.className} text-3xl mb-2`}>
+                Dish Display
+              </h3>
               <p className="text-gray-400 font-medium text-lg">
                 Bringing menus to life
               </p>

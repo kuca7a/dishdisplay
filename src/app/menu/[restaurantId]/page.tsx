@@ -10,6 +10,7 @@ import { Utensils, Search } from "lucide-react";
 import { cachedDataService } from "@/lib/cache";
 import { Restaurant, MenuItem } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+import DinerMenuInteractions from "@/components/DinerMenuInteractions";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -305,6 +306,9 @@ export default function CustomerMenuPage() {
           </div>
         </div>
       </footer>
+
+      {/* Diner Interactions - floating overlay for logged in users */}
+      {restaurant && <DinerMenuInteractions restaurant={restaurant} />}
     </div>
   );
 }

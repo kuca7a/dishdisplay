@@ -404,7 +404,7 @@ export default function BillingContent() {
                             <span className="ml-2">Upgrading...</span>
                           </div>
                         ) : (
-                          "Upgrade to Pro Monthly (£19.99/month)"
+                          "Upgrade to Pro Monthly (£29/month)"
                         )}
                       </Button>
                       <Button
@@ -422,7 +422,7 @@ export default function BillingContent() {
                             <span className="ml-2">Upgrading...</span>
                           </div>
                         ) : (
-                          "Pro Yearly (£199.99/year - Save 17%)"
+                          "Pro Yearly (£299/year - Save 14%)"
                         )}
                       </Button>
                     </div>
@@ -492,9 +492,9 @@ export default function BillingContent() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold mb-4">
-                      £19.99/month
+                      £29/month
                       <span className="text-sm font-normal text-gray-500 ml-2">
-                        or £199.99/year
+                        or £299/year
                       </span>
                     </div>
                     <ul className="space-y-2 text-sm mb-4">
