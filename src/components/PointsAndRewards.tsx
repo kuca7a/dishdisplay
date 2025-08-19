@@ -15,12 +15,10 @@ import {
 
 interface PointsAndRewardsProps {
   totalPoints: number;
-  dinerEmail: string;
 }
 
 export default function PointsAndRewards({ 
-  totalPoints,
-  dinerEmail
+  totalPoints
 }: PointsAndRewardsProps) {
   
   return (

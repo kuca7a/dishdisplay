@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 
+interface DinerProfile {
+  id: string;
+  email: string;
+  name: string | null;
+  created_at: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -34,7 +41,7 @@ export async function GET(request: NextRequest) {
           city
         )
       `)
-      .eq("diner_id", (profile as any).id)
+      .eq("diner_id", (profile as DinerProfile).id)
       .order("visit_date", { ascending: false });
 
     if (error) {
@@ -92,7 +99,7 @@ export async function POST(request: NextRequest) {
     const { data: visit, error } = await supabaseServer
       .from("diner_visits")
       .insert({
-        diner_id: (profile as any).id,
+        diner_id: (profile as DinerProfile).id,
         restaurant_id,
         visit_date: visit_date || new Date().toISOString(),
         notes

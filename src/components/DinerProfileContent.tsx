@@ -54,11 +54,7 @@ const rubik = Rubik({
   display: "swap",
 });
 
-interface DinerProfileContentProps {
-  initialRestaurantId?: string | null;
-}
-
-export default function DinerProfileContent({ initialRestaurantId }: DinerProfileContentProps) {
+export default function DinerProfileContent() {
   const { isAuthenticated, isLoading, user } = useAuth0();
   const router = useRouter();
 
@@ -484,7 +480,6 @@ export default function DinerProfileContent({ initialRestaurantId }: DinerProfil
               <TabsContent value="rewards">
                 <PointsAndRewards 
                   totalPoints={profile?.total_points || 0}
-                  dinerEmail={user?.email || ""}
                 />
               </TabsContent>
 

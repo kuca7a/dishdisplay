@@ -28,6 +28,10 @@ interface ReviewFormData {
 }
 
 export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormProps) {
+  // visitId is passed for potential future use to associate reviews with specific visits
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _visitId = visitId;
+  
   const [formData, setFormData] = useState<ReviewFormData>({
     rating: 0,
     content: "",
