@@ -385,7 +385,7 @@ export default function SubscriptionContent() {
                       <div className="space-y-3">
                         <Button
                           onClick={() =>
-                            handleUpgrade("price_1RuwrXAluVLbiFnm14DNsfhz")
+                            handleUpgrade("price_1Rxm3YAluVLbiFnm7JdALoqk")
                           }
                           disabled={actionLoading}
                           className="w-full bg-[#5F7161] hover:bg-[#4C5B4F] cursor-pointer"
@@ -409,6 +409,14 @@ export default function SubscriptionContent() {
                         <p className="text-xs text-gray-500 text-center">
                           14-day free trial • Cancel anytime
                         </p>
+                        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                          <p className="text-sm text-gray-700 text-center">
+                            <strong>Monthly:</strong> £29/month
+                          </p>
+                          <p className="text-sm text-gray-700 text-center">
+                            <strong>Annual:</strong> £299/year <span className="text-green-600 font-medium">(Save 14%)</span>
+                          </p>
+                        </div>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -434,7 +442,7 @@ export default function SubscriptionContent() {
                         {/* Test Upgrade to Yearly */}
                         <Button
                           onClick={() =>
-                            handleUpgrade("price_1RuwrkAluVLbiFnmfYLbQVVC")
+                            handleUpgrade("price_1Rxm3ZAluVLbiFnmnukwPAOa")
                           }
                           disabled={actionLoading}
                           variant="secondary"

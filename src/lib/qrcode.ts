@@ -1,4 +1,4 @@
-import QRCode from 'qrcode';
+import QRCode from "qrcode";
 
 export interface QRCodeOptions {
   size?: number;
@@ -7,16 +7,17 @@ export interface QRCodeOptions {
     dark?: string;
     light?: string;
   };
-  errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
+  errorCorrectionLevel?: "L" | "M" | "Q" | "H";
 }
 
 export class QRCodeGenerator {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = typeof window !== 'undefined' 
-      ? window.location.origin 
-      : process.env.NEXT_PUBLIC_BASE_URL || 'https://dishdisplay.com';
+    this.baseUrl =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : process.env.NEXT_PUBLIC_BASE_URL || "https://dishdisplay.com";
   }
 
   /**
@@ -30,26 +31,26 @@ export class QRCodeGenerator {
    * Generate QR code as data URL (base64 image)
    */
   async generateDataURL(
-    restaurantId: string, 
+    restaurantId: string,
     options: QRCodeOptions = {}
   ): Promise<string> {
     const url = this.getMenuUrl(restaurantId);
-    
+
     const qrOptions = {
       width: options.size || 256,
       margin: options.margin || 2,
       color: {
-        dark: options.color?.dark || '#000000',
-        light: options.color?.light || '#FFFFFF',
+        dark: options.color?.dark || "#000000",
+        light: options.color?.light || "#FFFFFF",
       },
-      errorCorrectionLevel: options.errorCorrectionLevel || 'M' as const,
+      errorCorrectionLevel: options.errorCorrectionLevel || ("M" as const),
     };
 
     try {
       return await QRCode.toDataURL(url, qrOptions);
     } catch (error) {
-      console.error('Error generating QR code:', error);
-      throw new Error('Failed to generate QR code');
+      console.error("Error generating QR code:", error);
+      throw new Error("Failed to generate QR code");
     }
   }
 
@@ -57,29 +58,29 @@ export class QRCodeGenerator {
    * Generate QR code as SVG string
    */
   async generateSVG(
-    restaurantId: string, 
+    restaurantId: string,
     options: QRCodeOptions = {}
   ): Promise<string> {
     const url = this.getMenuUrl(restaurantId);
-    
+
     const qrOptions = {
       width: options.size || 256,
       margin: options.margin || 2,
       color: {
-        dark: options.color?.dark || '#000000',
-        light: options.color?.light || '#FFFFFF',
+        dark: options.color?.dark || "#000000",
+        light: options.color?.light || "#FFFFFF",
       },
-      errorCorrectionLevel: options.errorCorrectionLevel || 'M' as const,
+      errorCorrectionLevel: options.errorCorrectionLevel || ("M" as const),
     };
 
     try {
-      return await QRCode.toString(url, { 
-        type: 'svg',
-        ...qrOptions 
+      return await QRCode.toString(url, {
+        type: "svg",
+        ...qrOptions,
       });
     } catch (error) {
-      console.error('Error generating QR code SVG:', error);
-      throw new Error('Failed to generate QR code SVG');
+      console.error("Error generating QR code SVG:", error);
+      throw new Error("Failed to generate QR code SVG");
     }
   }
 
@@ -87,24 +88,24 @@ export class QRCodeGenerator {
    * Download QR code as PNG file
    */
   async downloadPNG(
-    restaurantId: string, 
+    restaurantId: string,
     filename?: string,
     options: QRCodeOptions = {}
   ): Promise<void> {
     try {
       const dataUrl = await this.generateDataURL(restaurantId, options);
-      
+
       // Create download link
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.download = filename || `menu-qr-${restaurantId}.png`;
       link.href = dataUrl;
-      
+
       // Trigger download
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error downloading QR code:', error);
+      console.error("Error downloading QR code:", error);
       throw error;
     }
   }
@@ -113,30 +114,30 @@ export class QRCodeGenerator {
    * Download QR code as SVG file
    */
   async downloadSVG(
-    restaurantId: string, 
+    restaurantId: string,
     filename?: string,
     options: QRCodeOptions = {}
   ): Promise<void> {
     try {
       const svg = await this.generateSVG(restaurantId, options);
-      
+
       // Create blob and download link
-      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const blob = new Blob([svg], { type: "image/svg+xml" });
       const url = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
+
+      const link = document.createElement("a");
       link.download = filename || `menu-qr-${restaurantId}.svg`;
       link.href = url;
-      
+
       // Trigger download
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       // Cleanup
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error downloading QR code SVG:', error);
+      console.error("Error downloading QR code SVG:", error);
       throw error;
     }
   }
