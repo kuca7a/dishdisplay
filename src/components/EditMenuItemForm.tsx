@@ -65,6 +65,11 @@ export function EditMenuItemForm({
     image_url: item.image_url || "",
     is_available: item.is_available,
     time_to_make: item.time_to_make || "",
+    // New required nutritional fields with fallback values
+    detailed_description: item.detailed_description || "",
+    calories: item.calories?.toString() || "",
+    allergens: item.allergens || [],
+    ingredients: item.ingredients || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,9 +80,31 @@ export function EditMenuItemForm({
       return;
     }
 
+    // Validate new required fields
+    if (!formData.detailed_description.trim()) {
+      alert("Please provide a detailed description");
+      return;
+    }
+
+    if (!formData.calories || parseInt(formData.calories) <= 0) {
+      alert("Please enter a valid calorie count");
+      return;
+    }
+
+    if (!formData.ingredients.trim()) {
+      alert("Please list the ingredients");
+      return;
+    }
+
     const price = parseFloat(formData.price);
     if (isNaN(price) || price <= 0) {
       alert("Please enter a valid price");
+      return;
+    }
+
+    const calories = parseInt(formData.calories);
+    if (isNaN(calories) || calories <= 0) {
+      alert("Please enter a valid calorie count");
       return;
     }
 
@@ -96,6 +123,11 @@ export function EditMenuItemForm({
         image_url: formData.image_url.trim() || undefined,
         is_available: formData.is_available,
         time_to_make: formData.time_to_make.trim() || undefined,
+        // New required nutritional fields
+        detailed_description: formData.detailed_description.trim(),
+        calories: calories,
+        allergens: formData.allergens,
+        ingredients: formData.ingredients.trim(),
       };
 
       const updatedItem = await menuItemService.update(item.id, updateData);
@@ -207,6 +239,67 @@ export function EditMenuItemForm({
             restaurantId={item.restaurant_id}
             currentImageUrl={formData.image_url}
           />
+
+          {/* New Required Nutritional Information Fields */}
+          <div>
+            <Label htmlFor="edit-detailed-description">Detailed Description *</Label>
+            <Textarea
+              id="edit-detailed-description"
+              value={formData.detailed_description}
+              onChange={(e) =>
+                setFormData({ ...formData, detailed_description: e.target.value })
+              }
+              placeholder="Provide a detailed description of the dish, its preparation, and what makes it special..."
+              rows={3}
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="edit-calories">Calories *</Label>
+            <Input
+              id="edit-calories"
+              type="number"
+              min="1"
+              value={formData.calories}
+              onChange={(e) =>
+                setFormData({ ...formData, calories: e.target.value })
+              }
+              placeholder="e.g. 350"
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="edit-ingredients">Ingredients *</Label>
+            <Textarea
+              id="edit-ingredients"
+              value={formData.ingredients}
+              onChange={(e) =>
+                setFormData({ ...formData, ingredients: e.target.value })
+              }
+              placeholder="List all ingredients used in this dish..."
+              rows={3}
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="edit-allergens">Allergens (comma-separated)</Label>
+            <Input
+              id="edit-allergens"
+              value={formData.allergens.join(", ")}
+              onChange={(e) => {
+                const allergenList = e.target.value
+                  .split(",")
+                  .map(item => item.trim())
+                  .filter(item => item.length > 0);
+                setFormData({ ...formData, allergens: allergenList });
+              }}
+              placeholder="e.g. Gluten, Dairy, Nuts, Eggs"
+            />
+          </div>
+
           <div className="flex items-center space-x-2">
             <Switch
               id="edit-item-available"
@@ -232,7 +325,10 @@ export function EditMenuItemForm({
                 loading ||
                 !formData.name.trim() ||
                 !formData.price ||
-                !formData.category
+                !formData.category ||
+                !formData.detailed_description.trim() ||
+                !formData.calories ||
+                !formData.ingredients.trim()
               }
               className="flex-1 cursor-pointer"
             >
