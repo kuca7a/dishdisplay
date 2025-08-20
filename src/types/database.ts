@@ -67,6 +67,11 @@ export interface MenuItem {
   image_url?: string;
   is_available: boolean;
   time_to_make?: string;
+  // New required nutritional fields
+  detailed_description: string; // Required detailed description
+  calories: number; // Required calorie count
+  allergens: string[]; // Required allergens list as JSON array
+  ingredients: string; // Required ingredients text
   created_at: string;
   updated_at: string;
 }
@@ -159,6 +164,11 @@ export interface CreateMenuItemData {
   image_url?: string;
   is_available?: boolean;
   time_to_make?: string;
+  // New required nutritional fields
+  detailed_description: string;
+  calories: number;
+  allergens: string[];
+  ingredients: string;
 }
 
 export interface UpdateMenuItemData {
@@ -169,6 +179,11 @@ export interface UpdateMenuItemData {
   image_url?: string;
   is_available?: boolean;
   time_to_make?: string;
+  // New required nutritional fields
+  detailed_description?: string;
+  calories?: number;
+  allergens?: string[];
+  ingredients?: string;
 }
 
 // Stripe & Payment types

@@ -39,11 +39,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Eye, EyeOff, Utensils, Filter } from "lucide-react";
+import { Plus, Eye, EyeOff, Utensils, Filter, Edit } from "lucide-react";
 import { menuItemService, restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
 import { AddMenuItemForm } from "@/components/AddMenuItemForm";
-import { EditMenuItemForm } from "@/components/EditMenuItemForm";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import { DeleteConfirmationModal } from "@/components/DeleteConfirmationModal";
 import { EditRestaurantForm } from "@/components/EditRestaurantForm";
@@ -174,12 +173,6 @@ export default function MenuManageContent() {
 
   const handleAddMenuItem = async () => {
     // Invalidate cache and refetch data to include new item
-    invalidateCache();
-    await refetch(true); // Force fresh data
-  };
-
-  const handleUpdateMenuItem = async () => {
-    // Invalidate cache and refetch data to include updates
     invalidateCache();
     await refetch(true); // Force fresh data
   };
@@ -637,10 +630,15 @@ export default function MenuManageContent() {
                             )}
                             {item.is_available ? "Hide" : "Show"}
                           </Button>
-                          <EditMenuItemForm
-                            item={item}
-                            onSuccess={handleUpdateMenuItem}
-                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/profile/menu/${restaurant.id}/edit/${item.id}`)}
+                            className="cursor-pointer"
+                          >
+                            <Edit className="h-3 w-3 mr-1" />
+                            Edit
+                          </Button>
                           <DeleteConfirmationModal
                             itemName={item.name}
                             onConfirm={() => handleDeleteItem(item.id)}

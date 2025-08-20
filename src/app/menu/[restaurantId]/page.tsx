@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Carousel from "@/components/Carousel";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Playfair_Display, Notable } from "next/font/google";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,7 @@ const notable = Notable({
 
 export default function CustomerMenuPage() {
   const params = useParams();
+  const router = useRouter();
   const restaurantId = params.restaurantId as string;
 
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
@@ -34,6 +35,10 @@ export default function CustomerMenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   // Removed previous slideshow state
+
+  const handleItemClick = (item: MenuItem) => {
+    router.push(`/menu/${restaurantId}/item/${item.id}`);
+  };
 
   useEffect(() => {
     const loadMenuData = async () => {
@@ -221,7 +226,10 @@ export default function CustomerMenuPage() {
           <div className="bg-white">
             {filteredItems.map((item, index) => (
               <div key={item.id}>
-                <div className="flex px-4 py-4 hover:bg-gray-50 transition-colors duration-200"> 
+                <div 
+                  className="flex px-4 py-4 hover:bg-gray-50 transition-colors duration-200 cursor-pointer" 
+                  onClick={() => handleItemClick(item)}
+                > 
                   {/* Item Image */}
                   <div className="w-32 h-32 bg-gray-100 flex items-center justify-center relative overflow-hidden flex-shrink-0">
                     {item.image_url ? (

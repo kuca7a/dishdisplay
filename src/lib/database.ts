@@ -149,6 +149,28 @@ export const menuItemService = {
     return data || [];
   },
 
+  // Get single menu item by ID
+  async getById(id: string): Promise<MenuItem | null> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error("Database not available");
+    }
+
+    const { data, error } = await supabase
+      .from("menu_items")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null; // No rows returned
+      }
+      throw error;
+    }
+    return data;
+  },
+
   // Get menu items by category
   async getByCategory(
     restaurantId: string,
