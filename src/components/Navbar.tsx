@@ -37,28 +37,28 @@ const Navbar = () => {
                 About
               </Link>
               <Link
-                href="/services"
+                href="/contact"
                 className="text-black font-medium hover:text-gray-700 transition-colors"
               >
-                Services
+                Contact
               </Link>
               <Link
-                href="/team"
+                href="/privacy"
                 className="text-black font-medium hover:text-gray-700 transition-colors"
               >
-                Our Team
+                Privacy
               </Link>
               <Link
-                href="/team"
+                href="/licensing"
                 className="text-black font-medium hover:text-gray-700 transition-colors"
               >
-                Pricing
+                Licensing
               </Link>
               <Link
-                href="/team"
+                href="/terms"
                 className="text-black font-medium hover:text-gray-700 transition-colors"
               >
-                Demo
+                Terms
               </Link>
             </div>
           </div>
@@ -140,18 +140,32 @@ const Navbar = () => {
               About
             </Link>
             <Link
-              href="/services"
+              href="/contact"
               className="text-black font-medium hover:text-gray-700 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              Services
+              Contact
             </Link>
             <Link
-              href="/team"
+              href="/privacy"
               className="text-black font-medium hover:text-gray-700 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              Our Team
+              Privacy
+            </Link>
+            <Link
+              href="/licensing"
+              className="text-black font-medium hover:text-gray-700 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Licensing
+            </Link>
+            <Link
+              href="/terms"
+              className="text-black font-medium hover:text-gray-700 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Terms
             </Link>
             {!isAuthenticated ? (
               <button
