@@ -4,12 +4,16 @@
 DROP POLICY IF EXISTS "Diners can view own profile" ON diner_profiles;
 DROP POLICY IF EXISTS "Diners can update own profile" ON diner_profiles;
 DROP POLICY IF EXISTS "Diners can insert own profile" ON diner_profiles;
+DROP POLICY IF EXISTS "Allow anonymous profile creation" ON diner_profiles;
+DROP POLICY IF EXISTS "Allow service role full access" ON diner_profiles;
 DROP POLICY IF EXISTS "Diners can view own visits" ON diner_visits;
 DROP POLICY IF EXISTS "Diners can insert own visits" ON diner_visits;
 DROP POLICY IF EXISTS "Diners can update own visits" ON diner_visits;
+DROP POLICY IF EXISTS "Allow service role visits access" ON diner_visits;
 DROP POLICY IF EXISTS "Anyone can view reviews" ON diner_reviews;
 DROP POLICY IF EXISTS "Diners can insert own reviews" ON diner_reviews;
 DROP POLICY IF EXISTS "Diners can update own reviews" ON diner_reviews;
+DROP POLICY IF EXISTS "Allow service role reviews access" ON diner_reviews;
 DROP POLICY IF EXISTS "Diners can view own badges" ON diner_badges;
 DROP POLICY IF EXISTS "System can insert badges" ON diner_badges;
 
@@ -23,7 +27,7 @@ CREATE TABLE IF NOT EXISTS public.diner_profiles (
   bio TEXT,
   favorite_cuisines TEXT[],
   dietary_restrictions TEXT[],
-  points INTEGER DEFAULT 0,
+  total_points INTEGER DEFAULT 0,
   level INTEGER DEFAULT 1,
   total_visits INTEGER DEFAULT 0,
   total_reviews INTEGER DEFAULT 0,
@@ -52,6 +56,7 @@ CREATE TABLE IF NOT EXISTS public.diner_reviews (
   rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
   review_text TEXT,
   photos TEXT[],
+  is_public BOOLEAN DEFAULT true,
   helpful_count INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -92,6 +97,13 @@ CREATE POLICY "Diners can update own profile" ON diner_profiles
 CREATE POLICY "Diners can insert own profile" ON diner_profiles
   FOR INSERT WITH CHECK (auth.uid()::text = auth0_id);
 
+-- Temporary policy for development (bypass auth for profile creation)
+CREATE POLICY "Allow anonymous profile creation" ON diner_profiles
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow service role full access" ON diner_profiles
+  FOR ALL USING (true);
+
 -- RLS Policies for diner_visits
 CREATE POLICY "Diners can view own visits" ON diner_visits
   FOR SELECT USING (diner_id IN (SELECT id FROM diner_profiles WHERE auth0_id = auth.uid()::text));
@@ -102,6 +114,10 @@ CREATE POLICY "Diners can insert own visits" ON diner_visits
 CREATE POLICY "Diners can update own visits" ON diner_visits
   FOR UPDATE USING (diner_id IN (SELECT id FROM diner_profiles WHERE auth0_id = auth.uid()::text));
 
+-- Temporary policy for development
+CREATE POLICY "Allow service role visits access" ON diner_visits
+  FOR ALL USING (true);
+
 -- RLS Policies for diner_reviews
 CREATE POLICY "Anyone can view reviews" ON diner_reviews FOR SELECT TO public;
 
@@ -110,6 +126,10 @@ CREATE POLICY "Diners can insert own reviews" ON diner_reviews
 
 CREATE POLICY "Diners can update own reviews" ON diner_reviews
   FOR UPDATE USING (diner_id IN (SELECT id FROM diner_profiles WHERE auth0_id = auth.uid()::text));
+
+-- Temporary policy for development
+CREATE POLICY "Allow service role reviews access" ON diner_reviews
+  FOR ALL USING (true);
 
 -- RLS Policies for diner_badges
 CREATE POLICY "Diners can view own badges" ON diner_badges

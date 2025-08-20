@@ -49,59 +49,147 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Restaurant ID and rating are required" }, { status: 400 });
     }
 
-    // For now, we'll create a temporary implementation that doesn't require authentication
-    // In a real app, you'd get the user from the Auth0 token
+    // TODO: Get user from Auth0 token when authentication is properly set up
     const email = "hdcatalyst@gmail.com"; // Temporary hardcoded email
+    const userName = "Test Diner";
+    const auth0Id = "temp-id-" + Date.now(); // Make it unique
 
-    // First get or create the diner profile
-    let { data: profile } = await supabaseServer
-      .from("diner_profiles")
-      .select("id")
-      .eq("email", email)
-      .single();
+    console.log("Attempting to submit review for:", { email, restaurant_id, rating });
 
-    if (!profile) {
-      // Create profile if it doesn't exist
-      const { data: newProfile, error: createError } = await supabaseServer
+    // First check if diner_profiles table exists and get or create the diner profile
+    let profile;
+    try {
+      // Try to get existing profile
+      const { data: existingProfile, error: selectError } = await supabaseServer
         .from("diner_profiles")
-        .insert({
-          email,
-          name: "Test Diner",
-          auth0_id: "temp-id"
-        })
-        .select("id")
+        .select("id, email")
+        .eq("email", email)
         .single();
 
-      if (createError) {
-        console.error("Error creating diner profile:", createError);
-        return NextResponse.json({ error: "Failed to create profile" }, { status: 500 });
+      if (selectError && selectError.code !== 'PGRST116') { // PGRST116 is "not found"
+        console.error("Error querying diner_profiles:", selectError);
+        throw selectError;
       }
 
-      profile = newProfile;
+      if (existingProfile) {
+        profile = existingProfile;
+        console.log("Found existing profile:", profile.id);
+      } else {
+        // Create new profile
+        console.log("Creating new diner profile...");
+        const { data: newProfile, error: createError } = await supabaseServer
+          .from("diner_profiles")
+          .insert({
+            email,
+            name: userName,
+            auth0_id: auth0Id,
+            total_points: 0,
+            total_reviews: 0,
+            total_visits: 0,
+            created_at: new Date().toISOString()
+          })
+          .select("id, email")
+          .single();
+
+        if (createError) {
+          console.error("Error creating diner profile:", createError);
+          console.error("Full error details:", JSON.stringify(createError, null, 2));
+          
+          // Check if it's an RLS issue
+          if (createError.code === '42501' || createError.message.includes('row-level security')) {
+            return NextResponse.json({ 
+              error: "Database permission issue - please run the diner database migration with service role policies", 
+              details: createError.message,
+              code: createError.code,
+              hint: "This is likely an RLS (Row Level Security) policy issue"
+            }, { status: 500 });
+          }
+          
+          return NextResponse.json({ 
+            error: "Failed to create profile", 
+            details: createError.message,
+            code: createError.code 
+          }, { status: 500 });
+        }
+
+        profile = newProfile;
+        console.log("Created new profile:", profile.id);
+      }
+    } catch (tableError) {
+      console.error("Database table error:", tableError);
+      return NextResponse.json({ 
+        error: "Database not ready - please run the diner database migration", 
+        details: tableError instanceof Error ? tableError.message : "Unknown database error" 
+      }, { status: 500 });
     }
 
-    // Create the review without requiring a visit_id for now
-    const { data: review, error } = await supabaseServer
+    // Create the review
+    console.log("Creating review record...");
+    const { data: review, error: reviewError } = await supabaseServer
       .from("diner_reviews")
       .insert({
         diner_id: (profile as { id: string }).id,
         restaurant_id,
         visit_id: null, // Optional for now
         rating,
-        review_text,
-        photos: photos || []
+        review_text: review_text || "",
+        photos: photos || [],
+        is_public: true,
+        created_at: new Date().toISOString()
       })
       .select()
       .single();
 
-    if (error) {
-      console.error("Error creating review:", error);
-      return NextResponse.json({ error: "Failed to create review" }, { status: 500 });
+    if (reviewError) {
+      console.error("Error creating review:", reviewError);
+      console.error("Full review error details:", JSON.stringify(reviewError, null, 2));
+      return NextResponse.json({ 
+        error: "Failed to create review", 
+        details: reviewError.message,
+        code: reviewError.code 
+      }, { status: 500 });
     }
 
-    return NextResponse.json(review);
+    // Award points for the review (15 points per review)
+    console.log("Awarding points for review...");
+    
+    // Get current points and reviews count
+    const { data: currentProfile } = await supabaseServer
+      .from("diner_profiles")
+      .select("total_points, total_reviews")
+      .eq("id", (profile as { id: string }).id)
+      .single();
+
+    if (currentProfile) {
+      const currentPoints = (currentProfile as { total_points: number }).total_points || 0;
+      const currentReviews = (currentProfile as { total_reviews: number }).total_reviews || 0;
+      
+      const { error: pointsError } = await supabaseServer
+        .from("diner_profiles")
+        .update({ 
+          total_points: currentPoints + 15,
+          total_reviews: currentReviews + 1
+        })
+        .eq("id", (profile as { id: string }).id);
+
+      if (pointsError) {
+        console.warn("Error awarding points (review still saved):", pointsError);
+        // Don't fail the request if points update fails
+      } else {
+        console.log("Points awarded successfully: +15 points");
+      }
+    }
+
+    console.log("Review submitted successfully:", review.id);
+    return NextResponse.json({
+      ...review,
+      points_earned: 15
+    });
   } catch (error) {
     console.error("Diner review creation API error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ 
+      error: "Internal server error", 
+      details: error instanceof Error ? error.message : "Unknown error" 
+    }, { status: 500 });
   }
 }
