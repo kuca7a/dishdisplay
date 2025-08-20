@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Carousel from "@/components/Carousel";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -11,6 +11,7 @@ import { cachedDataService } from "@/lib/cache";
 import { Restaurant, MenuItem } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import DinerMenuInteractions from "@/components/DinerMenuInteractions";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -34,11 +35,52 @@ export default function CustomerMenuPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
-  // Removed previous slideshow state
+  const [pageStartTime] = useState<number>(Date.now());
+  
+  // Analytics tracking
+  const { trackMenuView, trackQrScan, trackItemView } = useAnalytics({ 
+    restaurantId: restaurant?.id,
+    enabled: !!restaurant 
+  });
 
   const handleItemClick = (item: MenuItem) => {
+    // Track item click before navigation
+    if (restaurant) {
+      trackItemView(item.id, item.name);
+    }
     router.push(`/menu/${restaurantId}/item/${item.id}`);
   };
+
+  // Check if this is a QR code scan (detect common QR scan indicators)
+  const checkForQRScan = useCallback(() => {
+    if (typeof window === 'undefined') return false;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const referrer = document.referrer;
+    
+    // Debug logging
+    console.log('QR Scan Detection Debug:');
+    console.log('- URL params:', Array.from(urlParams.entries()));
+    console.log('- Referrer:', referrer);
+    console.log('- Has qr param:', urlParams.has('qr'));
+    console.log('- Has scan param:', urlParams.has('scan'));
+    console.log('- Has table param:', urlParams.has('table'));
+    console.log('- No referrer:', !referrer);
+    console.log('- Referrer includes qr:', referrer.includes('qr'));
+    
+    // More specific QR scan indicators - only treat as QR scan if there are explicit indicators
+    const isQrScan = (
+      urlParams.has('qr') || 
+      urlParams.has('scan') ||
+      urlParams.has('table') ||
+      referrer.includes('qr') ||
+      referrer.includes('scan') ||
+      referrer.includes('table')
+    );
+    
+    console.log('- Final QR scan decision:', isQrScan);
+    return isQrScan;
+  }, []);
 
   useEffect(() => {
     const loadMenuData = async () => {
@@ -59,6 +101,18 @@ export default function CustomerMenuPage() {
 
         setRestaurant(restaurantData);
         setMenuItems(availableItems);
+        
+        // Track analytics - check if this was a QR scan first
+        setTimeout(() => {
+          const duration = Math.round((Date.now() - pageStartTime) / 1000);
+          if (checkForQRScan()) {
+            console.log('🔍 Tracking QR scan event with duration:', duration);
+            trackQrScan();
+          } else {
+            console.log('👁️ Tracking menu view event with duration:', duration);
+            trackMenuView(duration);
+          }
+        }, 1000); // Small delay to ensure page is fully loaded
       } catch (err) {
         console.error("Error loading menu:", err);
         setError("Restaurant not found or menu unavailable");
@@ -68,7 +122,26 @@ export default function CustomerMenuPage() {
     };
 
     loadMenuData();
-  }, [restaurantId]);
+  }, [restaurantId, trackMenuView, trackQrScan, checkForQRScan, pageStartTime]);
+
+  // Track page exit duration
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (restaurant) {
+        const duration = Math.round((Date.now() - pageStartTime) / 1000);
+        console.log('📤 Page exit - sending duration update:', duration);
+        // Send a final event with the total page duration
+        navigator.sendBeacon('/api/analytics/duration', JSON.stringify({
+          restaurantId: restaurant.id,
+          duration,
+          pageStartTime
+        }));
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [restaurant, pageStartTime]);
 
   // Removed featured items slideshow logic
 
