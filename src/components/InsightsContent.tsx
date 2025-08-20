@@ -7,7 +7,8 @@ import { AppSidebar } from "@/components/app-sidebar";
 import ReviewsSection from "@/components/ReviewsSection";
 import VisitStatsCard from "@/components/VisitStatsCard";
 import { restaurantService } from "@/lib/database";
-import { Restaurant } from "@/types/database";
+import { analyticsService } from "@/lib/analytics";
+import { Restaurant, AnalyticsOverview, MenuPerformanceItem, RecentActivity } from "@/types/database";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -29,7 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BarChart, TrendingUp, Users, Eye, Clock, Star } from "lucide-react";
+import { BarChart, TrendingUp, Users, Eye, Clock } from "lucide-react";
 
 import { Rubik } from "next/font/google";
 
@@ -46,6 +47,10 @@ export default function InsightsContent() {
   const router = useRouter();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loadingRestaurant, setLoadingRestaurant] = useState(true);
+  const [analytics, setAnalytics] = useState<AnalyticsOverview | null>(null);
+  const [menuPerformance, setMenuPerformance] = useState<MenuPerformanceItem[]>([]);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [loadingAnalytics, setLoadingAnalytics] = useState(true);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -72,6 +77,64 @@ export default function InsightsContent() {
       loadRestaurantData();
     }
   }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    const loadAnalyticsData = async () => {
+      if (!restaurant) return;
+      
+      try {
+        setLoadingAnalytics(true);
+        
+        // Load analytics data in parallel
+        const [analyticsOverview, performance, activity] = await Promise.all([
+          analyticsService.getAnalyticsOverview(restaurant.id),
+          analyticsService.getMenuPerformance(restaurant.id),
+          analyticsService.getRecentActivity(restaurant.id)
+        ]);
+
+        setAnalytics(analyticsOverview);
+        setMenuPerformance(performance);
+        setRecentActivity(activity);
+      } catch (err) {
+        console.error("Error loading analytics data:", err);
+      } finally {
+        setLoadingAnalytics(false);
+      }
+    };
+
+    if (restaurant && !loadingRestaurant) {
+      loadAnalyticsData();
+    }
+  }, [restaurant, loadingRestaurant]);
+
+  const formatTime = (seconds: number): string => {
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  };
+
+  const formatChange = (change: number): { text: string; isPositive: boolean } => {
+    const isPositive = change >= 0;
+    const text = `${isPositive ? '+' : ''}${change.toFixed(1)}%`;
+    return { text, isPositive };
+  };
+
+  const formatActivityTime = (timestamp: string): string => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+  };
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -134,11 +197,20 @@ export default function InsightsContent() {
                     <Eye className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">1,284</div>
-                    <p className="text-xs text-muted-foreground">
-                      <span className="text-green-600">+12.3%</span> from last
-                      month
-                    </p>
+                    {loadingAnalytics ? (
+                      <div className="text-2xl font-bold">...</div>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{analytics?.totalMenuViews.toLocaleString() || '0'}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {analytics && (
+                            <span className={analytics.menuViewsChange >= 0 ? "text-green-600" : "text-red-600"}>
+                              {formatChange(analytics.menuViewsChange).text}
+                            </span>
+                          )} from last month
+                        </p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -150,11 +222,20 @@ export default function InsightsContent() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">892</div>
-                    <p className="text-xs text-muted-foreground">
-                      <span className="text-green-600">+8.7%</span> from last
-                      month
-                    </p>
+                    {loadingAnalytics ? (
+                      <div className="text-2xl font-bold">...</div>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{analytics?.totalQrScans.toLocaleString() || '0'}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {analytics && (
+                            <span className={analytics.qrScansChange >= 0 ? "text-green-600" : "text-red-600"}>
+                              {formatChange(analytics.qrScansChange).text}
+                            </span>
+                          )} from last month
+                        </p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -166,27 +247,44 @@ export default function InsightsContent() {
                     <Clock className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">2m 14s</div>
-                    <p className="text-xs text-muted-foreground">
-                      <span className="text-green-600">+5.2%</span> from last
-                      month
-                    </p>
+                    {loadingAnalytics ? (
+                      <div className="text-2xl font-bold">...</div>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{analytics ? formatTime(analytics.averageViewTimeSeconds) : '0s'}</div>
+                        <p className="text-xs text-muted-foreground">
+                          {analytics && (
+                            <span className={analytics.viewTimeChange >= 0 ? "text-green-600" : "text-red-600"}>
+                              {formatChange(analytics.viewTimeChange).text}
+                            </span>
+                          )} from last month
+                        </p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Customer Rating
+                      Unique Visitors
                     </CardTitle>
-                    <Star className="h-4 w-4 text-muted-foreground" />
+                    <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">4.8</div>
-                    <p className="text-xs text-muted-foreground">
-                      <span className="text-green-600">+0.2</span> from last
-                      month
-                    </p>
+                    {loadingAnalytics ? (
+                      <div className="text-2xl font-bold">...</div>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{analytics?.uniqueVisitors || 0}</div>
+                        <p className="text-xs text-muted-foreground">
+                          <span className={analytics && analytics.uniqueVisitorsChange >= 0 ? "text-green-600" : "text-red-600"}>
+                            {analytics ? formatChange(analytics.uniqueVisitorsChange).text : '+0.0%'}
+                          </span>
+                          {' '}from last month
+                        </p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -204,41 +302,40 @@ export default function InsightsContent() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-[#5F7161]/5 rounded-lg">
-                        <div>
-                          <p className="font-medium">Margherita Pizza</p>
-                          <p className="text-sm text-gray-600">234 views</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-green-600 font-medium">
-                            +18%
-                          </p>
-                        </div>
+                    {loadingAnalytics ? (
+                      <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg animate-pulse">
+                            <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+                            <div className="h-4 bg-gray-300 rounded w-16"></div>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium">Caesar Salad</p>
-                          <p className="text-sm text-gray-600">198 views</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-green-600 font-medium">
-                            +12%
-                          </p>
-                        </div>
+                    ) : menuPerformance.length > 0 ? (
+                      <div className="space-y-4">
+                        {menuPerformance.slice(0, 3).map((item, index) => (
+                          <div key={item.menu_item_id} className={`flex items-center justify-between p-4 rounded-lg ${
+                            index === 0 ? 'bg-[#5F7161]/5' : 'bg-gray-50'
+                          }`}>
+                            <div>
+                              <p className="font-medium">{item.name}</p>
+                              <p className="text-sm text-gray-600">{item.total_views} views</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-green-600 font-medium">
+                                {item.views_change_percentage > 0 ? '+' : ''}{item.views_change_percentage.toFixed(0)}%
+                              </p>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium">Grilled Salmon</p>
-                          <p className="text-sm text-gray-600">156 views</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-green-600 font-medium">
-                            +8%
-                          </p>
-                        </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <TrendingUp className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p>No menu performance data yet</p>
+                        <p className="text-sm">Data will appear once your menu receives views</p>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -257,37 +354,52 @@ export default function InsightsContent() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-4 border rounded-lg">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <div className="flex-1">
-                        <p className="font-medium">Menu viewed via QR code</p>
-                        <p className="text-sm text-gray-600">
-                          Table 7 • 2 minutes ago
-                        </p>
-                      </div>
+                  {loadingAnalytics ? (
+                    <div className="space-y-4">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="flex items-center gap-4 p-4 border rounded-lg animate-pulse">
+                          <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                            <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex items-center gap-4 p-4 border rounded-lg">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <div className="flex-1">
-                        <p className="font-medium">Pizza Margherita viewed</p>
-                        <p className="text-sm text-gray-600">
-                          Online • 5 minutes ago
-                        </p>
-                      </div>
+                  ) : recentActivity.length > 0 ? (
+                    <div className="space-y-4">
+                      {recentActivity.slice(0, 5).map((activity) => {
+                        const getActivityColor = (type: string) => {
+                          switch (type) {
+                            case 'qr_scan': return 'bg-green-500';
+                            case 'menu_view': return 'bg-blue-500';
+                            case 'item_view': return 'bg-purple-500';
+                            case 'visit_marked': return 'bg-[#5F7161]';
+                            case 'review_submitted': return 'bg-yellow-500';
+                            default: return 'bg-gray-500';
+                          }
+                        };
+
+                        return (
+                          <div key={activity.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                            <div className={`w-2 h-2 ${getActivityColor(activity.type)} rounded-full`}></div>
+                            <div className="flex-1">
+                              <p className="font-medium">{activity.description}</p>
+                              <p className="text-sm text-gray-600">
+                                {formatActivityTime(activity.timestamp)}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    <div className="flex items-center gap-4 p-4 border rounded-lg">
-                      <div className="w-2 h-2 bg-[#5F7161] rounded-full"></div>
-                      <div className="flex-1">
-                        <p className="font-medium">
-                          Menu shared on social media
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Instagram • 1 hour ago
-                        </p>
-                      </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <BarChart className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                      <p>No recent activity</p>
+                      <p className="text-sm">Activity will appear when customers interact with your menu</p>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

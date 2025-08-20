@@ -391,3 +391,120 @@ export interface UpdateReviewData {
   private_tags?: string[];
   would_recommend?: boolean;
 }
+
+// Analytics System Types
+export interface AnalyticsEvent {
+  id: string;
+  restaurant_id: string;
+  event_type: 'menu_view' | 'qr_scan' | 'item_view' | 'item_detail_click' | 'visit_marked' | 'review_submitted';
+  session_id?: string;
+  user_agent?: string;
+  ip_address?: string;
+  event_data: Record<string, string | number | boolean | null>; // JSONB field for flexible event data
+  timestamp: string;
+  duration_seconds?: number;
+  referrer_url?: string;
+  page_url?: string;
+  created_at: string;
+}
+
+export interface MenuItemAnalytics {
+  id: string;
+  restaurant_id: string;
+  menu_item_id: string;
+  date: string;
+  view_count: number;
+  unique_viewers: number;
+  total_view_time_seconds: number;
+  average_view_time_seconds: number;
+  clicks_to_details: number;
+  created_at: string;
+  updated_at: string;
+  // Extended with menu item data when fetched with joins
+  menu_items?: {
+    id: string;
+    name: string;
+    category: string;
+    price: number;
+    image_url?: string;
+  };
+}
+
+export interface RestaurantAnalytics {
+  id: string;
+  restaurant_id: string;
+  date: string;
+  qr_scans: number;
+  menu_views: number;
+  unique_visitors: number;
+  total_session_time_seconds: number;
+  average_session_time_seconds: number;
+  item_detail_views: number;
+  visits_marked: number;
+  reviews_submitted: number;
+  average_rating?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AnalyticsSession {
+  id: string;
+  session_id: string;
+  restaurant_id: string;
+  first_seen: string;
+  last_seen: string;
+  page_views: number;
+  user_agent?: string;
+  ip_address?: string;
+  device_type?: string;
+  browser?: string;
+  entry_url?: string;
+  referrer_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateAnalyticsEventData {
+  restaurant_id: string;
+  event_type: 'menu_view' | 'qr_scan' | 'item_view' | 'item_detail_click' | 'visit_marked' | 'review_submitted';
+  session_id?: string;
+  event_data?: Record<string, string | number | boolean | null>;
+  duration_seconds?: number;
+  referrer_url?: string;
+  page_url?: string;
+}
+
+export interface AnalyticsOverview {
+  totalMenuViews: number;
+  totalQrScans: number;
+  averageViewTimeSeconds: number;
+  uniqueVisitors: number;
+  menuViewsChange: number; // percentage change from previous period
+  qrScansChange: number;
+  viewTimeChange: number;
+  uniqueVisitorsChange: number;
+}
+
+export interface MenuPerformanceItem {
+  menu_item_id: string;
+  name: string;
+  category: string;
+  image_url?: string;
+  total_views: number;
+  unique_viewers: number;
+  average_view_time: number;
+  views_change_percentage: number;
+}
+
+export interface RecentActivity {
+  id: string;
+  type: 'menu_view' | 'qr_scan' | 'item_view' | 'visit_marked' | 'review_submitted';
+  description: string;
+  timestamp: string;
+  metadata?: {
+    item_name?: string;
+    table_number?: string;
+    rating?: number;
+    visitor_location?: string;
+  };
+}

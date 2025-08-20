@@ -9,6 +9,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cachedDataService } from "@/lib/cache";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 export default function MenuItemDetailPage() {
   const params = useParams();
@@ -20,6 +21,13 @@ export default function MenuItemDetailPage() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pageStartTime] = useState(Date.now());
+
+  // Analytics tracking
+  const { trackItemView } = useAnalytics({ 
+    restaurantId: restaurant?.id,
+    enabled: !!restaurant 
+  });
 
   useEffect(() => {
     const loadItemData = async () => {
@@ -44,6 +52,11 @@ export default function MenuItemDetailPage() {
 
         setRestaurant(restaurantData);
         setItem(foundItem);
+        
+        // Track detailed item view with timing
+        setTimeout(() => {
+          trackItemView(foundItem.id, foundItem.name, pageStartTime);
+        }, 1000); // Small delay to ensure page is fully loaded
       } catch (err) {
         console.error("Error loading item:", err);
         setError("Failed to load menu item");
@@ -53,7 +66,7 @@ export default function MenuItemDetailPage() {
     };
 
     loadItemData();
-  }, [restaurantId, itemId]);
+  }, [restaurantId, itemId, trackItemView, pageStartTime]);
 
   const handleBack = () => {
     router.back();
