@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, MessageSquare, TrendingUp } from "lucide-react";
@@ -28,7 +34,7 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
   const [stats, setStats] = useState({
     totalReviews: 0,
     averageRating: 0,
-    ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+    ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
   });
 
   useEffect(() => {
@@ -36,26 +42,34 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
       try {
         setLoading(true);
         // Fetch reviews for this restaurant
-        const response = await fetch(`/api/restaurant-reviews?restaurant_id=${restaurantId}`);
+        const response = await fetch(
+          `/api/restaurant-reviews?restaurant_id=${restaurantId}`
+        );
         if (response.ok) {
           const reviewsData = await response.json();
           setReviews(reviewsData);
-          
+
           // Calculate stats
           const totalReviews = reviewsData.length;
-          const averageRating = totalReviews > 0 
-            ? reviewsData.reduce((sum: number, review: DinerReview) => sum + review.rating, 0) / totalReviews 
-            : 0;
-          
+          const averageRating =
+            totalReviews > 0
+              ? reviewsData.reduce(
+                  (sum: number, review: DinerReview) => sum + review.rating,
+                  0
+                ) / totalReviews
+              : 0;
+
           const ratingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
           reviewsData.forEach((review: DinerReview) => {
-            ratingDistribution[review.rating as keyof typeof ratingDistribution]++;
+            ratingDistribution[
+              review.rating as keyof typeof ratingDistribution
+            ]++;
           });
 
           setStats({ totalReviews, averageRating, ratingDistribution });
         }
       } catch (error) {
-        console.error('Error fetching reviews:', error);
+        console.error("Error fetching reviews:", error);
       } finally {
         setLoading(false);
       }
@@ -78,10 +92,10 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -96,9 +110,7 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="text-center text-gray-500">
-              Loading reviews...
-            </div>
+            <div className="text-center text-gray-500">Loading reviews...</div>
           </div>
         </CardContent>
       </Card>
@@ -124,7 +136,9 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Average Rating
+            </CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -152,14 +166,25 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
                     <div
                       className="bg-[#5F7161] h-2 rounded-full"
                       style={{
-                        width: stats.totalReviews > 0 
-                          ? `${(stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution] / stats.totalReviews) * 100}%` 
-                          : '0%'
+                        width:
+                          stats.totalReviews > 0
+                            ? `${
+                                (stats.ratingDistribution[
+                                  rating as keyof typeof stats.ratingDistribution
+                                ] /
+                                  stats.totalReviews) *
+                                100
+                              }%`
+                            : "0%",
                       }}
                     />
                   </div>
                   <span className="text-xs w-6">
-                    {stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution]}
+                    {
+                      stats.ratingDistribution[
+                        rating as keyof typeof stats.ratingDistribution
+                      ]
+                    }
                   </span>
                 </div>
               ))}
@@ -183,9 +208,12 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
           {reviews.length === 0 ? (
             <div className="text-center py-8">
               <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">No reviews yet</h3>
+              <h3 className="text-lg font-medium text-gray-600 mb-2">
+                No reviews yet
+              </h3>
               <p className="text-gray-500">
-                When customers scan your QR code and leave reviews, they'll appear here.
+                When customers scan your QR code and leave reviews, they'll
+                appear here.
               </p>
             </div>
           ) : (
@@ -199,11 +227,13 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
                         {review.diner_profiles.name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <h4 className="font-medium">{review.diner_profiles.name}</h4>
+                          <h4 className="font-medium">
+                            {review.diner_profiles.name}
+                          </h4>
                           <div className="flex items-center gap-2">
                             <div className="flex items-center gap-1">
                               {renderStars(review.rating)}
@@ -217,7 +247,7 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
                           {formatDate(review.created_at)}
                         </span>
                       </div>
-                      
+
                       {review.review_text && (
                         <p className="text-gray-700 text-sm leading-relaxed">
                           {review.review_text}
@@ -227,11 +257,12 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
                   </div>
                 </div>
               ))}
-              
+
               {reviews.length > 10 && (
                 <div className="text-center pt-4">
                   <p className="text-sm text-gray-500">
-                    Showing latest 10 reviews • {reviews.length - 10} more available
+                    Showing latest 10 reviews • {reviews.length - 10} more
+                    available
                   </p>
                 </div>
               )}

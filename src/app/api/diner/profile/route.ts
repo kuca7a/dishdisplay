@@ -19,7 +19,10 @@ export async function GET(request: NextRequest) {
 
     if (error && error.code !== "PGRST116") {
       console.error("Error fetching diner profile:", error);
-      return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch profile" },
+        { status: 500 }
+      );
     }
 
     // If no profile exists, create one
@@ -32,14 +35,17 @@ export async function GET(request: NextRequest) {
           total_points: 0,
           total_visits: 0,
           total_reviews: 0,
-          is_public: true
+          is_public: true,
         })
         .select()
         .single();
 
       if (createError) {
         console.error("Error creating diner profile:", createError);
-        return NextResponse.json({ error: "Failed to create profile" }, { status: 500 });
+        return NextResponse.json(
+          { error: "Failed to create profile" },
+          { status: 500 }
+        );
       }
 
       return NextResponse.json(newProfile);
@@ -48,7 +54,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(profile);
   } catch (error) {
     console.error("Diner profile API error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -66,7 +75,7 @@ export async function PATCH(request: NextRequest) {
       .update({
         display_name,
         is_public,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq("email", email)
       .select()
@@ -74,12 +83,18 @@ export async function PATCH(request: NextRequest) {
 
     if (error) {
       console.error("Error updating diner profile:", error);
-      return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to update profile" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(profile);
   } catch (error) {
     console.error("Diner profile update API error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

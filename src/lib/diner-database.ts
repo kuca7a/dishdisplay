@@ -12,10 +12,10 @@ import {
   CreateReviewData,
   UpdateReviewData,
 } from "@/types/database";
-import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-for-development';
+const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-development";
 
 interface JWTPayload {
   restaurant_id: string;
@@ -28,7 +28,10 @@ interface JWTPayload {
 // Diner Profile operations
 export const dinerProfileService = {
   // Get or create diner profile
-  async getOrCreate(email: string, displayName?: string): Promise<DinerProfile> {
+  async getOrCreate(
+    email: string,
+    displayName?: string
+  ): Promise<DinerProfile> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -47,10 +50,12 @@ export const dinerProfileService = {
     if (getError?.code === "PGRST116") {
       const { data, error } = await supabase
         .from("diner_profiles")
-        .insert([{
-          email,
-          display_name: displayName || email.split('@')[0],
-        }])
+        .insert([
+          {
+            email,
+            display_name: displayName || email.split("@")[0],
+          },
+        ])
         .select()
         .single();
 
@@ -62,7 +67,10 @@ export const dinerProfileService = {
   },
 
   // Update diner profile
-  async update(email: string, updates: UpdateDinerProfileData): Promise<DinerProfile> {
+  async update(
+    email: string,
+    updates: UpdateDinerProfileData
+  ): Promise<DinerProfile> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -121,7 +129,10 @@ export const dinerProfileService = {
 // Visit Token operations (OVT system)
 export const visitTokenService = {
   // Create a new visit token for a restaurant
-  async create(restaurantId: string, tokenData: Omit<CreateVisitTokenData, 'restaurant_id'>): Promise<{token: string, tokenRecord: VisitToken}> {
+  async create(
+    restaurantId: string,
+    tokenData: Omit<CreateVisitTokenData, "restaurant_id">
+  ): Promise<{ token: string; tokenRecord: VisitToken }> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -130,28 +141,30 @@ export const visitTokenService = {
     // Generate JWT token
     const expiresInMinutes = tokenData.expires_in_minutes || 30;
     const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
-    
+
     const tokenPayload = {
       restaurant_id: restaurantId,
       table_identifier: tokenData.table_identifier,
       bill_identifier: tokenData.bill_identifier,
       exp: Math.floor(expiresAt.getTime() / 1000),
-      nonce: crypto.randomBytes(16).toString('hex'),
+      nonce: crypto.randomBytes(16).toString("hex"),
     };
 
     const token = jwt.sign(tokenPayload, JWT_SECRET);
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
     // Store token record
     const { data, error } = await supabase
       .from("visit_tokens")
-      .insert([{
-        restaurant_id: restaurantId,
-        table_identifier: tokenData.table_identifier,
-        bill_identifier: tokenData.bill_identifier,
-        token_hash: tokenHash,
-        expires_at: expiresAt.toISOString(),
-      }])
+      .insert([
+        {
+          restaurant_id: restaurantId,
+          table_identifier: tokenData.table_identifier,
+          bill_identifier: tokenData.bill_identifier,
+          token_hash: tokenHash,
+          expires_at: expiresAt.toISOString(),
+        },
+      ])
       .select()
       .single();
 
@@ -160,7 +173,11 @@ export const visitTokenService = {
   },
 
   // Redeem a visit token
-  async redeem(tokenString: string, dinerEmail: string, additionalData?: Omit<RedeemVisitTokenData, 'token' | 'diner_email'>): Promise<DinerVisit> {
+  async redeem(
+    tokenString: string,
+    dinerEmail: string,
+    additionalData?: Omit<RedeemVisitTokenData, "token" | "diner_email">
+  ): Promise<DinerVisit> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -169,7 +186,10 @@ export const visitTokenService = {
     try {
       // Verify JWT token
       jwt.verify(tokenString, JWT_SECRET) as JWTPayload;
-      const tokenHash = crypto.createHash('sha256').update(tokenString).digest('hex');
+      const tokenHash = crypto
+        .createHash("sha256")
+        .update(tokenString)
+        .digest("hex");
 
       // Find and validate token
       const { data: tokenRecord, error: tokenError } = await supabase
@@ -201,20 +221,21 @@ export const visitTokenService = {
       // Create visit record
       const { data: visit, error: visitError } = await supabase
         .from("diner_visits")
-        .insert([{
-          diner_email: dinerEmail,
-          restaurant_id: tokenRecord.restaurant_id,
-          visit_token_id: tokenRecord.id,
-          dishes_viewed: additionalData?.dishes_viewed || [],
-          time_spent_minutes: additionalData?.time_spent_minutes,
-          points_earned: 10, // Base points for a visit
-        }])
+        .insert([
+          {
+            diner_email: dinerEmail,
+            restaurant_id: tokenRecord.restaurant_id,
+            visit_token_id: tokenRecord.id,
+            dishes_viewed: additionalData?.dishes_viewed || [],
+            time_spent_minutes: additionalData?.time_spent_minutes,
+            points_earned: 10, // Base points for a visit
+          },
+        ])
         .select()
         .single();
 
       if (visitError) throw visitError;
       return visit;
-      
     } catch (error) {
       if (error instanceof jwt.JsonWebTokenError) {
         throw new Error("Invalid token format");
@@ -252,7 +273,8 @@ export const dinerVisitService = {
 
     const { data, error } = await supabase
       .from("diner_visits")
-      .select(`
+      .select(
+        `
         *,
         restaurants:restaurant_id (
           id,
@@ -261,7 +283,8 @@ export const dinerVisitService = {
           address,
           city
         )
-      `)
+      `
+      )
       .eq("diner_email", email)
       .order("visit_date", { ascending: false })
       .limit(limit);
@@ -271,7 +294,10 @@ export const dinerVisitService = {
   },
 
   // Get visits for a restaurant
-  async getByRestaurantId(restaurantId: string, limit = 100): Promise<DinerVisit[]> {
+  async getByRestaurantId(
+    restaurantId: string,
+    limit = 100
+  ): Promise<DinerVisit[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -279,14 +305,16 @@ export const dinerVisitService = {
 
     const { data, error } = await supabase
       .from("diner_visits")
-      .select(`
+      .select(
+        `
         *,
         diner_profiles:diner_email (
           display_name,
           profile_photo_url,
           is_public
         )
-      `)
+      `
+      )
       .eq("restaurant_id", restaurantId)
       .order("visit_date", { ascending: false })
       .limit(limit);
@@ -299,7 +327,10 @@ export const dinerVisitService = {
 // Diner Reviews operations
 export const dinerReviewService = {
   // Create a review
-  async create(dinerEmail: string, reviewData: CreateReviewData): Promise<DinerReview> {
+  async create(
+    dinerEmail: string,
+    reviewData: CreateReviewData
+  ): Promise<DinerReview> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -319,17 +350,21 @@ export const dinerReviewService = {
 
     // Calculate points for review (base + bonuses)
     let pointsEarned = 25; // Base points
-    if (reviewData.content && reviewData.content.length > 50) pointsEarned += 10;
-    if (reviewData.photo_urls && reviewData.photo_urls.length > 0) pointsEarned += 15;
+    if (reviewData.content && reviewData.content.length > 50)
+      pointsEarned += 10;
+    if (reviewData.photo_urls && reviewData.photo_urls.length > 0)
+      pointsEarned += 15;
 
     const { data, error } = await supabase
       .from("diner_reviews")
-      .insert([{
-        diner_email: dinerEmail,
-        restaurant_id: visit.restaurant_id,
-        ...reviewData,
-        points_earned: pointsEarned,
-      }])
+      .insert([
+        {
+          diner_email: dinerEmail,
+          restaurant_id: visit.restaurant_id,
+          ...reviewData,
+          points_earned: pointsEarned,
+        },
+      ])
       .select()
       .single();
 
@@ -338,7 +373,11 @@ export const dinerReviewService = {
   },
 
   // Update a review
-  async update(reviewId: string, dinerEmail: string, updates: UpdateReviewData): Promise<DinerReview> {
+  async update(
+    reviewId: string,
+    dinerEmail: string,
+    updates: UpdateReviewData
+  ): Promise<DinerReview> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -381,7 +420,8 @@ export const dinerReviewService = {
 
     const { data, error } = await supabase
       .from("diner_reviews")
-      .select(`
+      .select(
+        `
         *,
         restaurants:restaurant_id (
           id,
@@ -391,7 +431,8 @@ export const dinerReviewService = {
         diner_visits:visit_id (
           visit_date
         )
-      `)
+      `
+      )
       .eq("diner_email", email)
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -401,7 +442,10 @@ export const dinerReviewService = {
   },
 
   // Get public reviews for a restaurant
-  async getByRestaurantId(restaurantId: string, limit = 50): Promise<DinerReview[]> {
+  async getByRestaurantId(
+    restaurantId: string,
+    limit = 50
+  ): Promise<DinerReview[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -409,7 +453,8 @@ export const dinerReviewService = {
 
     const { data, error } = await supabase
       .from("diner_reviews")
-      .select(`
+      .select(
+        `
         *,
         diner_profiles:diner_email (
           display_name,
@@ -419,7 +464,8 @@ export const dinerReviewService = {
         diner_visits:visit_id (
           visit_date
         )
-      `)
+      `
+      )
       .eq("restaurant_id", restaurantId)
       .eq("is_public", true)
       .order("created_at", { ascending: false })
@@ -430,7 +476,10 @@ export const dinerReviewService = {
   },
 
   // Get all reviews for restaurant (including private data) - for restaurant owners
-  async getAllByRestaurantId(restaurantId: string, limit = 100): Promise<DinerReview[]> {
+  async getAllByRestaurantId(
+    restaurantId: string,
+    limit = 100
+  ): Promise<DinerReview[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -438,7 +487,8 @@ export const dinerReviewService = {
 
     const { data, error } = await supabase
       .from("diner_reviews")
-      .select(`
+      .select(
+        `
         *,
         diner_profiles:diner_email (
           display_name,
@@ -447,7 +497,8 @@ export const dinerReviewService = {
         diner_visits:visit_id (
           visit_date
         )
-      `)
+      `
+      )
       .eq("restaurant_id", restaurantId)
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -460,7 +511,10 @@ export const dinerReviewService = {
 // Competition operations
 export const competitionService = {
   // Get current week's leaderboard for a restaurant
-  async getWeeklyLeaderboard(restaurantId: string, week?: string): Promise<CompetitionEntry[]> {
+  async getWeeklyLeaderboard(
+    restaurantId: string,
+    week?: string
+  ): Promise<CompetitionEntry[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -471,14 +525,16 @@ export const competitionService = {
 
     const { data, error } = await supabase
       .from("competition_entries")
-      .select(`
+      .select(
+        `
         *,
         diner_profiles:diner_email (
           display_name,
           profile_photo_url,
           is_public
         )
-      `)
+      `
+      )
       .eq("restaurant_id", restaurantId)
       .eq("competition_week", currentWeek)
       .order("total_points", { ascending: false })
@@ -489,7 +545,11 @@ export const competitionService = {
   },
 
   // Update/create competition entry for a diner
-  async updateEntry(dinerEmail: string, restaurantId: string, week?: string): Promise<CompetitionEntry> {
+  async updateEntry(
+    dinerEmail: string,
+    restaurantId: string,
+    week?: string
+  ): Promise<CompetitionEntry> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -518,19 +578,21 @@ export const competitionService = {
 
     if (reviewsError) throw reviewsError;
 
-    const totalPoints = 
+    const totalPoints =
       (visits?.reduce((sum, v) => sum + v.points_earned, 0) || 0) +
       (reviews?.reduce((sum, r) => sum + r.points_earned, 0) || 0);
 
     // Upsert competition entry
     const { data, error } = await supabase
       .from("competition_entries")
-      .upsert([{
-        diner_email: dinerEmail,
-        restaurant_id: restaurantId,
-        competition_week: currentWeek,
-        total_points: totalPoints,
-      }])
+      .upsert([
+        {
+          diner_email: dinerEmail,
+          restaurant_id: restaurantId,
+          competition_week: currentWeek,
+          total_points: totalPoints,
+        },
+      ])
       .select()
       .single();
 
@@ -542,19 +604,38 @@ export const competitionService = {
 // Badge operations
 export const badgeService = {
   // Award a badge to a diner
-  async award(dinerEmail: string, badgeType: DinerBadge['badge_type'], restaurantId?: string): Promise<DinerBadge> {
+  async award(
+    dinerEmail: string,
+    badgeType: DinerBadge["badge_type"],
+    restaurantId?: string
+  ): Promise<DinerBadge> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
     }
 
     const badgeDefinitions = {
-      first_visit: { name: "First Visit", description: "Completed your first restaurant visit" },
-      frequent_visitor: { name: "Regular", description: "Visited the same restaurant 5+ times" },
+      first_visit: {
+        name: "First Visit",
+        description: "Completed your first restaurant visit",
+      },
+      frequent_visitor: {
+        name: "Regular",
+        description: "Visited the same restaurant 5+ times",
+      },
       reviewer: { name: "Critic", description: "Left 10+ reviews" },
-      photographer: { name: "Food Photographer", description: "Uploaded 25+ photos" },
-      explorer: { name: "Explorer", description: "Visited 10+ different restaurants" },
-      champion: { name: "Weekly Champion", description: "Won the weekly competition" },
+      photographer: {
+        name: "Food Photographer",
+        description: "Uploaded 25+ photos",
+      },
+      explorer: {
+        name: "Explorer",
+        description: "Visited 10+ different restaurants",
+      },
+      champion: {
+        name: "Weekly Champion",
+        description: "Won the weekly competition",
+      },
     };
 
     const badge = badgeDefinitions[badgeType];
@@ -562,13 +643,15 @@ export const badgeService = {
 
     const { data, error } = await supabase
       .from("diner_badges")
-      .upsert([{
-        diner_email: dinerEmail,
-        badge_type: badgeType,
-        badge_name: badge.name,
-        badge_description: badge.description,
-        restaurant_id: restaurantId,
-      }])
+      .upsert([
+        {
+          diner_email: dinerEmail,
+          badge_type: badgeType,
+          badge_name: badge.name,
+          badge_description: badge.description,
+          restaurant_id: restaurantId,
+        },
+      ])
       .select()
       .single();
 
@@ -585,13 +668,15 @@ export const badgeService = {
 
     const { data, error } = await supabase
       .from("diner_badges")
-      .select(`
+      .select(
+        `
         *,
         restaurants:restaurant_id (
           name,
           logo_url
         )
-      `)
+      `
+      )
       .eq("diner_email", email)
       .order("earned_at", { ascending: false });
 
@@ -600,7 +685,10 @@ export const badgeService = {
   },
 
   // Check and award automatic badges
-  async checkAndAwardBadges(dinerEmail: string, restaurantId?: string): Promise<DinerBadge[]> {
+  async checkAndAwardBadges(
+    dinerEmail: string,
+    restaurantId?: string
+  ): Promise<DinerBadge[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -617,7 +705,7 @@ export const badgeService = {
 
     if (visits?.length === 1) {
       try {
-        const badge = await this.award(dinerEmail, 'first_visit', restaurantId);
+        const badge = await this.award(dinerEmail, "first_visit", restaurantId);
         newBadges.push(badge);
       } catch {
         // Badge might already exist, ignore
@@ -632,7 +720,7 @@ export const badgeService = {
 
     if (reviews && reviews.length >= 10) {
       try {
-        const badge = await this.award(dinerEmail, 'reviewer');
+        const badge = await this.award(dinerEmail, "reviewer");
         newBadges.push(badge);
       } catch {
         // Badge might already exist, ignore
@@ -649,7 +737,11 @@ export const badgeService = {
 
       if (restaurantVisits && restaurantVisits.length >= 5) {
         try {
-          const badge = await this.award(dinerEmail, 'frequent_visitor', restaurantId);
+          const badge = await this.award(
+            dinerEmail,
+            "frequent_visitor",
+            restaurantId
+          );
           newBadges.push(badge);
         } catch {
           // Badge might already exist, ignore
@@ -666,7 +758,7 @@ function getCurrentISOWeek(): string {
   const now = new Date();
   const year = now.getFullYear();
   const week = getISOWeek(now);
-  return `${year}-W${week.toString().padStart(2, '0')}`;
+  return `${year}-W${week.toString().padStart(2, "0")}`;
 }
 
 function getISOWeek(date: Date): number {
@@ -676,20 +768,18 @@ function getISOWeek(date: Date): number {
   const firstThursday = target.valueOf();
   target.setMonth(0, 1);
   if (target.getDay() !== 4) {
-    target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    target.setMonth(0, 1 + ((4 - target.getDay() + 7) % 7));
   }
   return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
 }
 
 function getWeekStart(isoWeek: string): string {
-  const [year, week] = isoWeek.split('-W').map(Number);
+  const [year, week] = isoWeek.split("-W").map(Number);
   const simple = new Date(year, 0, 1 + (week - 1) * 7);
   const dow = simple.getDay();
   const ISOweekStart = simple;
-  if (dow <= 4)
-    ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-  else
-    ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+  if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+  else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
   return ISOweekStart.toISOString();
 }
 
