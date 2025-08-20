@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import DinerGuard from "@/components/DinerGuard";
 
 const DinerProfileContent = dynamic(
   () => import("@/components/DinerProfileContent"),
@@ -10,10 +9,6 @@ const DinerProfileContent = dynamic(
   }
 );
 
-export default function DinerPage() {
-  return (
-    <DinerGuard>
-      <DinerProfileContent />
-    </DinerGuard>
-  );
+export default function DinerProfilePage() {
+  return <DinerProfileContent />;
 }

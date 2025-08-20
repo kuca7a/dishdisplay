@@ -17,7 +17,38 @@ DROP POLICY IF EXISTS "Allow service role reviews access" ON diner_reviews;
 DROP POLICY IF EXISTS "Diners can view own badges" ON diner_badges;
 DROP POLICY IF EXISTS "System can insert badges" ON diner_badges;
 
--- Create diner profiles table
+-- Check if diner_profiles table exists and update schema if needed
+DO $$
+BEGIN
+  -- Check if table exists but with old column name
+  IF EXISTS (SELECT 1 FROM information_schema.columns 
+             WHERE table_name = 'diner_profiles' AND column_name = 'points') THEN
+    -- Rename old column and add missing columns
+    ALTER TABLE diner_profiles RENAME COLUMN points TO total_points;
+    
+    -- Add missing columns if they don't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'diner_profiles' AND column_name = 'total_visits') THEN
+      ALTER TABLE diner_profiles ADD COLUMN total_visits INTEGER DEFAULT 0;
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'diner_profiles' AND column_name = 'total_reviews') THEN
+      ALTER TABLE diner_profiles ADD COLUMN total_reviews INTEGER DEFAULT 0;
+    END IF;
+  END IF;
+  
+  -- Check if diner_reviews table exists but is missing is_public column
+  IF EXISTS (SELECT 1 FROM information_schema.tables 
+             WHERE table_name = 'diner_reviews') THEN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'diner_reviews' AND column_name = 'is_public') THEN
+      ALTER TABLE diner_reviews ADD COLUMN is_public BOOLEAN DEFAULT true;
+    END IF;
+  END IF;
+END $$;
+
+-- Create diner profiles table (will only create if it doesn't exist)
 CREATE TABLE IF NOT EXISTS public.diner_profiles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   auth0_id TEXT UNIQUE NOT NULL,

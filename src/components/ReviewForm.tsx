@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Star, 
-  X, 
-  Camera,
-  Clock
-} from "lucide-react";
+import { Star, X, Camera, Clock } from "lucide-react";
 import Image from "next/image";
 
 interface ReviewFormProps {
@@ -27,22 +28,28 @@ interface ReviewFormData {
   is_public?: boolean;
 }
 
-export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormProps) {
+export default function ReviewForm({
+  visitId,
+  onSubmit,
+  onClose,
+}: ReviewFormProps) {
   // visitId is passed for potential future use to associate reviews with specific visits
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _visitId = visitId;
-  
+
   const [formData, setFormData] = useState<ReviewFormData>({
     rating: 0,
     content: "",
     photo_urls: [],
-    is_public: true
+    is_public: true,
   });
-  
+
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -50,42 +57,42 @@ export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormPro
     try {
       const uploadPromises = Array.from(files).map(async (file) => {
         const formDataUpload = new FormData();
-        formDataUpload.append('file', file);
-        formDataUpload.append('type', 'review');
-        
-        const response = await fetch('/api/upload-image', {
-          method: 'POST',
+        formDataUpload.append("file", file);
+        formDataUpload.append("type", "review");
+
+        const response = await fetch("/api/upload-image", {
+          method: "POST",
           body: formDataUpload,
         });
-        
-        if (!response.ok) throw new Error('Upload failed');
+
+        if (!response.ok) throw new Error("Upload failed");
         const data = await response.json();
         return data.url;
       });
 
       const urls = await Promise.all(uploadPromises);
-      setFormData(prev => ({ 
-        ...prev, 
-        photo_urls: [...(prev.photo_urls || []), ...urls] 
+      setFormData((prev) => ({
+        ...prev,
+        photo_urls: [...(prev.photo_urls || []), ...urls],
       }));
     } catch (error) {
-      console.error('Photo upload error:', error);
-      alert('Failed to upload photos. Please try again.');
+      console.error("Photo upload error:", error);
+      alert("Failed to upload photos. Please try again.");
     } finally {
       setUploading(false);
     }
   };
 
   const removePhoto = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      photo_urls: (prev.photo_urls || []).filter((_, i) => i !== index)
+      photo_urls: (prev.photo_urls || []).filter((_, i) => i !== index),
     }));
   };
 
   const handleSubmit = async () => {
     if (formData.rating === 0) {
-      alert('Please provide a rating');
+      alert("Please provide a rating");
       return;
     }
 
@@ -98,11 +105,11 @@ export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormPro
         rating: 0,
         content: "",
         photo_urls: [],
-        is_public: true
+        is_public: true,
       });
     } catch (error) {
-      console.error('Review submission error:', error);
-      alert('Failed to submit review. Please try again.');
+      console.error("Review submission error:", error);
+      alert("Failed to submit review. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -127,7 +134,7 @@ export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormPro
                 <button
                   key={rating}
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, rating }))}
+                  onClick={() => setFormData((prev) => ({ ...prev, rating }))}
                   className="p-1 hover:scale-110 transition-transform"
                 >
                   <Star
@@ -151,7 +158,9 @@ export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormPro
               id="content"
               placeholder="Share details about the food, service, atmosphere, or anything that stood out about your visit..."
               value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, content: e.target.value }))
+              }
               rows={4}
               className="resize-none"
             />
@@ -167,10 +176,12 @@ export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormPro
                   variant="outline"
                   disabled={uploading}
                   className="gap-2"
-                  onClick={() => document.getElementById('photo-upload')?.click()}
+                  onClick={() =>
+                    document.getElementById("photo-upload")?.click()
+                  }
                 >
                   <Camera className="h-4 w-4" />
-                  {uploading ? 'Uploading...' : 'Add Photos'}
+                  {uploading ? "Uploading..." : "Add Photos"}
                 </Button>
                 <input
                   id="photo-upload"
@@ -217,7 +228,9 @@ export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormPro
               <Switch
                 id="is_public"
                 checked={formData.is_public}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
+                onCheckedChange={(checked) =>
+                  setFormData((prev) => ({ ...prev, is_public: checked }))
+                }
               />
               <Label htmlFor="is_public">Make this review public</Label>
             </div>
@@ -248,7 +261,7 @@ export default function ReviewForm({ visitId, onSubmit, onClose }: ReviewFormPro
                   Submitting...
                 </>
               ) : (
-                'Submit Review'
+                "Submit Review"
               )}
             </Button>
           </div>

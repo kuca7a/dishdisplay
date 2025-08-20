@@ -1,26 +1,23 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Trophy, 
-  Target, 
-  Gift, 
-  Star,
-  Award,
-  Zap,
-  Users
-} from "lucide-react";
+import { Trophy, Target, Gift, Star, Award, Zap, Users } from "lucide-react";
 
 interface PointsAndRewardsProps {
   totalPoints: number;
 }
 
-export default function PointsAndRewards({ 
-  totalPoints
+export default function PointsAndRewards({
+  totalPoints,
 }: PointsAndRewardsProps) {
-  
   return (
     <div className="space-y-6">
       {/* Points Overview */}
@@ -33,7 +30,9 @@ export default function PointsAndRewards({
               </div>
               <div>
                 <p className="text-sm text-gray-600">Total Points</p>
-                <p className="text-2xl font-bold text-yellow-600">{totalPoints.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {totalPoints.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -77,7 +76,7 @@ export default function PointsAndRewards({
                   <p className="text-sm text-gray-600">+50 points</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                   <Star className="h-4 w-4 text-yellow-600" />
@@ -88,7 +87,7 @@ export default function PointsAndRewards({
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -99,7 +98,7 @@ export default function PointsAndRewards({
                   <p className="text-sm text-gray-600">+25 points each</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                   <Users className="h-4 w-4 text-green-600" />
@@ -121,9 +120,7 @@ export default function PointsAndRewards({
             <Gift className="h-5 w-5" />
             Coming Soon
           </CardTitle>
-          <CardDescription>
-            Exciting features we're working on
-          </CardDescription>
+          <CardDescription>Exciting features we're working on</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -131,27 +128,39 @@ export default function PointsAndRewards({
               <Trophy className="h-5 w-5 text-gray-400" />
               <div>
                 <p className="font-medium text-gray-600">Leaderboards</p>
-                <p className="text-sm text-gray-500">Compete with other diners</p>
+                <p className="text-sm text-gray-500">
+                  Compete with other diners
+                </p>
               </div>
-              <Badge variant="outline" className="ml-auto">Soon</Badge>
+              <Badge variant="outline" className="ml-auto">
+                Soon
+              </Badge>
             </div>
-            
+
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               <Award className="h-5 w-5 text-gray-400" />
               <div>
                 <p className="font-medium text-gray-600">Achievement Badges</p>
-                <p className="text-sm text-gray-500">Unlock dining milestones</p>
+                <p className="text-sm text-gray-500">
+                  Unlock dining milestones
+                </p>
               </div>
-              <Badge variant="outline" className="ml-auto">Soon</Badge>
+              <Badge variant="outline" className="ml-auto">
+                Soon
+              </Badge>
             </div>
-            
+
             <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               <Gift className="h-5 w-5 text-gray-400" />
               <div>
                 <p className="font-medium text-gray-600">Rewards Program</p>
-                <p className="text-sm text-gray-500">Redeem points for discounts</p>
+                <p className="text-sm text-gray-500">
+                  Redeem points for discounts
+                </p>
               </div>
-              <Badge variant="outline" className="ml-auto">Soon</Badge>
+              <Badge variant="outline" className="ml-auto">
+                Soon
+              </Badge>
             </div>
           </div>
         </CardContent>

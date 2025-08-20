@@ -5,6 +5,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import ReviewsSection from "@/components/ReviewsSection";
+import VisitStatsCard from "@/components/VisitStatsCard";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
 import {
@@ -241,46 +242,10 @@ export default function InsightsContent() {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Coming Soon</CardTitle>
-                    <CardDescription>
-                      Advanced analytics and reporting features
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-8">
-                      <BarChart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold mb-2">
-                        Advanced Analytics
-                      </h3>
-                      <p className="text-gray-600 mb-4">
-                        Get detailed insights into customer behavior, peak
-                        hours, and menu optimization recommendations.
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                          <span className="text-sm">Heat Maps</span>
-                          <span className="text-xs text-[#5F7161]">
-                            Coming Soon
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                          <span className="text-sm">Customer Journey</span>
-                          <span className="text-xs text-[#5F7161]">
-                            Coming Soon
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                          <span className="text-sm">Revenue Analytics</span>
-                          <span className="text-xs text-[#5F7161]">
-                            Coming Soon
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* Visit Statistics Card */}
+                {restaurant && !loadingRestaurant && (
+                  <VisitStatsCard restaurantId={restaurant.id} />
+                )}
               </div>
 
               {/* Recent Activity */}

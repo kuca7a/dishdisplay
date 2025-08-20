@@ -5,16 +5,22 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Star, 
-  LogIn, 
-  User, 
+import {
+  Star,
+  LogIn,
+  User,
   Trophy,
   MapPin,
   Calendar,
-  StarIcon
+  StarIcon,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Restaurant } from "@/types/database";
@@ -23,7 +29,9 @@ interface DinerMenuInteractionsProps {
   restaurant: Restaurant;
 }
 
-export default function DinerMenuInteractions({ restaurant }: DinerMenuInteractionsProps) {
+export default function DinerMenuInteractions({
+  restaurant,
+}: DinerMenuInteractionsProps) {
   const { loginWithRedirect, isAuthenticated, user, isLoading } = useAuth0();
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showVisitDialog, setShowVisitDialog] = useState(false);
@@ -34,10 +42,10 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleDinerLogin = () => {
-    loginWithRedirect({ 
-      appState: { 
-        returnTo: `/menu/${restaurant.id}` 
-      } 
+    loginWithRedirect({
+      appState: {
+        returnTo: `/menu/${restaurant.id}`,
+      },
     });
   };
 
@@ -45,15 +53,15 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
     setIsSubmitting(true);
     try {
       // Call API to log visit
-      const response = await fetch('/api/diner/visits', {
-        method: 'POST',
+      const response = await fetch("/api/diner/visits", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           restaurant_id: restaurant.id,
           visit_date: new Date().toISOString(),
-          notes: "Visited via QR code menu"
+          notes: "Visited via QR code menu",
         }),
       });
 
@@ -65,12 +73,12 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         const error = await response.json();
-        console.error('Visit logging failed:', error);
-        alert('Failed to log visit. Please try again.');
+        console.error("Visit logging failed:", error);
+        alert("Failed to log visit. Please try again.");
       }
     } catch (error) {
-      console.error('Error logging visit:', error);
-      alert('Failed to log visit. Please try again.');
+      console.error("Error logging visit:", error);
+      alert("Failed to log visit. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -82,16 +90,16 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
     setIsSubmitting(true);
     try {
       // Call API to submit review
-      const response = await fetch('/api/diner/reviews', {
-        method: 'POST',
+      const response = await fetch("/api/diner/reviews", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           restaurant_id: restaurant.id,
           rating,
           review_text: reviewText,
-          photos: []
+          photos: [],
         }),
       });
 
@@ -99,17 +107,19 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
         setShowReviewDialog(false);
         setRating(0);
         setReviewText("");
-        setSuccessMessage("Review submitted! Thank you for sharing your experience.");
+        setSuccessMessage(
+          "Review submitted! Thank you for sharing your experience."
+        );
         // Clear success message after 3 seconds
         setTimeout(() => setSuccessMessage(""), 3000);
       } else {
         const error = await response.json();
-        console.error('Review submission failed:', error);
-        alert('Failed to submit review. Please try again.');
+        console.error("Review submission failed:", error);
+        alert("Failed to submit review. Please try again.");
       }
     } catch (error) {
-      console.error('Error submitting review:', error);
-      alert('Failed to submit review. Please try again.');
+      console.error("Error submitting review:", error);
+      alert("Failed to submit review. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -130,11 +140,13 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
               <Trophy className="h-4 w-4 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-sm mb-1">Unlock Food Explorer Features!</h3>
+              <h3 className="font-semibold text-sm mb-1">
+                Unlock Food Explorer Features!
+              </h3>
               <p className="text-xs text-gray-600 mb-3">
                 Track visits, write reviews, and earn dining achievements
               </p>
-              <Button 
+              <Button
                 onClick={handleDinerLogin}
                 size="sm"
                 className="w-full bg-[#5F7161] hover:bg-[#4C5B4F] text-white"
@@ -160,7 +172,9 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
               <div className="bg-green-500 rounded-full p-1">
                 <Trophy className="h-3 w-3 text-white" />
               </div>
-              <span className="text-sm font-medium text-green-800">{successMessage}</span>
+              <span className="text-sm font-medium text-green-800">
+                {successMessage}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -174,14 +188,14 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
               <User className="h-3 w-3 text-white" />
             </div>
             <span className="text-xs font-medium text-gray-700">
-              {user?.name?.split(' ')[0]} • Food Explorer
+              {user?.name?.split(" ")[0]} • Food Explorer
             </span>
           </div>
-          
+
           <div className="flex gap-2">
-            <Button 
+            <Button
               onClick={() => setShowVisitDialog(true)}
-              size="sm" 
+              size="sm"
               variant="outline"
               className="flex-1 text-xs"
               disabled={isVisitLogged}
@@ -189,7 +203,7 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
               <MapPin className="h-3 w-3 mr-1" />
               {isVisitLogged ? "Visited ✓" : "Log Visit"}
             </Button>
-            <Button 
+            <Button
               onClick={() => setShowReviewDialog(true)}
               size="sm"
               className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F] text-white text-xs"
@@ -210,38 +224,39 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
               Log Your Visit
             </DialogTitle>
             <DialogDescription>
-              Track your visit to {restaurant.name} and earn points toward your next dining achievement!
+              Track your visit to {restaurant.name} and earn points toward your
+              next dining achievement!
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div className="bg-[#5F7161]/5 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold text-sm">{restaurant.name}</h3>
                   <p className="text-xs text-gray-600">
-                    {new Date().toLocaleDateString('en-US', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
+                    {new Date().toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
                     })}
                   </p>
                 </div>
                 <Badge className="bg-[#5F7161] text-white">+10 pts</Badge>
               </div>
             </div>
-            
+
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setShowVisitDialog(false)}
                 className="flex-1"
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleLogVisit}
                 className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F] text-white"
                 disabled={isSubmitting}
@@ -262,10 +277,11 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
               Review {restaurant.name}
             </DialogTitle>
             <DialogDescription>
-              Share your experience to help other food explorers discover great dining!
+              Share your experience to help other food explorers discover great
+              dining!
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             {/* Rating Stars */}
             <div>
@@ -279,8 +295,8 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
                   >
                     <StarIcon
                       className={`h-6 w-6 ${
-                        star <= rating 
-                          ? "fill-yellow-400 text-yellow-400" 
+                        star <= rating
+                          ? "fill-yellow-400 text-yellow-400"
                           : "text-gray-300"
                       }`}
                     />
@@ -305,15 +321,15 @@ export default function DinerMenuInteractions({ restaurant }: DinerMenuInteracti
             </div>
 
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setShowReviewDialog(false)}
                 className="flex-1"
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={handleSubmitReview}
                 disabled={rating === 0 || isSubmitting}
                 className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F] text-white"

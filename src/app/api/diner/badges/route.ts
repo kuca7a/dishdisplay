@@ -30,12 +30,18 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error("Error fetching diner badges:", error);
-      return NextResponse.json({ error: "Failed to fetch badges" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to fetch badges" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(badges || []);
   } catch (error) {
     console.error("Diner badges API error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

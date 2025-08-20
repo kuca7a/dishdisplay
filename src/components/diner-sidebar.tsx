@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  User,
-  MapPin,
-  Star,
-  MessageCircleQuestion,
-  Home,
-} from "lucide-react";
+import { User, MapPin, Star, MessageCircleQuestion, Home } from "lucide-react";
 import {
   Sidebar,
   SidebarHeader,
@@ -127,12 +121,12 @@ export function DinerSidebar() {
       </SidebarContent>
       <SidebarFooter>
         {user && (
-          <NavUser 
+          <NavUser
             user={{
               name: user.name || "",
               email: user.email || "",
-              avatar: user.picture || ""
-            }} 
+              avatar: user.picture || "",
+            }}
           />
         )}
       </SidebarFooter>
