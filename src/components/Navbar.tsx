@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { CircleUser } from "lucide-react";
 import { Notable } from "next/font/google";
+import { useUserType } from "@/hooks/use-user-type";
 
 const notable = Notable({
   weight: "400",
@@ -13,8 +14,16 @@ const notable = Notable({
 });
 
 const Navbar = () => {
-  const { loginWithRedirect, isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
+  const { userType } = useUserType();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Determine the profile link based on user type
+  const getProfileLink = () => {
+    if (userType === 'restaurant_owner') return '/profile';
+    if (userType === 'diner') return '/diner';
+    return '/profile'; // fallback
+  };
 
   return (
     <nav className="bg-[#ffffff] shadow-lg">
@@ -66,19 +75,19 @@ const Navbar = () => {
           {/* Auth Button */}
           <div className="hidden md:block">
             {!isAuthenticated ? (
-              <button
-                onClick={() => loginWithRedirect()}
+              <Link
+                href="/login"
                 className="px-6 py-2 rounded-sm font-medium text-white bg-[#5F7161] hover:bg-[#4C5B4F] transition-colors hover:cursor-pointer"
               >
                 Log In
-              </button>
+              </Link>
             ) : (
               <div className="flex items-center space-x-4">
                 <span className="text-gray-700 font-medium">
                   Welcome, {user?.name}
                 </span>
                 <a
-                  href="/profile"
+                  href={getProfileLink()}
                   className="flex items-center justify-center w-10 h-10 rounded-full hover:text-[#5F7161] transition-colors"
                   title="Profile"
                 >
@@ -124,7 +133,7 @@ const Navbar = () => {
           <div className="flex flex-col space-y-4 py-4">
             {isAuthenticated && (
               <Link
-                href="/profile"
+                href={getProfileLink()}
                 className="text-black font-medium hover:text-[#5F7161] transition-colors"
                 onClick={() => setIsMenuOpen(false)}
                 title="Profile"
@@ -168,15 +177,13 @@ const Navbar = () => {
               Terms
             </Link>
             {!isAuthenticated ? (
-              <button
-                onClick={() => {
-                  loginWithRedirect();
-                  setIsMenuOpen(false);
-                }}
+              <Link
+                href="/login"
                 className="text-black font-medium hover:text-gray-700 transition-colors text-left"
+                onClick={() => setIsMenuOpen(false)}
               >
                 Log In
-              </button>
+              </Link>
             ) : null}
           </div>
         </div>

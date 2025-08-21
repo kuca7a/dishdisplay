@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { useAuth0 } from "@auth0/auth0-react";
+import Link from "next/link";
 import { Notable } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import { CheckIcon } from "@heroicons/react/20/solid";
@@ -23,11 +23,6 @@ const includedFeatures = [
 ];
 
 export default function LandingPageContent() {
-  const { loginWithRedirect } = useAuth0();
-
-  const handleRestaurantOwnerSignup = () => {
-    loginWithRedirect({ screen_hint: "signup", appState: { returnTo: '/profile' } });
-  };
 
   return (
     <div className="min-h-screen">
@@ -45,12 +40,12 @@ export default function LandingPageContent() {
                 Help customers make confident dining decisions with high-quality
                 photos of every dish on your menu.
               </p>
-              <button
-                onClick={handleRestaurantOwnerSignup}
-                className="bg-[#5F7161] hover:bg-[#4C5B4F] text-white px-8 py-4 rounded-lg font-medium hover:cursor-pointer transition-colors text-lg w-full"
+              <Link
+                href="/login"
+                className="block bg-[#5F7161] hover:bg-[#4C5B4F] text-white px-8 py-4 rounded-lg font-medium hover:cursor-pointer transition-colors text-lg w-full text-center"
               >
-                Get Started Free
-              </button>
+                Get Started - Choose Your Path
+              </Link>
             </div>
             <div className="md:w-1/2 flex flex-col md:flex-row items-center justify-center gap-6">
               <Image
@@ -382,12 +377,12 @@ export default function LandingPageContent() {
               🚀 Advanced analytics dashboard coming soon - be among the first
               to access detailed insights!
             </p>
-            <button
-              onClick={handleRestaurantOwnerSignup}
+            <Link
+              href="/login"
               className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-medium hover:bg-[#4C5B4F] transition-colors text-lg"
             >
-              Get Early Access to Analytics
-            </button>
+              Get Started - Choose Your Path
+            </Link>
           </div>
         </div>
       </section>
@@ -667,12 +662,12 @@ export default function LandingPageContent() {
             Join hundreds of restaurants already using our platform to showcase
             their dishes and delight their customers.
           </p>
-          <button
-            onClick={handleRestaurantOwnerSignup}
+          <Link
+            href="/login"
             className="bg-[#5F7161] text-white px-8 py-4 rounded-lg font-medium hover:cursor-pointer hover:bg-[#4C5B4F] transition-colors text-lg"
           >
-            Start Your Free Trial
-          </button>
+            Get Started - Choose Your Path
+          </Link>
         </div>
       </section>
 

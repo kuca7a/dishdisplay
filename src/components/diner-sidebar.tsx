@@ -14,6 +14,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
+import { Notable } from "next/font/google";
+
+const notable = Notable({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const dinerData = {
   navMain: [
@@ -107,7 +114,7 @@ export function DinerSidebar() {
                   <Home className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">DishDisplay</span>
+                  <span className={`font-semibold ${notable.className}`}>DISH DISPLAY</span>
                   <span className="text-xs">Diner Portal</span>
                 </div>
               </a>

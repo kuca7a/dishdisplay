@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import DinerGuard from "@/components/DinerGuard";
+import SmartRedirect from "@/components/SmartRedirect";
 
 const DinerProfileContent = dynamic(
   () => import("@/components/DinerProfileContent"),
@@ -12,8 +12,11 @@ const DinerProfileContent = dynamic(
 
 export default function DinerPage() {
   return (
-    <DinerGuard>
+    <SmartRedirect 
+      requireAuth={true}
+      allowedUserTypes={['diner']}
+    >
       <DinerProfileContent />
-    </DinerGuard>
+    </SmartRedirect>
   );
 }

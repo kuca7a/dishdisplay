@@ -26,6 +26,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
+import { Notable } from "next/font/google";
+
+const notable = Notable({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const data = {
   navMain: [
@@ -140,7 +147,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <div className="flex items-center px-6 py-4">
-          <h1 className="text-xl font-semibold text-[#5F7161]">
+          <h1 className={`text-xl font-semibold text-[#5F7161] ${notable.className}`}>
             DISH DISPLAY
           </h1>
         </div>
