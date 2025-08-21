@@ -6,10 +6,23 @@ import { useRouter } from "next/navigation";
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
-  const onRedirectCallback = (appState?: { returnTo?: string }) => {
-    // Redirect to the intended page from appState, or fallback to current page
-    const returnTo = appState?.returnTo || window.location.pathname;
-    router.push(returnTo);
+  const onRedirectCallback = (appState?: { returnTo?: string; userType?: string }) => {
+    // Handle user type routing
+    if (appState?.userType === 'restaurant_owner') {
+      router.push('/profile');
+    } else if (appState?.userType === 'diner') {
+      // Return to the menu they were viewing or diner dashboard
+      const returnTo = appState.returnTo || '/diner';
+      router.push(returnTo);
+    } else {
+      // Fallback - if no user type specified, go to login page to choose
+      const returnTo = appState?.returnTo;
+      if (returnTo && (returnTo !== '/login' && returnTo !== '/')) {
+        router.push('/login');
+      } else {
+        router.push(returnTo || '/');
+      }
+    }
   };
 
   return (

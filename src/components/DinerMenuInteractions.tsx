@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +33,7 @@ interface DinerMenuInteractionsProps {
 export default function DinerMenuInteractions({
   restaurant,
 }: DinerMenuInteractionsProps) {
-  const { loginWithRedirect, isAuthenticated, user, isLoading } = useAuth0();
+  const { isAuthenticated, user, isLoading } = useAuth0();
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showVisitDialog, setShowVisitDialog] = useState(false);
   const [rating, setRating] = useState(0);
@@ -40,14 +41,6 @@ export default function DinerMenuInteractions({
   const [isVisitLogged, setIsVisitLogged] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-
-  const handleDinerLogin = () => {
-    loginWithRedirect({
-      appState: {
-        returnTo: `/menu/${restaurant.id}`,
-      },
-    });
-  };
 
   const handleLogVisit = async () => {
     setIsSubmitting(true);
@@ -146,14 +139,15 @@ export default function DinerMenuInteractions({
               <p className="text-xs text-gray-600 mb-3">
                 Track visits, write reviews, and earn dining achievements
               </p>
-              <Button
-                onClick={handleDinerLogin}
-                size="sm"
-                className="w-full bg-[#5F7161] hover:bg-[#4C5B4F] text-white"
-              >
-                <LogIn className="h-3 w-3 mr-1" />
-                Join as Food Explorer
-              </Button>
+              <Link href="/login">
+                <Button
+                  size="sm"
+                  className="w-full bg-[#5F7161] hover:bg-[#4C5B4F] text-white"
+                >
+                  <LogIn className="h-3 w-3 mr-1" />
+                  Join as Food Explorer
+                </Button>
+              </Link>
             </div>
           </div>
         </CardContent>
