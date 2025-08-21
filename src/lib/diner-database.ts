@@ -1,16 +1,15 @@
-import { getSupabaseClient } from "@/lib/supabase";
+import { getSupabaseClient } from "./supabase";
+import { leaderboardService } from "./leaderboard";
 import {
   DinerProfile,
-  VisitToken,
+  UpdateDinerProfileData,
   DinerVisit,
   DinerReview,
-  CompetitionEntry,
-  DinerBadge,
-  UpdateDinerProfileData,
-  CreateVisitTokenData,
-  RedeemVisitTokenData,
   CreateReviewData,
   UpdateReviewData,
+  VisitToken,
+  CreateVisitTokenData,
+  RedeemVisitTokenData,
 } from "@/types/database";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
@@ -235,6 +234,28 @@ export const visitTokenService = {
         .single();
 
       if (visitError) throw visitError;
+
+      // Award leaderboard points for the visit
+      try {
+        // Get diner profile to get the diner_id
+        const { data: diner, error: dinerError } = await supabase
+          .from("diner_profiles")
+          .select("id")
+          .eq("email", dinerEmail)
+          .single();
+
+        if (!dinerError && diner) {
+          await leaderboardService.awardVisitPoints(
+            diner.id, 
+            visit.id, 
+            tokenRecord.restaurant_id
+          );
+        }
+      } catch (leaderboardError) {
+        console.error("Error awarding leaderboard points for visit:", leaderboardError);
+        // Don't fail the visit creation if leaderboard points fail
+      }
+
       return visit;
     } catch (error) {
       if (error instanceof jwt.JsonWebTokenError) {
@@ -369,6 +390,28 @@ export const dinerReviewService = {
       .single();
 
     if (error) throw error;
+
+    // Award leaderboard points for the review
+    try {
+      // Get diner profile to get the diner_id
+      const { data: diner, error: dinerError } = await supabase
+        .from("diner_profiles")
+        .select("id")
+        .eq("email", dinerEmail)
+        .single();
+
+      if (!dinerError && diner) {
+        await leaderboardService.awardReviewPoints(
+          diner.id, 
+          data.id, 
+          visit.restaurant_id
+        );
+      }
+    } catch (leaderboardError) {
+      console.error("Error awarding leaderboard points for review:", leaderboardError);
+      // Don't fail the review creation if leaderboard points fail
+    }
+
     return data;
   },
 
@@ -511,10 +554,14 @@ export const dinerReviewService = {
 // Competition operations
 export const competitionService = {
   // Get current week's leaderboard for a restaurant
+  // TODO: Replace with new leaderboard system
+  // Legacy competition functions - to be removed
+};
+/*
   async getWeeklyLeaderboard(
     restaurantId: string,
     week?: string
-  ): Promise<CompetitionEntry[]> {
+  ): Promise<any[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
@@ -789,3 +836,4 @@ function getWeekEnd(isoWeek: string): string {
   start.setHours(23, 59, 59, 999);
   return start.toISOString();
 }
+*/
