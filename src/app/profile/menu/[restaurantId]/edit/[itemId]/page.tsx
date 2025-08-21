@@ -3,6 +3,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Rubik } from "next/font/google";
+import { AppSidebar } from "@/components/app-sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Save } from "lucide-react";
+import { Save, ArrowLeft } from "lucide-react";
 import { menuItemService } from "@/lib/database";
 import { MenuItem, UpdateMenuItemData } from "@/types/database";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -165,274 +180,313 @@ export default function EditMenuItemPage() {
   };
 
   const handleBack = () => {
-    router.back();
+    router.push(`/profile/menu/manage`);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <ThreeDotsLoader size="lg" color="#5F7161" />
-          <p className="text-lg text-gray-600 mt-4">Loading menu item...</p>
-        </div>
-      </div>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="text-center">
+              <ThreeDotsLoader size="lg" color="#5F7161" />
+              <p className="text-lg text-gray-600 mt-4">Loading menu item...</p>
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
     );
   }
 
   if (error || !item) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white shadow-lg rounded-lg">
-          <div className="p-8 text-center">
-            <div className="text-6xl mb-4">🍽️</div>
-            <h1 className="text-2xl font-bold mb-2 text-gray-800">
-              Item Not Found
-            </h1>
-            <p className="text-gray-600 mb-4">
-              {error || "Sorry, we couldn't find this menu item."}
-            </p>
-            <Button onClick={handleBack} className="bg-[#5F7161] hover:bg-[#4C5B4F]">
-              Go Back
-            </Button>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <div className="flex h-full w-full items-center justify-center p-4">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🍽️</div>
+              <h1 className="text-2xl font-bold mb-2 text-gray-800">
+                Item Not Found
+              </h1>
+              <p className="text-gray-600 mb-4">
+                {error || "Sorry, we couldn't find this menu item."}
+              </p>
+              <Button onClick={handleBack} className="bg-[#5F7161] hover:bg-[#4C5B4F]">
+                Go Back to Menu
+              </Button>
+            </div>
           </div>
-        </div>
-      </div>
+        </SidebarInset>
+      </SidebarProvider>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${rubik.className}`}>
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-20">
-        <div className="flex items-center gap-3 px-4 py-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-            className="shrink-0"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-lg font-semibold text-center flex-1 pr-10">
-            Edit Menu Item
-          </h1>
-        </div>
-      </div>
+    <div className={rubik.className}>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+            <div className="flex items-center gap-2 px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink href="/profile">Dashboard</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink href="/profile/menu/manage">Menu Management</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Edit Menu Item</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+          </header>
 
-      <div className="max-w-2xl mx-auto p-4 py-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Update Menu Item Details</CardTitle>
-            <p className="text-sm text-gray-600">
-              Update the details of your menu item. All fields marked with * are required.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Basic Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Basic Information</h3>
-                
-                <div>
-                  <Label htmlFor="item-name">Item Name *</Label>
-                  <Input
-                    id="item-name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="e.g. Margherita Pizza"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="item-description">Short Description</Label>
-                  <Textarea
-                    id="item-description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    placeholder="Brief description for menu list..."
-                    rows={2}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="item-price">Price (£) *</Label>
-                    <Input
-                      id="item-price"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.price}
-                      onChange={(e) =>
-                        setFormData({ ...formData, price: e.target.value })
-                      }
-                      placeholder="12.99"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="item-category">Category *</Label>
-                    <Select
-                      value={formData.category}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, category: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.value} value={category.value}>
-                            {category.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="item-time-to-make">Time to Make</Label>
-                  <Input
-                    id="item-time-to-make"
-                    value={formData.time_to_make}
-                    onChange={(e) =>
-                      setFormData({ ...formData, time_to_make: e.target.value })
-                    }
-                    placeholder="e.g. 20 minutes"
-                  />
-                </div>
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Edit Menu Item</h1>
+                <p className="text-muted-foreground">
+                  Update the details of your menu item
+                </p>
               </div>
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                className="gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Menu
+              </Button>
+            </div>
 
-              {/* Image Upload */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Image</h3>
-                <ImageUpload
-                  onImageUploaded={(url) =>
-                    setFormData({ ...formData, image_url: url })
-                  }
-                  restaurantId={restaurantId}
-                  currentImageUrl={formData.image_url}
-                />
-              </div>
+            <div className="grid auto-rows-min gap-4 md:grid-cols-1">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Menu Item Details</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Update the details of your menu item. All fields marked with * are required.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Basic Information */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Basic Information</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2">
+                          <Label htmlFor="item-name">Item Name *</Label>
+                          <Input
+                            id="item-name"
+                            value={formData.name}
+                            onChange={(e) =>
+                              setFormData({ ...formData, name: e.target.value })
+                            }
+                            placeholder="e.g. Margherita Pizza"
+                            required
+                          />
+                        </div>
 
-              {/* Nutritional Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Nutritional Information</h3>
-                
-                <div>
-                  <Label htmlFor="detailed-description">Detailed Description *</Label>
-                  <Textarea
-                    id="detailed-description"
-                    value={formData.detailed_description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, detailed_description: e.target.value })
-                    }
-                    placeholder="Provide a detailed description of the dish, its preparation, and what makes it special..."
-                    rows={4}
-                    required
-                  />
-                </div>
+                        <div className="md:col-span-2">
+                          <Label htmlFor="item-description">Short Description</Label>
+                          <Textarea
+                            id="item-description"
+                            value={formData.description}
+                            onChange={(e) =>
+                              setFormData({ ...formData, description: e.target.value })
+                            }
+                            placeholder="Brief description for menu list..."
+                            rows={2}
+                          />
+                        </div>
 
-                <div>
-                  <Label htmlFor="calories">Calories *</Label>
-                  <Input
-                    id="calories"
-                    type="number"
-                    min="1"
-                    value={formData.calories}
-                    onChange={(e) =>
-                      setFormData({ ...formData, calories: e.target.value })
-                    }
-                    placeholder="e.g. 350"
-                    required
-                  />
-                </div>
+                        <div>
+                          <Label htmlFor="item-price">Price (£) *</Label>
+                          <Input
+                            id="item-price"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={formData.price}
+                            onChange={(e) =>
+                              setFormData({ ...formData, price: e.target.value })
+                            }
+                            placeholder="12.99"
+                            required
+                          />
+                        </div>
 
-                <div>
-                  <Label htmlFor="ingredients">Ingredients *</Label>
-                  <Textarea
-                    id="ingredients"
-                    value={formData.ingredients}
-                    onChange={(e) =>
-                      setFormData({ ...formData, ingredients: e.target.value })
-                    }
-                    placeholder="List all ingredients used in this dish..."
-                    rows={4}
-                    required
-                  />
-                </div>
+                        <div>
+                          <Label htmlFor="item-category">Category *</Label>
+                          <Select
+                            value={formData.category}
+                            onValueChange={(value) =>
+                              setFormData({ ...formData, category: value })
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categories.map((category) => (
+                                <SelectItem key={category.value} value={category.value}>
+                                  {category.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                <div>
-                  <Label htmlFor="allergens">Allergens (comma-separated)</Label>
-                  <Input
-                    id="allergens"
-                    value={formData.allergens.join(", ")}
-                    onChange={(e) => {
-                      const allergenList = e.target.value
-                        .split(",")
-                        .map(item => item.trim())
-                        .filter(item => item.length > 0);
-                      setFormData({ ...formData, allergens: allergenList });
-                    }}
-                    placeholder="e.g. Gluten, Dairy, Nuts, Eggs"
-                  />
-                </div>
-              </div>
+                        <div className="md:col-span-2">
+                          <Label htmlFor="item-time-to-make">Time to Make</Label>
+                          <Input
+                            id="item-time-to-make"
+                            value={formData.time_to_make}
+                            onChange={(e) =>
+                              setFormData({ ...formData, time_to_make: e.target.value })
+                            }
+                            placeholder="e.g. 20 minutes"
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Availability */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Availability</h3>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="item-available"
-                    checked={formData.is_available}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_available: checked })
-                    }
-                  />
-                  <Label htmlFor="item-available">Available for order</Label>
-                </div>
-              </div>
+                    {/* Image Upload */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Image</h3>
+                      <ImageUpload
+                        onImageUploaded={(url) =>
+                          setFormData({ ...formData, image_url: url })
+                        }
+                        restaurantId={restaurantId}
+                        currentImageUrl={formData.image_url}
+                      />
+                    </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-4 pt-6 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleBack}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={
-                    saving ||
-                    !formData.name.trim() ||
-                    !formData.price ||
-                    !formData.category ||
-                    !formData.detailed_description.trim() ||
-                    !formData.calories ||
-                    !formData.ingredients.trim()
-                  }
-                  className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F]"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {saving ? "Saving..." : "Save Changes"}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+                    {/* Nutritional Information */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Nutritional Information</h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2">
+                          <Label htmlFor="detailed-description">Detailed Description *</Label>
+                          <Textarea
+                            id="detailed-description"
+                            value={formData.detailed_description}
+                            onChange={(e) =>
+                              setFormData({ ...formData, detailed_description: e.target.value })
+                            }
+                            placeholder="Provide a detailed description of the dish, its preparation, and what makes it special..."
+                            rows={4}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="calories">Calories *</Label>
+                          <Input
+                            id="calories"
+                            type="number"
+                            min="1"
+                            value={formData.calories}
+                            onChange={(e) =>
+                              setFormData({ ...formData, calories: e.target.value })
+                            }
+                            placeholder="e.g. 350"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="allergens">Allergens (comma-separated)</Label>
+                          <Input
+                            id="allergens"
+                            value={formData.allergens.join(", ")}
+                            onChange={(e) => {
+                              const allergenList = e.target.value
+                                .split(",")
+                                .map(item => item.trim())
+                                .filter(item => item.length > 0);
+                              setFormData({ ...formData, allergens: allergenList });
+                            }}
+                            placeholder="e.g. Gluten, Dairy, Nuts, Eggs"
+                          />
+                        </div>
+
+                        <div className="md:col-span-2">
+                          <Label htmlFor="ingredients">Ingredients *</Label>
+                          <Textarea
+                            id="ingredients"
+                            value={formData.ingredients}
+                            onChange={(e) =>
+                              setFormData({ ...formData, ingredients: e.target.value })
+                            }
+                            placeholder="List all ingredients used in this dish..."
+                            rows={4}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Availability */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-gray-900 border-b pb-2">Availability</h3>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="item-available"
+                          checked={formData.is_available}
+                          onCheckedChange={(checked) =>
+                            setFormData({ ...formData, is_available: checked })
+                          }
+                        />
+                        <Label htmlFor="item-available">Available for order</Label>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-4 pt-6 border-t">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleBack}
+                        className="flex-1"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={
+                          saving ||
+                          !formData.name.trim() ||
+                          !formData.price ||
+                          !formData.category ||
+                          !formData.detailed_description.trim() ||
+                          !formData.calories ||
+                          !formData.ingredients.trim()
+                        }
+                        className="flex-1 bg-[#5F7161] hover:bg-[#4C5B4F]"
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        {saving ? "Saving..." : "Save Changes"}
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
     </div>
   );
 }

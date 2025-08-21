@@ -75,7 +75,7 @@ const dinerData = {
         },
         {
           title: "Leaderboard",
-          url: "/leaderboard",
+          url: "/diner/leaderboard",
         },
         {
           title: "Food Competitions",

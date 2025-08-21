@@ -508,3 +508,62 @@ export interface RecentActivity {
     visitor_location?: string;
   };
 }
+
+// Leaderboard System Types
+export interface LeaderboardPeriod {
+  id: string;
+  start_date: string;
+  end_date: string;
+  status: 'active' | 'completed' | 'upcoming';
+  winner_restaurant_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DinerPoints {
+  id: string;
+  diner_id: string;
+  leaderboard_period_id: string;
+  points: number;
+  earned_from: 'visit' | 'review';
+  source_id?: string;
+  restaurant_id?: string;
+  earned_at: string;
+  created_at: string;
+}
+
+export interface LeaderboardRanking {
+  id: string;
+  leaderboard_period_id: string;
+  diner_id: string;
+  total_points: number;
+  rank: number;
+  is_winner: boolean;
+  prize_claimed: boolean;
+  created_at: string;
+  updated_at: string;
+  // Joined data
+  diner_profile?: {
+    display_name: string;
+    profile_photo_url?: string;
+  };
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  diner_name: string;
+  total_points: number;
+  is_current_user: boolean;
+  is_winner: boolean;
+  profile_photo_url?: string;
+}
+
+export interface LeaderboardData {
+  current_period: LeaderboardPeriod;
+  top_entries: LeaderboardEntry[];
+  current_user_entry?: LeaderboardEntry;
+  prize_restaurant?: {
+    id: string;
+    name: string;
+  };
+}
