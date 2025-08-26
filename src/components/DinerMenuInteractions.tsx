@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,6 +35,7 @@ export default function DinerMenuInteractions({
   restaurant,
 }: DinerMenuInteractionsProps) {
   const { isAuthenticated, user, isLoading } = useAuth0();
+  const pathname = usePathname();
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [showVisitDialog, setShowVisitDialog] = useState(false);
   const [rating, setRating] = useState(0);
@@ -139,7 +141,7 @@ export default function DinerMenuInteractions({
               <p className="text-xs text-gray-600 mb-3">
                 Track visits, write reviews, and earn dining achievements
               </p>
-              <Link href="/login">
+              <Link href={`/login?returnTo=${encodeURIComponent(pathname)}`}>
                 <Button
                   size="sm"
                   className="w-full bg-[#5F7161] hover:bg-[#4C5B4F] text-white"

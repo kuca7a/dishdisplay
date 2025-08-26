@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Notable } from "next/font/google";
 import { 
   QrCode, 
@@ -24,19 +24,28 @@ const notable = Notable({
   display: "swap",
 });
 
-export default function LoginPage() {
+function LoginContent() {
   const { loginWithRedirect } = useAuth0();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleRestaurantOwnerLogin = () => {
+    const returnTo = searchParams.get('returnTo');
     loginWithRedirect({
-      appState: { returnTo: '/profile', userType: 'restaurant_owner' }
+      appState: { 
+        returnTo: returnTo || '/profile', 
+        userType: 'restaurant_owner' 
+      }
     });
   };
 
   const handleDinerLogin = () => {
+    const returnTo = searchParams.get('returnTo');
     loginWithRedirect({
-      appState: { returnTo: '/diner', userType: 'diner' }
+      appState: { 
+        returnTo: returnTo || '/diner', 
+        userType: 'diner' 
+      }
     });
   };
 
@@ -231,5 +240,20 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5F7161] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
