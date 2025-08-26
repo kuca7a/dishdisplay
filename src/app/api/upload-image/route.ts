@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 
-const BUCKET_NAME = "menu-images";
+const MENU_BUCKET = "menu-images";
+const REVIEW_BUCKET = "review-photos";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 /**
- * Generate a unique filename for uploaded images
+ * Generate a unique filename for menu images
  */
 const generateFileName = (
   originalName: string,
@@ -17,6 +18,16 @@ const generateFileName = (
   return `${restaurantId}/${timestamp}-${random}.${extension}`;
 };
 
+/**
+ * Generate a unique filename for review photos
+ */
+const generateReviewFileName = (originalName: string): string => {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2);
+  const extension = originalName.split(".").pop()?.toLowerCase() || "jpg";
+  return `reviews/${timestamp}-${random}.${extension}`;
+};
+
 export async function POST(request: NextRequest) {
   try {
     console.log("Image upload API called");
@@ -24,18 +35,31 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const restaurantId = formData.get("restaurantId") as string;
+    const type = formData.get("type") as string; // 'menu' or 'review'
 
     if (!file) {
       console.error("No file provided");
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    if (!restaurantId) {
-      console.error("No restaurant ID provided");
-      return NextResponse.json(
-        { error: "Restaurant ID is required" },
-        { status: 400 }
-      );
+    // Determine bucket and filename based on type
+    let bucketName: string;
+    let fileName: string;
+
+    if (type === "review") {
+      bucketName = REVIEW_BUCKET;
+      fileName = generateReviewFileName(file.name);
+    } else {
+      // Default to menu upload
+      if (!restaurantId) {
+        console.error("No restaurant ID provided for menu upload");
+        return NextResponse.json(
+          { error: "Restaurant ID is required for menu uploads" },
+          { status: 400 }
+        );
+      }
+      bucketName = MENU_BUCKET;
+      fileName = generateFileName(file.name, restaurantId);
     }
 
     // Validate file type
@@ -60,11 +84,10 @@ export async function POST(request: NextRequest) {
       name: file.name,
       size: file.size,
       type: file.type,
-      restaurantId,
+      uploadType: type,
+      bucket: bucketName,
     });
 
-    // Generate unique filename
-    const fileName = generateFileName(file.name, restaurantId);
     console.log("Generated filename:", fileName);
 
     // Convert File to ArrayBuffer for Supabase
@@ -74,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     // Upload to Supabase Storage using service key (bypasses RLS)
     const { error: uploadError } = await supabaseServer.storage
-      .from(BUCKET_NAME)
+      .from(bucketName)
       .upload(fileName, fileBuffer, {
         contentType: file.type,
         cacheControl: "3600",
@@ -93,7 +116,7 @@ export async function POST(request: NextRequest) {
 
     // Get public URL
     const { data: urlData } = supabaseServer.storage
-      .from(BUCKET_NAME)
+      .from(bucketName)
       .getPublicUrl(fileName);
 
     console.log("Upload complete:", urlData.publicUrl);
@@ -102,6 +125,7 @@ export async function POST(request: NextRequest) {
       success: true,
       url: urlData.publicUrl,
       path: fileName,
+      type: type || 'menu',
     });
   } catch (error) {
     console.error("Image upload error:", error);

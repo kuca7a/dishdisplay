@@ -320,6 +320,57 @@ export default function LeaderboardContent() {
                   </p>
                 </div>
               </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  +15
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-green-800 text-sm sm:text-base">
+                    Add Photos to Review
+                  </p>
+                  <p className="text-xs sm:text-sm text-green-600">
+                    Upload photos with your review
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  +15
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-green-800 text-sm sm:text-base">
+                    3+ Day Visit Streak
+                  </p>
+                  <p className="text-xs sm:text-sm text-green-600">
+                    Visit restaurants on consecutive days
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  +25
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-green-800 text-sm sm:text-base">
+                    Complete Your Profile
+                  </p>
+                  <p className="text-xs sm:text-sm text-green-600">
+                    Add photo, bio, preferences & location
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  +10
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-green-800 text-sm sm:text-base">
+                    Detailed Review Bonus
+                  </p>
+                  <p className="text-xs sm:text-sm text-green-600">
+                    Write 50+ characters for extra points</p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
