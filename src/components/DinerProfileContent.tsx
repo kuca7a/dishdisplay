@@ -181,6 +181,11 @@ export default function DinerProfileContent() {
     photo_urls?: string[];
     is_public?: boolean;
   }) => {
+    if (!user?.email) {
+      console.error("User email not available");
+      return;
+    }
+
     try {
       const response = await fetch("/api/diner/reviews", {
         method: "POST",
@@ -188,6 +193,8 @@ export default function DinerProfileContent() {
         body: JSON.stringify({
           ...reviewData,
           visit_id: selectedVisitForReview,
+          user_email: user.email,
+          user_name: user.name || user.email.split('@')[0],
         }),
       });
 

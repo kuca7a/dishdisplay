@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { restaurant_id, visit_date, notes } = await request.json();
+    const { restaurant_id, visit_date, notes, user_email, user_name } = await request.json();
 
     if (!restaurant_id) {
       return NextResponse.json(
@@ -75,11 +75,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Get user from Auth0 token when authentication is properly set up
-    // For now, we'll use a more robust temporary implementation
-    const email = "hdcatalyst@gmail.com"; // Temporary hardcoded email
-    const userName = "Test Diner";
-    const auth0Id = "temp-id-" + Date.now(); // Make it unique
+    if (!user_email) {
+      return NextResponse.json(
+        { error: "User email is required" },
+        { status: 400 }
+      );
+    }
+
+    const email = user_email;
+    const userName = user_name || "Diner";
+    const auth0Id = "auth0-" + Date.now(); // Make it unique
 
     console.log("Attempting to log visit for:", { email, restaurant_id });
 
@@ -110,6 +115,7 @@ export async function POST(request: NextRequest) {
         let createProfileData: Record<string, unknown> = {
           email,
           name: userName,
+          display_name: userName,
           auth0_id: auth0Id,
           total_points: 0,
           total_visits: 0,
@@ -129,6 +135,7 @@ export async function POST(request: NextRequest) {
           createProfileData = {
             email,
             name: userName,
+            display_name: userName,
             auth0_id: auth0Id,
             points: 0, // Legacy column name
             level: 1,
@@ -244,6 +251,13 @@ export async function POST(request: NextRequest) {
     // Award points for the visit (10 points per visit)
     console.log("Awarding points for visit...");
 
+    // Get current active leaderboard period
+    const { data: activePeriod } = await supabaseServer
+      .from("leaderboard_periods")
+      .select("id")
+      .eq("status", "active")
+      .single();
+
     // Get current points and visits count
     const { data: currentProfile } = await supabaseServer
       .from("diner_profiles")
@@ -257,6 +271,7 @@ export async function POST(request: NextRequest) {
       const currentVisits =
         (currentProfile as { total_visits: number }).total_visits || 0;
 
+      // Update profile totals
       const { error: pointsError } = await supabaseServer
         .from("diner_profiles")
         .update({
@@ -273,6 +288,29 @@ export async function POST(request: NextRequest) {
         // Don't fail the request if points update fails
       } else {
         console.log("Points awarded successfully: +10 points");
+      }
+
+      // Also create entry in diner_points table for leaderboard if period exists
+      if (activePeriod) {
+        const { error: leaderboardPointsError } = await supabaseServer
+          .from("diner_points")
+          .insert({
+            diner_id: (profile as { id: string }).id,
+            points: 10,
+            earned_from: "visit",
+            source_id: visit.id,
+            restaurant_id: restaurant_id,
+            leaderboard_period_id: activePeriod.id,
+          });
+
+        if (leaderboardPointsError) {
+          console.warn("Error logging leaderboard points:", leaderboardPointsError);
+          // Don't fail the request if leaderboard points logging fails
+        } else {
+          console.log("Leaderboard points logged successfully");
+        }
+      } else {
+        console.warn("No active leaderboard period found, points not logged for leaderboard");
       }
     }
 

@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { restaurant_id, rating, review_text, photos } = body;
+    const { restaurant_id, rating, review_text, photos, user_email, user_name } = body;
 
     if (!restaurant_id || !rating) {
       return NextResponse.json(
@@ -58,10 +58,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Get user from Auth0 token when authentication is properly set up
-    const email = "hdcatalyst@gmail.com"; // Temporary hardcoded email
-    const userName = "Test Diner";
-    const auth0Id = "temp-id-" + Date.now(); // Make it unique
+    if (!user_email) {
+      return NextResponse.json(
+        { error: "User email is required" },
+        { status: 400 }
+      );
+    }
+
+    const email = user_email;
+    const userName = user_name || "Diner";
+    const auth0Id = "auth0-" + Date.now(); // Make it unique
 
     console.log("Attempting to submit review for:", {
       email,
@@ -96,6 +102,7 @@ export async function POST(request: NextRequest) {
         let createProfileData: Record<string, unknown> = {
           email,
           name: userName,
+          display_name: userName,
           auth0_id: auth0Id,
           total_points: 0,
           total_reviews: 0,
@@ -115,6 +122,7 @@ export async function POST(request: NextRequest) {
           createProfileData = {
             email,
             name: userName,
+            display_name: userName,
             auth0_id: auth0Id,
             points: 0, // Legacy column name
             level: 1,
@@ -276,6 +284,13 @@ export async function POST(request: NextRequest) {
     // Award points for the review (15 points per review)
     console.log("Awarding points for review...");
 
+    // Get current active leaderboard period
+    const { data: activePeriod } = await supabaseServer
+      .from("leaderboard_periods")
+      .select("id")
+      .eq("status", "active")
+      .single();
+
     // Get current points and reviews count
     const { data: currentProfile } = await supabaseServer
       .from("diner_profiles")
@@ -289,10 +304,11 @@ export async function POST(request: NextRequest) {
       const currentReviews =
         (currentProfile as { total_reviews: number }).total_reviews || 0;
 
+      // Update profile totals
       const { error: pointsError } = await supabaseServer
         .from("diner_profiles")
         .update({
-          total_points: currentPoints + 15,
+          total_points: currentPoints + 25, // Reviews give 25 points (not 15)
           total_reviews: currentReviews + 1,
         })
         .eq("id", (profile as { id: string }).id);
@@ -304,14 +320,37 @@ export async function POST(request: NextRequest) {
         );
         // Don't fail the request if points update fails
       } else {
-        console.log("Points awarded successfully: +15 points");
+        console.log("Points awarded successfully: +25 points");
+      }
+
+      // Also create entry in diner_points table for leaderboard if period exists
+      if (activePeriod) {
+        const { error: leaderboardPointsError } = await supabaseServer
+          .from("diner_points")
+          .insert({
+            diner_id: (profile as { id: string }).id,
+            points: 25, // Reviews give 25 points
+            earned_from: "review",
+            source_id: review?.id,
+            restaurant_id: restaurant_id,
+            leaderboard_period_id: activePeriod.id,
+          });
+
+        if (leaderboardPointsError) {
+          console.warn("Error logging leaderboard points:", leaderboardPointsError);
+          // Don't fail the request if leaderboard points logging fails
+        } else {
+          console.log("Leaderboard points logged successfully");
+        }
+      } else {
+        console.warn("No active leaderboard period found, points not logged for leaderboard");
       }
     }
 
     console.log("Review submitted successfully:", review?.id);
     return NextResponse.json({
       ...review,
-      points_earned: 15,
+      points_earned: 25, // Updated to reflect actual points awarded
     });
   } catch (error) {
     console.error("Diner review creation API error:", error);
