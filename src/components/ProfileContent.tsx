@@ -36,7 +36,6 @@ import {
 import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/solid";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import { useRestaurantData } from "@/hooks/use-cached-data";
-import { CacheDebug } from "@/components/CacheDebug";
 
 import { Rubik } from "next/font/google";
 
@@ -516,11 +515,6 @@ export default function ProfileContent() {
                 </Card>
               </div>
             )}
-          </div>
-
-          {/* Cache Debug Component - only visible in development */}
-          <div className="mt-6">
-            <CacheDebug showDetailed={process.env.NODE_ENV === "development"} />
           </div>
         </div>
       </SidebarInset>

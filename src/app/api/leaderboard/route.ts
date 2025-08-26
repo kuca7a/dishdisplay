@@ -7,14 +7,14 @@ export async function GET(request: Request) {
     const userEmail = searchParams.get('email');
     
     const supabase = getSupabaseClient();
-    
+
     // Get current active period
     const { data: currentPeriod, error: periodError } = await supabase
       .from('leaderboard_periods')
       .select('*')
       .eq('status', 'active')
       .single();
-    
+
     if (periodError || !currentPeriod) {
       return NextResponse.json({
         success: false,
@@ -22,28 +22,23 @@ export async function GET(request: Request) {
         details: periodError
       });
     }
-    
-    // Get all points for this period and calculate leaderboard
-    const { data: pointsData, error: pointsError } = await supabase
-      .from('diner_points')
-      .select(`
-        *,
-        diner_profiles!inner (
-          email,
-          display_name
-        )
-      `)
-      .eq('leaderboard_period_id', currentPeriod.id);
-    
-    if (pointsError) {
+
+    // SIMPLIFIED: Get all diner profiles with points - single source of truth!
+    const { data: profiles, error: profilesError } = await supabase
+      .from('diner_profiles')
+      .select('email, display_name, name, total_points, total_visits, total_reviews')
+      .gt('total_points', 0) // Only users with points
+      .order('total_points', { ascending: false });
+
+    if (profilesError) {
       return NextResponse.json({
         success: false,
-        error: "Failed to fetch points data",
-        details: pointsError
+        error: "Failed to fetch profiles",
+        details: profilesError
       });
     }
-    
-    if (!pointsData || pointsData.length === 0) {
+
+    if (!profiles || profiles.length === 0) {
       return NextResponse.json({
         success: true,
         leaderboard: {
@@ -54,40 +49,29 @@ export async function GET(request: Request) {
         }
       });
     }
-    
-    // Calculate totals per diner
-    const dinerTotals: { [email: string]: { points: number, name: string } } = {};
-    
-    pointsData.forEach(point => {
-      const email = point.diner_profiles.email;
-      const name = point.diner_profiles.display_name || email.split('@')[0];
+
+    // Convert profiles to leaderboard entries
+    const sortedEntries = profiles.map((profile, index) => {
+      const fullName = profile.display_name || profile.name || profile.email.split('@')[0];
+      const nameParts = fullName.split(' ');
+      const firstName = nameParts[0] || '';
+      const surnameInitial = nameParts.length > 1 ? nameParts[nameParts.length - 1].charAt(0).toUpperCase() : '';
       
-      if (!dinerTotals[email]) {
-        dinerTotals[email] = { points: 0, name };
-      }
-      dinerTotals[email].points += point.points;
+      return {
+        email: profile.email,
+        diner_name: firstName,
+        surname_initial: surnameInitial,
+        total_points: profile.total_points,
+        is_current_user: userEmail === profile.email,
+        is_winner: index === 0, // Winner is #1
+        profile_photo_url: undefined,
+        rank: index + 1
+      };
     });
-    
-    // Convert to sorted leaderboard
-    const sortedEntries = Object.entries(dinerTotals)
-      .map(([email, data]) => ({
-        email,
-        diner_name: data.name,
-        total_points: data.points,
-        is_current_user: userEmail === email,
-        is_winner: false, // Will set later
-        profile_photo_url: undefined
-      }))
-      .sort((a, b) => b.total_points - a.total_points)
-      .map((entry, index) => ({
-        ...entry,
-        rank: index + 1,
-        is_winner: index === 0 // Winner is #1
-      }));
-    
+
     // Get top 10 (only show if user is authenticated)
     const topEntries = userEmail ? sortedEntries.slice(0, 10) : [];
-    
+
     // Get current user entry if not in top 10
     let currentUserEntry = undefined;
     if (userEmail) {
@@ -96,71 +80,19 @@ export async function GET(request: Request) {
         currentUserEntry = sortedEntries.find(entry => entry.is_current_user);
       }
     }
-    
-    // Get prize restaurant (most reviewed restaurant this week)
-    let prizeRestaurant = undefined;
-    const { data: reviewPoints, error: reviewError } = await supabase
-      .from('diner_points')
-      .select(`
-        restaurant_id,
-        restaurants!inner (
-          id,
-          name
-        )
-      `)
-      .eq('leaderboard_period_id', currentPeriod.id)
-      .eq('earned_from', 'review')
-      .not('restaurant_id', 'is', null);
-    
-    if (!reviewError && reviewPoints && reviewPoints.length > 0) {
-      const restaurantCounts: { [key: string]: { count: number; restaurant: { id: string; name: string } } } = {};
-      
-      reviewPoints.forEach((point) => {
-        const restaurantId = point.restaurant_id;
-        const restaurant = Array.isArray(point.restaurants) ? point.restaurants[0] : point.restaurants;
-        
-        if (restaurantCounts[restaurantId]) {
-          restaurantCounts[restaurantId].count++;
-        } else {
-          restaurantCounts[restaurantId] = {
-            count: 1,
-            restaurant: {
-              id: restaurant.id,
-              name: restaurant.name
-            }
-          };
-        }
-      });
-      
-      let maxCount = 0;
-      Object.values(restaurantCounts).forEach(({ count, restaurant }) => {
-        if (count > maxCount) {
-          maxCount = count;
-          prizeRestaurant = {
-            id: restaurant.id,
-            name: restaurant.name
-          };
-        }
-      });
-    }
-    
+
     return NextResponse.json({
       success: true,
       leaderboard: {
         current_period: currentPeriod,
         top_entries: topEntries,
         current_user_entry: currentUserEntry,
-        prize_restaurant: prizeRestaurant
-      },
-      debug: {
-        totalPoints: pointsData.length,
-        totalDiners: Object.keys(dinerTotals).length,
-        periodId: currentPeriod.id
+        prize_restaurant: undefined
       }
     });
 
   } catch (error) {
-    console.error("Direct leaderboard API error:", error);
+    console.error("Simplified leaderboard API error:", error);
     return NextResponse.json(
       { 
         success: false,

@@ -552,6 +552,7 @@ export interface LeaderboardRanking {
 export interface LeaderboardEntry {
   rank: number;
   diner_name: string;
+  surname_initial?: string;
   total_points: number;
   is_current_user: boolean;
   is_winner: boolean;
