@@ -45,6 +45,11 @@ export default function DinerMenuInteractions({
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleLogVisit = async () => {
+    if (!isAuthenticated || !user?.email) {
+      console.error("User not authenticated or email not available");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // Call API to log visit
@@ -57,6 +62,8 @@ export default function DinerMenuInteractions({
           restaurant_id: restaurant.id,
           visit_date: new Date().toISOString(),
           notes: "Visited via QR code menu",
+          user_email: user.email,
+          user_name: user.name || user.email.split('@')[0],
         }),
       });
 
@@ -82,6 +89,11 @@ export default function DinerMenuInteractions({
   const handleSubmitReview = async () => {
     if (rating === 0) return;
 
+    if (!isAuthenticated || !user?.email) {
+      console.error("User not authenticated or email not available");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // Call API to submit review
@@ -95,6 +107,8 @@ export default function DinerMenuInteractions({
           rating,
           review_text: reviewText,
           photos: [],
+          user_email: user.email,
+          user_name: user.name || user.email.split('@')[0],
         }),
       });
 

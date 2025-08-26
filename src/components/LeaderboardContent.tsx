@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, Medal, Award, Users, Calendar, Star } from "lucide-react";
-import { leaderboardService } from "@/lib/leaderboard";
 import { LeaderboardData } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
@@ -20,25 +19,33 @@ export default function LeaderboardContent() {
     const loadLeaderboard = async () => {
       try {
         setLoading(true);
-        const data = await leaderboardService.getCurrentLeaderboard(
-          isAuthenticated ? user?.email : undefined
-        );
+        setError(null);
         
-        if (data) {
-          setLeaderboardData(data);
+        // Use direct API instead of service layer
+        const url = `/api/leaderboard${isAuthenticated && user?.email ? `?email=${encodeURIComponent(user.email)}` : ''}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success && result.leaderboard) {
+          setLeaderboardData(result.leaderboard);
         } else {
-          setError("Could not load leaderboard data");
+          setError(result.error || "Could not load leaderboard data");
         }
       } catch (err) {
         console.error("Error loading leaderboard:", err);
-        setError("Failed to load leaderboard");
+        setError(err instanceof Error ? err.message : "Failed to load leaderboard");
       } finally {
         setLoading(false);
       }
     };
 
     loadLeaderboard();
-  }, [isAuthenticated, user?.email]);
+  }, [isAuthenticated, user]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
