@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Notable } from "next/font/google";
 import { 
   QrCode, 
@@ -27,16 +27,25 @@ const notable = Notable({
 export default function LoginPage() {
   const { loginWithRedirect } = useAuth0();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleRestaurantOwnerLogin = () => {
+    const returnTo = searchParams.get('returnTo');
     loginWithRedirect({
-      appState: { returnTo: '/profile', userType: 'restaurant_owner' }
+      appState: { 
+        returnTo: returnTo || '/profile', 
+        userType: 'restaurant_owner' 
+      }
     });
   };
 
   const handleDinerLogin = () => {
+    const returnTo = searchParams.get('returnTo');
     loginWithRedirect({
-      appState: { returnTo: '/diner', userType: 'diner' }
+      appState: { 
+        returnTo: returnTo || '/diner', 
+        userType: 'diner' 
+      }
     });
   };
 

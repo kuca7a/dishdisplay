@@ -9,18 +9,20 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
   const onRedirectCallback = (appState?: { returnTo?: string; userType?: string }) => {
     // Handle user type routing
     if (appState?.userType === 'restaurant_owner') {
-      router.push('/profile');
+      // For restaurant owners, always go to their profile unless they have a specific returnTo
+      const returnTo = appState.returnTo || '/profile';
+      router.push(returnTo);
     } else if (appState?.userType === 'diner') {
-      // Return to the menu they were viewing or diner dashboard
+      // For diners, prioritize returnTo (e.g., the menu they were viewing) over dashboard
       const returnTo = appState.returnTo || '/diner';
       router.push(returnTo);
     } else {
-      // Fallback - if no user type specified, go to login page to choose
+      // Fallback - if no user type specified, respect returnTo or go to login to choose
       const returnTo = appState?.returnTo;
       if (returnTo && (returnTo !== '/login' && returnTo !== '/')) {
-        router.push('/login');
+        router.push(returnTo);
       } else {
-        router.push(returnTo || '/');
+        router.push('/login');
       }
     }
   };
