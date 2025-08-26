@@ -123,6 +123,83 @@ export const dinerProfileService = {
     if (error) throw error;
     return data || [];
   },
+
+  // Calculate profile completion and award bonus if applicable
+  async checkProfileCompletion(email: string): Promise<{
+    completionPercentage: number;
+    bonusAwarded: boolean;
+    bonusPoints: number;
+    missingFields: string[];
+  }> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error("Database not available");
+    }
+
+    const { data: profile, error } = await supabase
+      .from("diner_profiles")
+      .select("*")
+      .eq("email", email)
+      .single();
+
+    if (error) throw error;
+
+    // Calculate completion percentage
+    const completionFields = {
+      profile_photo_url: !!profile.profile_photo_url,
+      bio: !!(profile.bio && profile.bio.length > 10),
+      dietary_preferences: !!profile.dietary_preferences,
+      location: !!profile.location,
+    };
+
+    const completedFields = Object.values(completionFields).filter(Boolean).length;
+    const totalFields = Object.keys(completionFields).length;
+    const completionPercentage = Math.round((completedFields / totalFields) * 100);
+
+    const missingFields = Object.entries(completionFields)
+      .filter(([, completed]) => !completed)
+      .map(([field]) => {
+        switch (field) {
+          case 'profile_photo_url': return 'Profile Photo';
+          case 'bio': return 'Bio (10+ characters)';
+          case 'dietary_preferences': return 'Dietary Preferences';
+          case 'location': return 'Location';
+          default: return field;
+        }
+      });
+
+    let bonusAwarded = false;
+    let bonusPoints = 0;
+
+    // Award 25 points for 100% completion (only once)
+    if (completionPercentage === 100 && !profile.profile_completion_bonus_claimed) {
+      bonusPoints = 25;
+      bonusAwarded = true;
+
+      // Update profile with bonus
+      await supabase
+        .from("diner_profiles")
+        .update({
+          profile_completion_bonus_claimed: true,
+          profile_completion_percentage: completionPercentage,
+          total_points: (profile.total_points || 0) + bonusPoints,
+        })
+        .eq("email", email);
+    } else {
+      // Just update completion percentage
+      await supabase
+        .from("diner_profiles")
+        .update({ profile_completion_percentage: completionPercentage })
+        .eq("email", email);
+    }
+
+    return {
+      completionPercentage,
+      bonusAwarded,
+      bonusPoints,
+      missingFields,
+    };
+  },
 };
 
 // Visit Token operations (OVT system)
@@ -235,6 +312,21 @@ export const visitTokenService = {
 
       if (visitError) throw visitError;
 
+      // Calculate and update visit streak
+      const streakData = await visitTokenService.calculateVisitStreak(dinerEmail);
+      
+      // Update visit with streak bonus points if applicable
+      let totalPoints = 10; // Base points
+      if (streakData.streakBonus > 0) {
+        totalPoints += streakData.streakBonus;
+        
+        // Update the visit record with bonus points
+        await supabase
+          .from("diner_visits")
+          .update({ points_earned: totalPoints })
+          .eq("id", visit.id);
+      }
+
       // Award leaderboard points for the visit
       try {
         // Get diner profile to get the diner_id
@@ -256,7 +348,7 @@ export const visitTokenService = {
         // Don't fail the visit creation if leaderboard points fail
       }
 
-      return visit;
+      return { ...visit, points_earned: totalPoints, streak_info: streakData };
     } catch (error) {
       if (error instanceof jwt.JsonWebTokenError) {
         throw new Error("Invalid token format");
@@ -280,6 +372,113 @@ export const visitTokenService = {
 
     if (error) throw error;
     return data?.length || 0;
+  },
+
+  // Calculate visit streak and award bonus points
+  async calculateVisitStreak(dinerEmail: string): Promise<{
+    currentStreak: number;
+    streakBonus: number;
+    isNewStreak: boolean;
+    streakMessage?: string;
+  }> {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      throw new Error("Database not available");
+    }
+
+    // Get current profile data
+    const { data: profile, error: profileError } = await supabase
+      .from("diner_profiles")
+      .select("current_streak, longest_streak, last_visit_date, total_points")
+      .eq("email", dinerEmail)
+      .single();
+
+    if (profileError) {
+      // If profile doesn't exist, create it
+      if (profileError.code === "PGRST116") {
+        await dinerProfileService.getOrCreate(dinerEmail, "New Diner");
+        return { currentStreak: 1, streakBonus: 0, isNewStreak: true };
+      }
+      throw profileError;
+    }
+
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const lastVisitDate = profile.last_visit_date;
+    const currentStreak = profile.current_streak || 0;
+    
+    let newStreak = 1;
+    let streakBonus = 0;
+    let isNewStreak = false;
+    let streakMessage = undefined;
+
+    if (lastVisitDate) {
+      const lastVisit = new Date(lastVisitDate);
+      const todayDate = new Date(today);
+      const diffTime = todayDate.getTime() - lastVisit.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) {
+        // Same day visit - no streak change, no bonus
+        return { 
+          currentStreak: currentStreak, 
+          streakBonus: 0, 
+          isNewStreak: false 
+        };
+      } else if (diffDays === 1) {
+        // Consecutive day - extend streak
+        newStreak = currentStreak + 1;
+        isNewStreak = false;
+        
+        // Award streak bonus after 3+ consecutive days
+        if (newStreak >= 3) {
+          streakBonus = 15; // +15 points for 3+ day streaks
+          streakMessage = `🔥 ${newStreak}-day streak! +15 bonus points!`;
+        }
+      } else {
+        // Streak broken - reset to 1
+        newStreak = 1;
+        isNewStreak = true;
+      }
+    } else {
+      // First visit ever
+      newStreak = 1;
+      isNewStreak = true;
+    }
+
+    // Update profile with new streak data
+    const updateData: {
+      current_streak: number;
+      last_visit_date: string;
+      streak_updated_at: string;
+      longest_streak?: number;
+      total_points?: number;
+    } = {
+      current_streak: newStreak,
+      last_visit_date: today,
+      streak_updated_at: new Date().toISOString(),
+    };
+
+    // Update longest streak if needed
+    if (newStreak > (profile.longest_streak || 0)) {
+      updateData.longest_streak = newStreak;
+    }
+
+    // Add bonus points to total if earned
+    if (streakBonus > 0) {
+      updateData.total_points = (profile.total_points || 0) + streakBonus;
+    }
+
+    await supabase
+      .from("diner_profiles")
+      .update(updateData)
+      .eq("email", dinerEmail);
+
+    return {
+      currentStreak: newStreak,
+      streakBonus,
+      isNewStreak,
+      streakMessage
+    };
   },
 };
 

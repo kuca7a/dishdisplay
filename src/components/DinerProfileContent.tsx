@@ -55,6 +55,7 @@ import {
 import VisitsHistory from "@/components/VisitsHistory";
 import ReviewForm from "@/components/ReviewForm";
 import PointsAndRewards from "@/components/PointsAndRewards";
+import ProfileCompletionCard from "@/components/ProfileCompletionCard";
 
 const rubik = Rubik({
   weight: ["300", "400", "500", "600"],
@@ -549,7 +550,14 @@ export default function DinerProfileContent() {
               </TabsContent>
 
               <TabsContent value="rewards">
-                <PointsAndRewards totalPoints={profile?.total_points || 0} />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <PointsAndRewards totalPoints={profile?.total_points || 0} />
+                  </div>
+                  <div>
+                    <ProfileCompletionCard userEmail={user?.email} />
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="badges" className="space-y-4">
