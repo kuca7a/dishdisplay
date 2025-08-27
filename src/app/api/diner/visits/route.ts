@@ -219,6 +219,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // **ANTI-SPAM CHECK**: Check for existing visit within 24 hours
+    const twentyFourHoursAgo = new Date();
+    twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+
+    const { data: recentVisit } = await supabaseServer
+      .from("diner_visits")
+      .select("id, visit_date")
+      .eq("diner_id", (profile as { id: string }).id)
+      .eq("restaurant_id", restaurant_id)
+      .gte("visit_date", twentyFourHoursAgo.toISOString())
+      .order("visit_date", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (recentVisit) {
+      const lastVisitTime = new Date((recentVisit as { visit_date: string }).visit_date);
+      const timeDiff = Date.now() - lastVisitTime.getTime();
+      const hoursRemaining = Math.ceil((24 * 60 * 60 * 1000 - timeDiff) / (60 * 60 * 1000));
+      
+      return NextResponse.json(
+        {
+          error: "Visit limit reached",
+          message: `You can only log one visit per restaurant every 24 hours. Try again in ${hoursRemaining} hour${hoursRemaining !== 1 ? 's' : ''}.`,
+          canRetry: true,
+          timeRemaining: hoursRemaining
+        },
+        { status: 429 }
+      );
+    }
+
     // Create the visit record
     console.log("Creating visit record...");
     const { data: visit, error: visitError } = await supabaseServer

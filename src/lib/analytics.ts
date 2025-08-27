@@ -1,64 +1,67 @@
 import { getSupabaseClient } from "./supabase";
-import { 
-  CreateAnalyticsEventData, 
-  AnalyticsEvent, 
+import {
+  CreateAnalyticsEventData,
+  AnalyticsEvent,
   AnalyticsOverview,
   MenuPerformanceItem,
-  RecentActivity
+  RecentActivity,
 } from "@/types/database";
 
 export class AnalyticsService {
   // Track an analytics event
-  async trackEvent(data: CreateAnalyticsEventData): Promise<AnalyticsEvent | null> {
+  async trackEvent(
+    data: CreateAnalyticsEventData
+  ): Promise<AnalyticsEvent | null> {
     try {
       const supabase = getSupabaseClient();
       const { data: event, error } = await supabase
-        .from('analytics_events')
-        .insert([{
-          restaurant_id: data.restaurant_id,
-          event_type: data.event_type,
-          session_id: data.session_id,
-          event_data: data.event_data || {},
-          duration_seconds: data.duration_seconds,
-          referrer_url: data.referrer_url,
-          page_url: data.page_url,
-          user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : undefined,
-          timestamp: new Date().toISOString()
-        }])
+        .from("analytics_events")
+        .insert([
+          {
+            restaurant_id: data.restaurant_id,
+            event_type: data.event_type,
+            session_id: data.session_id,
+            event_data: data.event_data || {},
+            duration_seconds: data.duration_seconds,
+            referrer_url: data.referrer_url,
+            page_url: data.page_url,
+            user_agent:
+              typeof window !== "undefined"
+                ? window.navigator.userAgent
+                : undefined,
+            timestamp: new Date().toISOString(),
+          },
+        ])
         .select()
         .single();
 
       if (error) throw error;
       return event;
-    } catch (error) {
-      console.error('Error tracking analytics event:', error);
+    } catch {
       return null;
     }
   }
 
   // Get analytics overview for a restaurant
-  async getAnalyticsOverview(restaurantId: string, days: number = 30): Promise<AnalyticsOverview> {
+  async getAnalyticsOverview(
+    restaurantId: string,
+    days: number = 30
+  ): Promise<AnalyticsOverview> {
     try {
       const supabase = getSupabaseClient();
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(endDate.getDate() - days);
 
-      console.log('Getting analytics for restaurant:', restaurantId);
-      console.log('Date range:', startDate.toISOString(), 'to', endDate.toISOString());
-
       // Get current period events
       const { data: currentEvents, error: currentError } = await supabase
-        .from('analytics_events')
-        .select('*')
-        .eq('restaurant_id', restaurantId)
-        .gte('timestamp', startDate.toISOString())
-        .lte('timestamp', endDate.toISOString());
+        .from("analytics_events")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .gte("timestamp", startDate.toISOString())
+        .lte("timestamp", endDate.toISOString());
 
       if (currentError) throw currentError;
-      
-      console.log('Current events found:', currentEvents?.length || 0);
-      console.log('Event types:', currentEvents?.map(e => e.event_type) || []);
 
       // Get previous period events for comparison
       const prevStartDate = new Date(startDate);
@@ -66,35 +69,37 @@ export class AnalyticsService {
       const prevEndDate = new Date(startDate);
 
       const { data: prevEvents, error: prevError } = await supabase
-        .from('analytics_events')
-        .select('*')
-        .eq('restaurant_id', restaurantId)
-        .gte('timestamp', prevStartDate.toISOString())
-        .lte('timestamp', prevEndDate.toISOString());
+        .from("analytics_events")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .gte("timestamp", prevStartDate.toISOString())
+        .lte("timestamp", prevEndDate.toISOString());
 
       if (prevError) throw prevError;
 
       // Calculate current period metrics
-      const currentMenuViews = (currentEvents || []).filter(e => e.event_type === 'menu_view').length;
-      const currentQrScans = (currentEvents || []).filter(e => e.event_type === 'qr_scan').length;
-      const currentUniqueVisitors = new Set((currentEvents || []).map(e => e.session_id)).size;
-      
-      console.log('Calculated metrics:');
-      console.log('- Menu views:', currentMenuViews);
-      console.log('- QR scans:', currentQrScans);
-      console.log('- Unique visitors:', currentUniqueVisitors);
-      
+      const currentMenuViews = (currentEvents || []).filter(
+        (e) => e.event_type === "menu_view"
+      ).length;
+      const currentQrScans = (currentEvents || []).filter(
+        (e) => e.event_type === "qr_scan"
+      ).length;
+      const currentUniqueVisitors = new Set(
+        (currentEvents || []).map((e) => e.session_id)
+      ).size;
+
       // Calculate session-based metrics
-      const currentSessions = new Set((currentEvents || []).map(e => e.session_id)).size;
-      const eventsWithDuration = (currentEvents || []).filter(e => e.duration_seconds && e.duration_seconds > 0);
-      const totalDurationFromEvents = eventsWithDuration.reduce((sum, e) => sum + (e.duration_seconds || 0), 0);
-      
-      console.log('Session metrics debug:');
-      console.log('- Total sessions:', currentSessions);
-      console.log('- Events with duration:', eventsWithDuration.length);
-      console.log('- Total duration from events:', totalDurationFromEvents);
-      console.log('- Events with duration data:', eventsWithDuration.map(e => ({ type: e.event_type, duration: e.duration_seconds })));
-      
+      const currentSessions = new Set(
+        (currentEvents || []).map((e) => e.session_id)
+      ).size;
+      const eventsWithDuration = (currentEvents || []).filter(
+        (e) => e.duration_seconds && e.duration_seconds > 0
+      );
+      const totalDurationFromEvents = eventsWithDuration.reduce(
+        (sum, e) => sum + (e.duration_seconds || 0),
+        0
+      );
+
       // Calculate average view time per session based on events with duration
       // If no duration data, calculate a basic estimate based on number of interactions per session
       let currentAvgTime = 0;
@@ -102,28 +107,49 @@ export class AnalyticsService {
         currentAvgTime = Math.round(totalDurationFromEvents / currentSessions);
       } else if (currentSessions > 0) {
         // Fallback: estimate 30 seconds per menu view + 10 seconds per item view
-        const menuViews = (currentEvents || []).filter(e => e.event_type === 'menu_view').length;
-        const itemViews = (currentEvents || []).filter(e => e.event_type === 'item_view').length;
-        const estimatedTime = (menuViews * 30) + (itemViews * 10);
+        const menuViews = (currentEvents || []).filter(
+          (e) => e.event_type === "menu_view"
+        ).length;
+        const itemViews = (currentEvents || []).filter(
+          (e) => e.event_type === "item_view"
+        ).length;
+        const estimatedTime = menuViews * 30 + itemViews * 10;
         currentAvgTime = Math.round(estimatedTime / currentSessions);
       }
 
       // Calculate previous period metrics
-      const prevMenuViews = (prevEvents || []).filter(e => e.event_type === 'menu_view').length;
-      const prevQrScans = (prevEvents || []).filter(e => e.event_type === 'qr_scan').length;
-      const prevUniqueVisitors = new Set((prevEvents || []).map(e => e.session_id)).size;
-      const prevSessions = new Set((prevEvents || []).map(e => e.session_id)).size;
-      
-      const prevEventsWithDuration = (prevEvents || []).filter(e => e.duration_seconds && e.duration_seconds > 0);
-      const prevTotalDurationFromEvents = prevEventsWithDuration.reduce((sum, e) => sum + (e.duration_seconds || 0), 0);
-      
+      const prevMenuViews = (prevEvents || []).filter(
+        (e) => e.event_type === "menu_view"
+      ).length;
+      const prevQrScans = (prevEvents || []).filter(
+        (e) => e.event_type === "qr_scan"
+      ).length;
+      const prevUniqueVisitors = new Set(
+        (prevEvents || []).map((e) => e.session_id)
+      ).size;
+      const prevSessions = new Set((prevEvents || []).map((e) => e.session_id))
+        .size;
+
+      const prevEventsWithDuration = (prevEvents || []).filter(
+        (e) => e.duration_seconds && e.duration_seconds > 0
+      );
+      const prevTotalDurationFromEvents = prevEventsWithDuration.reduce(
+        (sum, e) => sum + (e.duration_seconds || 0),
+        0
+      );
+
       let prevAvgTime = 0;
       if (prevEventsWithDuration.length > 0) {
         prevAvgTime = Math.round(prevTotalDurationFromEvents / prevSessions);
       } else if (prevSessions > 0) {
-        const prevMenuViewsCount = (prevEvents || []).filter(e => e.event_type === 'menu_view').length;
-        const prevItemViewsCount = (prevEvents || []).filter(e => e.event_type === 'item_view').length;
-        const prevEstimatedTime = (prevMenuViewsCount * 30) + (prevItemViewsCount * 10);
+        const prevMenuViewsCount = (prevEvents || []).filter(
+          (e) => e.event_type === "menu_view"
+        ).length;
+        const prevItemViewsCount = (prevEvents || []).filter(
+          (e) => e.event_type === "item_view"
+        ).length;
+        const prevEstimatedTime =
+          prevMenuViewsCount * 30 + prevItemViewsCount * 10;
         prevAvgTime = Math.round(prevEstimatedTime / prevSessions);
       }
 
@@ -141,13 +167,14 @@ export class AnalyticsService {
         menuViewsChange: calculateChange(currentMenuViews, prevMenuViews),
         qrScansChange: calculateChange(currentQrScans, prevQrScans),
         viewTimeChange: calculateChange(currentAvgTime, prevAvgTime),
-        uniqueVisitorsChange: calculateChange(currentUniqueVisitors, prevUniqueVisitors)
+        uniqueVisitorsChange: calculateChange(
+          currentUniqueVisitors,
+          prevUniqueVisitors
+        ),
       };
-      
-      console.log('Final analytics result:', result);
+
       return result;
-    } catch (error) {
-      console.error('Error getting analytics overview:', error);
+    } catch {
       return {
         totalMenuViews: 0,
         totalQrScans: 0,
@@ -156,54 +183,54 @@ export class AnalyticsService {
         menuViewsChange: 0,
         qrScansChange: 0,
         viewTimeChange: 0,
-        uniqueVisitorsChange: 0
+        uniqueVisitorsChange: 0,
       };
     }
   }
 
   // Get menu performance data
-  async getMenuPerformance(restaurantId: string, days: number = 30): Promise<MenuPerformanceItem[]> {
+  async getMenuPerformance(
+    restaurantId: string,
+    days: number = 30
+  ): Promise<MenuPerformanceItem[]> {
     try {
       const supabase = getSupabaseClient();
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(endDate.getDate() - days);
 
-      console.log('Getting menu performance for restaurant:', restaurantId);
-
       // Get item view events for the period
       const { data: events, error: eventsError } = await supabase
-        .from('analytics_events')
-        .select('*')
-        .eq('restaurant_id', restaurantId)
-        .eq('event_type', 'item_view')
-        .gte('timestamp', startDate.toISOString())
-        .lte('timestamp', endDate.toISOString());
+        .from("analytics_events")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .eq("event_type", "item_view")
+        .gte("timestamp", startDate.toISOString())
+        .lte("timestamp", endDate.toISOString());
 
       if (eventsError) throw eventsError;
-      
-      console.log('Item view events found:', events?.length || 0);
 
       // Get menu items to join with analytics data
       const { data: menuItems, error: menuError } = await supabase
-        .from('menu_items')
-        .select('id, name, category, image_url')
-        .eq('restaurant_id', restaurantId);
+        .from("menu_items")
+        .select("id, name, category, image_url")
+        .eq("restaurant_id", restaurantId);
 
       if (menuError) throw menuError;
-      
-      console.log('Menu items found:', menuItems?.length || 0);
 
       // Aggregate analytics by menu item
-      const itemMap = new Map<string, {
-        total_views: number;
-        unique_viewers: Set<string>;
-        total_view_time: number;
-      }>();
+      const itemMap = new Map<
+        string,
+        {
+          total_views: number;
+          unique_viewers: Set<string>;
+          total_view_time: number;
+        }
+      >();
 
       (events || []).forEach((event) => {
-        const itemId = event.event_data?.item_id || event.event_data?.menu_item_id;
-        console.log('Processing event for item:', itemId, 'from event data:', event.event_data);
+        const itemId =
+          event.event_data?.item_id || event.event_data?.menu_item_id;
         if (!itemId) return;
 
         if (itemMap.has(itemId)) {
@@ -215,12 +242,10 @@ export class AnalyticsService {
           itemMap.set(itemId, {
             total_views: 1,
             unique_viewers: new Set([event.session_id]),
-            total_view_time: event.duration_seconds || 0
+            total_view_time: event.duration_seconds || 0,
           });
         }
       });
-
-      console.log('Item analytics map:', Array.from(itemMap.entries()));
 
       // Combine with menu item details
       const performance = (menuItems || [])
@@ -235,35 +260,37 @@ export class AnalyticsService {
             image_url: item.image_url,
             total_views: analytics.total_views,
             unique_viewers: analytics.unique_viewers.size,
-            average_view_time: analytics.total_views > 0 
-              ? analytics.total_view_time / analytics.total_views 
-              : 0,
-            views_change_percentage: 0 // TODO: Calculate change from previous period
+            average_view_time:
+              analytics.total_views > 0
+                ? analytics.total_view_time / analytics.total_views
+                : 0,
+            views_change_percentage: 0, // TODO: Calculate change from previous period
           } as MenuPerformanceItem;
         })
-        .filter((item) => item !== null) as MenuPerformanceItem[]
+        .filter((item) => item !== null) as MenuPerformanceItem[];
 
       const result = performance
         .sort((a, b) => b.total_views - a.total_views)
         .slice(0, 10); // Top 10 items
-        
-      console.log('Final menu performance result:', result);
+
       return result;
-    } catch (error) {
-      console.error('Error getting menu performance:', error);
+    } catch {
       return [];
     }
   }
 
   // Get recent activity
-  async getRecentActivity(restaurantId: string, limit: number = 20): Promise<RecentActivity[]> {
+  async getRecentActivity(
+    restaurantId: string,
+    limit: number = 20
+  ): Promise<RecentActivity[]> {
     try {
       const supabase = getSupabaseClient();
       const { data, error } = await supabase
-        .from('analytics_events')
-        .select('*')
-        .eq('restaurant_id', restaurantId)
-        .order('timestamp', { ascending: false })
+        .from("analytics_events")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .order("timestamp", { ascending: false })
         .limit(limit);
 
       if (error) throw error;
@@ -273,81 +300,92 @@ export class AnalyticsService {
         type: event.event_type,
         description: this.getActivityDescription(event),
         timestamp: event.timestamp,
-        metadata: event.event_data
+        metadata: event.event_data,
       }));
-    } catch (error) {
-      console.error('Error getting recent activity:', error);
+    } catch {
       return [];
     }
   }
 
   // Create or update analytics session
-  async trackSession(sessionId: string, restaurantId: string, pageUrl?: string): Promise<void> {
+  async trackSession(
+    sessionId: string,
+    restaurantId: string,
+    pageUrl?: string
+  ): Promise<void> {
     try {
       const supabase = getSupabaseClient();
       const deviceType = this.getDeviceType();
       const browser = this.getBrowser();
 
-      const { error } = await supabase
-        .from('analytics_sessions')
-        .upsert({
+      const { error } = await supabase.from("analytics_sessions").upsert(
+        {
           session_id: sessionId,
           restaurant_id: restaurantId,
           last_seen: new Date().toISOString(),
           device_type: deviceType,
           browser: browser,
-          user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : undefined,
-          entry_url: pageUrl
-        }, {
-          onConflict: 'session_id,restaurant_id'
-        });
+          user_agent:
+            typeof window !== "undefined"
+              ? window.navigator.userAgent
+              : undefined,
+          entry_url: pageUrl,
+        },
+        {
+          onConflict: "session_id,restaurant_id",
+        }
+      );
 
       if (error) throw error;
-    } catch (error) {
-      console.error('Error tracking session:', error);
+    } catch {
+      // Silently fail for analytics errors
     }
   }
 
   // Helper methods
   private getActivityDescription(event: AnalyticsEvent): string {
     switch (event.event_type) {
-      case 'menu_view':
-        return 'Menu viewed via QR code';
-      case 'qr_scan':
-        return 'QR code scanned';
-      case 'item_view':
+      case "menu_view":
+        return "Menu viewed via QR code";
+      case "qr_scan":
+        return "QR code scanned";
+      case "item_view":
         const itemName = event.event_data.item_name as string;
-        return itemName ? `${itemName} viewed` : 'Menu item viewed';
-      case 'visit_marked':
-        return 'Visit marked as completed';
-      case 'review_submitted':
-        return 'Review submitted';
+        return itemName ? `${itemName} viewed` : "Menu item viewed";
+      case "visit_marked":
+        return "Visit marked as completed";
+      case "review_submitted":
+        return "Review submitted";
       default:
-        return 'Activity recorded';
+        return "Activity recorded";
     }
   }
 
   private getDeviceType(): string {
-    if (typeof window === 'undefined') return 'unknown';
-    
+    if (typeof window === "undefined") return "unknown";
+
     const userAgent = window.navigator.userAgent;
     if (/tablet|ipad|playbook|silk/i.test(userAgent)) {
-      return 'tablet';
-    } else if (/mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(userAgent)) {
-      return 'mobile';
+      return "tablet";
+    } else if (
+      /mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(
+        userAgent
+      )
+    ) {
+      return "mobile";
     }
-    return 'desktop';
+    return "desktop";
   }
 
   private getBrowser(): string {
-    if (typeof window === 'undefined') return 'unknown';
-    
+    if (typeof window === "undefined") return "unknown";
+
     const userAgent = window.navigator.userAgent;
-    if (userAgent.includes('Chrome')) return 'Chrome';
-    if (userAgent.includes('Firefox')) return 'Firefox';
-    if (userAgent.includes('Safari')) return 'Safari';
-    if (userAgent.includes('Edge')) return 'Edge';
-    return 'Other';
+    if (userAgent.includes("Chrome")) return "Chrome";
+    if (userAgent.includes("Firefox")) return "Firefox";
+    if (userAgent.includes("Safari")) return "Safari";
+    if (userAgent.includes("Edge")) return "Edge";
+    return "Other";
   }
 
   // Generate a session ID for tracking

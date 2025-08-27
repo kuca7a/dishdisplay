@@ -206,14 +206,92 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // **ANTI-SPAM CHECKS**: Multiple validation layers
+    
+    // 1. Check for existing review within 7 days (one review per restaurant per week)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const { data: recentReview } = await supabaseServer
+      .from("diner_reviews")
+      .select("id, created_at")
+      .eq("diner_id", (profile as { id: string }).id)
+      .eq("restaurant_id", restaurant_id)
+      .gte("created_at", sevenDaysAgo.toISOString())
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (recentReview) {
+      const lastReviewTime = new Date((recentReview as { created_at: string }).created_at);
+      const timeDiff = Date.now() - lastReviewTime.getTime();
+      const daysRemaining = Math.ceil((7 * 24 * 60 * 60 * 1000 - timeDiff) / (24 * 60 * 60 * 1000));
+      
+      return NextResponse.json(
+        {
+          error: "Review limit reached",
+          message: `You can only submit one review per restaurant every 7 days. Try again in ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}.`,
+          canRetry: true,
+          timeRemaining: daysRemaining
+        },
+        { status: 429 }
+      );
+    }
+
+    // 2. Check for rapid-fire reviews (max 3 reviews per day across all restaurants)
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+    const { count: todayReviewCount } = await supabaseServer
+      .from("diner_reviews")
+      .select("id", { count: "exact" })
+      .eq("diner_id", (profile as { id: string }).id)
+      .gte("created_at", oneDayAgo.toISOString());
+
+    if (todayReviewCount && todayReviewCount >= 3) {
+      return NextResponse.json(
+        {
+          error: "Daily review limit reached",
+          message: "You can only submit up to 3 reviews per day. This helps maintain review quality and prevents spam.",
+          canRetry: true
+        },
+        { status: 429 }
+      );
+    }
+
+    // 3. Require a recent visit to review (must have visited within last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const { data: recentVisit } = await supabaseServer
+      .from("diner_visits")
+      .select("id, visit_date")
+      .eq("diner_id", (profile as { id: string }).id)
+      .eq("restaurant_id", restaurant_id)
+      .gte("visit_date", thirtyDaysAgo.toISOString())
+      .order("visit_date", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (!recentVisit) {
+      return NextResponse.json(
+        {
+          error: "No recent visit found",
+          message: "You need to have visited this restaurant within the last 30 days to leave a review. Please log a visit first!",
+          canRetry: false
+        },
+        { status: 400 }
+      );
+    }
+
     // Create the review
     console.log("Creating review record...");
 
-    // First attempt with new schema including is_public
+    // First attempt with new schema including is_public and visit_id linking
     let reviewData: Record<string, unknown> = {
       diner_id: (profile as { id: string }).id,
       restaurant_id,
-      visit_id: null, // Optional for now
+      visit_id: (recentVisit as { id: string }).id, // Link to the recent visit
       rating,
       review_text: review_text || "",
       photos: photos || [],
@@ -233,7 +311,7 @@ export async function POST(request: NextRequest) {
       reviewData = {
         diner_id: (profile as { id: string }).id,
         restaurant_id,
-        visit_id: null, // Optional for now
+        visit_id: (recentVisit as { id: string }).id, // Still link to recent visit
         rating,
         review_text: review_text || "",
         photos: photos || [],
@@ -281,8 +359,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Award points for the review (15 points per review)
+    // Award points for the review with bonuses for quality
     console.log("Awarding points for review...");
+
+    // Calculate review points based on quality
+    let reviewPoints = 25; // Base points for review
+    
+    // Bonus points for detailed review (minimum 20 characters)
+    if (review_text && review_text.length >= 20) {
+      reviewPoints += 10; // +10 for thoughtful review
+    }
+    
+    // Bonus points for photos
+    if (photos && photos.length > 0) {
+      reviewPoints += photos.length * 5; // +5 per photo, max reasonable bonus
+    }
+    
+    // Cap total review points at 50 to prevent gaming
+    reviewPoints = Math.min(reviewPoints, 50);
 
     // Get current active leaderboard period
     const { data: activePeriod } = await supabaseServer
@@ -308,7 +402,7 @@ export async function POST(request: NextRequest) {
       const { error: pointsError } = await supabaseServer
         .from("diner_profiles")
         .update({
-          total_points: currentPoints + 25, // Reviews give 25 points (not 15)
+          total_points: currentPoints + reviewPoints,
           total_reviews: currentReviews + 1,
         })
         .eq("id", (profile as { id: string }).id);
@@ -320,7 +414,7 @@ export async function POST(request: NextRequest) {
         );
         // Don't fail the request if points update fails
       } else {
-        console.log("Points awarded successfully: +25 points");
+        console.log(`Points awarded successfully: +${reviewPoints} points`);
       }
 
       // Also create entry in diner_points table for leaderboard if period exists
@@ -329,7 +423,7 @@ export async function POST(request: NextRequest) {
           .from("diner_points")
           .insert({
             diner_id: (profile as { id: string }).id,
-            points: 25, // Reviews give 25 points
+            points: reviewPoints,
             earned_from: "review",
             source_id: review?.id,
             restaurant_id: restaurant_id,
@@ -350,7 +444,7 @@ export async function POST(request: NextRequest) {
     console.log("Review submitted successfully:", review?.id);
     return NextResponse.json({
       ...review,
-      points_earned: 25, // Updated to reflect actual points awarded
+      points_earned: reviewPoints,
     });
   } catch (error) {
     console.error("Diner review creation API error:", error);
