@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Trophy } from "lucide-react";
+import { Trophy, X } from "lucide-react";
 
 interface SuccessMessageProps {
   message: string;
@@ -18,9 +18,18 @@ export default function SuccessMessage({ message, onClose }: SuccessMessageProps
           <div className="bg-green-500 rounded-full p-1">
             <Trophy className="h-3 w-3 text-white" />
           </div>
-          <span className="text-sm font-medium text-green-800">
+          <span className="text-sm font-medium text-green-800 flex-1">
             {message}
           </span>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="ml-2 text-green-600 hover:text-green-800 transition-colors"
+              aria-label="Close message"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </CardContent>
     </Card>
