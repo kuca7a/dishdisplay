@@ -1,6 +1,6 @@
 /**
  * Cache Management System for DishDisplay
- * 
+ *
  * Implements session storage caching with TTL (Time To Live) support
  * to reduce API calls and improve performance.
  */
@@ -11,19 +11,19 @@ import { Restaurant, MenuItem } from "@/types/database";
 const CACHE_CONFIG = {
   // Cache keys
   KEYS: {
-    RESTAURANT_BY_EMAIL: 'restaurant_by_email',
-    RESTAURANT_BY_ID: 'restaurant_by_id',
-    MENU_ITEMS: 'menu_items',
-    USER_RESTAURANT_DATA: 'user_restaurant_data',
+    RESTAURANT_BY_EMAIL: "restaurant_by_email",
+    RESTAURANT_BY_ID: "restaurant_by_id",
+    MENU_ITEMS: "menu_items",
+    USER_RESTAURANT_DATA: "user_restaurant_data",
   },
   // Default TTL in milliseconds (5 minutes)
   DEFAULT_TTL: 5 * 60 * 1000,
   // TTL for different data types
   TTL: {
     RESTAURANT: 10 * 60 * 1000, // 10 minutes - restaurant data changes less frequently
-    MENU_ITEMS: 5 * 60 * 1000,  // 5 minutes - menu items may change more often
-    USER_DATA: 15 * 60 * 1000,  // 15 minutes - user profile data
-  }
+    MENU_ITEMS: 5 * 60 * 1000, // 5 minutes - menu items may change more often
+    USER_DATA: 15 * 60 * 1000, // 15 minutes - user profile data
+  },
 };
 
 interface CacheItem<T> {
@@ -44,11 +44,13 @@ class CacheManager {
     hits: 0,
     misses: 0,
     sets: 0,
-    invalidations: 0
+    invalidations: 0,
   };
 
   private isClient(): boolean {
-    return typeof window !== 'undefined' && typeof sessionStorage !== 'undefined';
+    return (
+      typeof window !== "undefined" && typeof sessionStorage !== "undefined"
+    );
   }
 
   /**
@@ -74,14 +76,14 @@ class CacheManager {
     try {
       const key = this.generateKey(type, identifier);
       const cached = sessionStorage.getItem(key);
-      
+
       if (!cached) {
         this.stats.misses++;
         return null;
       }
 
       const item: CacheItem<T> = JSON.parse(cached);
-      
+
       if (!this.isValid(item)) {
         // Remove expired item
         sessionStorage.removeItem(key);
@@ -90,10 +92,8 @@ class CacheManager {
       }
 
       this.stats.hits++;
-      console.log(`Cache HIT for ${type}:${identifier}`);
       return item.data;
-    } catch (error) {
-      console.error('Cache get error:', error);
+    } catch {
       this.stats.misses++;
       return null;
     }
@@ -107,19 +107,21 @@ class CacheManager {
 
     try {
       const key = this.generateKey(type, identifier);
-      const ttl = customTTL || CACHE_CONFIG.TTL[type as keyof typeof CACHE_CONFIG.TTL] || CACHE_CONFIG.DEFAULT_TTL;
-      
+      const ttl =
+        customTTL ||
+        CACHE_CONFIG.TTL[type as keyof typeof CACHE_CONFIG.TTL] ||
+        CACHE_CONFIG.DEFAULT_TTL;
+
       const item: CacheItem<T> = {
         data,
         timestamp: Date.now(),
-        ttl
+        ttl,
       };
 
       sessionStorage.setItem(key, JSON.stringify(item));
       this.stats.sets++;
-      console.log(`Cache SET for ${type}:${identifier} (TTL: ${ttl}ms)`);
-    } catch (error) {
-      console.error('Cache set error:', error);
+    } catch {
+      // Silently handle cache errors
     }
   }
 
@@ -133,9 +135,8 @@ class CacheManager {
       const key = this.generateKey(type, identifier);
       sessionStorage.removeItem(key);
       this.stats.invalidations++;
-      console.log(`Cache INVALIDATED for ${type}:${identifier}`);
-    } catch (error) {
-      console.error('Cache invalidate error:', error);
+    } catch {
+      // Silently handle cache errors
     }
   }
 
@@ -148,19 +149,18 @@ class CacheManager {
     try {
       const prefix = `dishdisplay_${type}_`;
       const keysToRemove: string[] = [];
-      
+
       for (let i = 0; i < sessionStorage.length; i++) {
         const key = sessionStorage.key(i);
         if (key && key.startsWith(prefix)) {
           keysToRemove.push(key);
         }
       }
-      
-      keysToRemove.forEach(key => sessionStorage.removeItem(key));
+
+      keysToRemove.forEach((key) => sessionStorage.removeItem(key));
       this.stats.invalidations += keysToRemove.length;
-      console.log(`Cache INVALIDATED type ${type} (${keysToRemove.length} items)`);
-    } catch (error) {
-      console.error('Cache invalidateType error:', error);
+    } catch {
+      // Silently handle cache errors
     }
   }
 
@@ -172,19 +172,18 @@ class CacheManager {
 
     try {
       const keysToRemove: string[] = [];
-      
+
       for (let i = 0; i < sessionStorage.length; i++) {
         const key = sessionStorage.key(i);
-        if (key && key.startsWith('dishdisplay_')) {
+        if (key && key.startsWith("dishdisplay_")) {
           keysToRemove.push(key);
         }
       }
-      
-      keysToRemove.forEach(key => sessionStorage.removeItem(key));
+
+      keysToRemove.forEach((key) => sessionStorage.removeItem(key));
       this.stats.invalidations += keysToRemove.length;
-      console.log(`Cache CLEARED (${keysToRemove.length} items)`);
-    } catch (error) {
-      console.error('Cache clear error:', error);
+    } catch {
+      // Silently handle cache errors
     }
   }
 
@@ -194,10 +193,10 @@ class CacheManager {
   getStats(): CacheStats & { hitRate: number } {
     const total = this.stats.hits + this.stats.misses;
     const hitRate = total > 0 ? (this.stats.hits / total) * 100 : 0;
-    
+
     return {
       ...this.stats,
-      hitRate: Math.round(hitRate * 100) / 100
+      hitRate: Math.round(hitRate * 100) / 100,
     };
   }
 
@@ -209,10 +208,10 @@ class CacheManager {
 
     try {
       const keysToRemove: string[] = [];
-      
+
       for (let i = 0; i < sessionStorage.length; i++) {
         const key = sessionStorage.key(i);
-        if (key && key.startsWith('dishdisplay_')) {
+        if (key && key.startsWith("dishdisplay_")) {
           try {
             const cached = sessionStorage.getItem(key);
             if (cached) {
@@ -227,11 +226,10 @@ class CacheManager {
           }
         }
       }
-      
-      keysToRemove.forEach(key => sessionStorage.removeItem(key));
-      console.log(`Cache CLEANUP removed ${keysToRemove.length} expired items`);
-    } catch (error) {
-      console.error('Cache cleanup error:', error);
+
+      keysToRemove.forEach((key) => sessionStorage.removeItem(key));
+    } catch {
+      // Silently handle cache errors
     }
   }
 }
@@ -244,86 +242,114 @@ export const cachedDataService = {
   /**
    * Get restaurant by owner email with caching
    */
-  async getRestaurantByOwnerEmail(email: string, forceFresh = false): Promise<Restaurant | null> {
+  async getRestaurantByOwnerEmail(
+    email: string,
+    forceFresh = false
+  ): Promise<Restaurant | null> {
     const cacheKey = CACHE_CONFIG.KEYS.RESTAURANT_BY_EMAIL;
-    
+
     if (!forceFresh) {
       const cached = cacheManager.get<Restaurant>(cacheKey, email);
       if (cached) return cached;
     }
 
     // Import here to avoid circular dependency
-    const { restaurantService } = await import('@/lib/database');
+    const { restaurantService } = await import("@/lib/database");
     const restaurant = await restaurantService.getByOwnerEmail(email);
-    
+
     if (restaurant) {
-      cacheManager.set(cacheKey, email, restaurant, CACHE_CONFIG.TTL.RESTAURANT);
+      cacheManager.set(
+        cacheKey,
+        email,
+        restaurant,
+        CACHE_CONFIG.TTL.RESTAURANT
+      );
     }
-    
+
     return restaurant;
   },
 
   /**
    * Get restaurant by ID with caching
    */
-  async getRestaurantById(id: string, forceFresh = false): Promise<Restaurant | null> {
+  async getRestaurantById(
+    id: string,
+    forceFresh = false
+  ): Promise<Restaurant | null> {
     const cacheKey = CACHE_CONFIG.KEYS.RESTAURANT_BY_ID;
-    
+
     if (!forceFresh) {
       const cached = cacheManager.get<Restaurant>(cacheKey, id);
       if (cached) return cached;
     }
 
-    const { restaurantService } = await import('@/lib/database');
+    const { restaurantService } = await import("@/lib/database");
     const restaurant = await restaurantService.getById(id);
-    
+
     if (restaurant) {
       cacheManager.set(cacheKey, id, restaurant, CACHE_CONFIG.TTL.RESTAURANT);
     }
-    
+
     return restaurant;
   },
 
   /**
    * Get menu items by restaurant ID with caching
    */
-  async getMenuItemsByRestaurantId(restaurantId: string, forceFresh = false): Promise<MenuItem[]> {
+  async getMenuItemsByRestaurantId(
+    restaurantId: string,
+    forceFresh = false
+  ): Promise<MenuItem[]> {
     const cacheKey = CACHE_CONFIG.KEYS.MENU_ITEMS;
-    
+
     if (!forceFresh) {
       const cached = cacheManager.get<MenuItem[]>(cacheKey, restaurantId);
       if (cached) return cached;
     }
 
-    const { menuItemService } = await import('@/lib/database');
+    const { menuItemService } = await import("@/lib/database");
     const menuItems = await menuItemService.getByRestaurantId(restaurantId);
-    
-    cacheManager.set(cacheKey, restaurantId, menuItems, CACHE_CONFIG.TTL.MENU_ITEMS);
-    
+
+    cacheManager.set(
+      cacheKey,
+      restaurantId,
+      menuItems,
+      CACHE_CONFIG.TTL.MENU_ITEMS
+    );
+
     return menuItems;
   },
 
   /**
    * Get complete user restaurant data with caching
    */
-  async getUserRestaurantData(email: string, forceFresh = false): Promise<{ restaurant: Restaurant | null; menuItems: MenuItem[] }> {
+  async getUserRestaurantData(
+    email: string,
+    forceFresh = false
+  ): Promise<{ restaurant: Restaurant | null; menuItems: MenuItem[] }> {
     const cacheKey = CACHE_CONFIG.KEYS.USER_RESTAURANT_DATA;
-    
+
     if (!forceFresh) {
-      const cached = cacheManager.get<{ restaurant: Restaurant | null; menuItems: MenuItem[] }>(cacheKey, email);
+      const cached = cacheManager.get<{
+        restaurant: Restaurant | null;
+        menuItems: MenuItem[];
+      }>(cacheKey, email);
       if (cached) return cached;
     }
 
     const restaurant = await this.getRestaurantByOwnerEmail(email, forceFresh);
     let menuItems: MenuItem[] = [];
-    
+
     if (restaurant) {
-      menuItems = await this.getMenuItemsByRestaurantId(restaurant.id, forceFresh);
+      menuItems = await this.getMenuItemsByRestaurantId(
+        restaurant.id,
+        forceFresh
+      );
     }
 
     const data = { restaurant, menuItems };
     cacheManager.set(cacheKey, email, data, CACHE_CONFIG.TTL.USER_DATA);
-    
+
     return data;
   },
 
@@ -335,10 +361,16 @@ export const cachedDataService = {
       cacheManager.invalidate(CACHE_CONFIG.KEYS.RESTAURANT_BY_ID, restaurantId);
       cacheManager.invalidate(CACHE_CONFIG.KEYS.MENU_ITEMS, restaurantId);
     }
-    
+
     if (ownerEmail) {
-      cacheManager.invalidate(CACHE_CONFIG.KEYS.RESTAURANT_BY_EMAIL, ownerEmail);
-      cacheManager.invalidate(CACHE_CONFIG.KEYS.USER_RESTAURANT_DATA, ownerEmail);
+      cacheManager.invalidate(
+        CACHE_CONFIG.KEYS.RESTAURANT_BY_EMAIL,
+        ownerEmail
+      );
+      cacheManager.invalidate(
+        CACHE_CONFIG.KEYS.USER_RESTAURANT_DATA,
+        ownerEmail
+      );
     }
   },
 
@@ -347,20 +379,23 @@ export const cachedDataService = {
    */
   invalidateMenuCache(restaurantId: string, ownerEmail?: string): void {
     cacheManager.invalidate(CACHE_CONFIG.KEYS.MENU_ITEMS, restaurantId);
-    
+
     if (ownerEmail) {
-      cacheManager.invalidate(CACHE_CONFIG.KEYS.USER_RESTAURANT_DATA, ownerEmail);
+      cacheManager.invalidate(
+        CACHE_CONFIG.KEYS.USER_RESTAURANT_DATA,
+        ownerEmail
+      );
     }
-  }
+  },
 };
 
 // Cleanup expired entries on load
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   // Run cleanup when the page loads
-  window.addEventListener('load', () => {
+  window.addEventListener("load", () => {
     cacheManager.cleanup();
   });
-  
+
   // Run cleanup periodically (every 5 minutes)
   setInterval(() => {
     cacheManager.cleanup();

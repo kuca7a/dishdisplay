@@ -12,40 +12,29 @@ import {
 export const restaurantService = {
   // Get restaurant by owner email
   async getByOwnerEmail(email: string): Promise<Restaurant | null> {
-    console.log("Database: Getting restaurant via API for email:", email);
-
     try {
       const response = await fetch(
         `/api/restaurants?owner_email=${encodeURIComponent(email)}`
       );
 
-      console.log("Database: API response status:", response.status);
-
       if (!response.ok) {
         let errorData;
         try {
           errorData = await response.json();
-        } catch (parseError) {
-          console.error("Database: Failed to parse error response:", parseError);
+        } catch {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        
-        console.error("Database: API error response:", errorData);
+
         throw new Error(
-          errorData.error || 
-          errorData.message || 
-          `HTTP ${response.status}: ${response.statusText}`
+          errorData.error ||
+            errorData.message ||
+            `HTTP ${response.status}: ${response.statusText}`
         );
       }
 
       const data = await response.json();
-      console.log("Database: Got restaurant via API:", data);
       return data;
     } catch (error) {
-      console.error("Database: API get error:", {
-        message: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined,
-      });
       throw error;
     }
   },
@@ -54,7 +43,6 @@ export const restaurantService = {
   async getById(id: string): Promise<Restaurant | null> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.error("Database: Supabase client not available");
       return null;
     }
 
@@ -90,9 +78,6 @@ export const restaurantService = {
 
   // Update restaurant
   async update(id: string, updates: UpdateRestaurantData): Promise<Restaurant> {
-    console.log("Database: Updating restaurant via API with ID:", id);
-    console.log("Database: Update data:", updates);
-
     try {
       const response = await fetch(`/api/restaurants/${id}`, {
         method: "PUT",
@@ -108,10 +93,8 @@ export const restaurantService = {
       }
 
       const data = await response.json();
-      console.log("Database: Update successful via API:", data);
       return data;
     } catch (error) {
-      console.error("Database: API update error:", error);
       throw error;
     }
   },
@@ -135,7 +118,6 @@ export const menuItemService = {
   async getByRestaurantId(restaurantId: string): Promise<MenuItem[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.error("Database: Supabase client not available");
       return [];
     }
 
@@ -163,7 +145,7 @@ export const menuItemService = {
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
+      if (error.code === "PGRST116") {
         return null; // No rows returned
       }
       throw error;
@@ -178,7 +160,6 @@ export const menuItemService = {
   ): Promise<MenuItem[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
-      console.error("Database: Supabase client not available");
       return [];
     }
 
