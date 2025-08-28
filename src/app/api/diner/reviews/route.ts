@@ -10,33 +10,86 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // First get the diner profile to get the diner ID
-    const { data: profile } = await supabaseServer
-      .from("diner_profiles")
-      .select("id")
-      .eq("email", email)
-      .single();
+    // Try to get reviews using diner_email column first
+    try {
+      const { data: reviews, error } = await supabaseServer
+        .from("diner_reviews")
+        .select("*")
+        .eq("diner_email", email)
+        .order("created_at", { ascending: false });
 
-    if (!profile) {
-      return NextResponse.json([]);
+      if (error) {
+        // Check if the error is due to missing diner_email column
+        if (error.code === "42703" || error.message.includes("diner_email")) {
+          console.warn("diner_email column not available, trying to find alternative approach");
+          
+          // Fallback: Get reviews via diner_id by first getting profile
+          const { data: profile } = await supabaseServer
+            .from("diner_profiles")
+            .select("id")
+            .eq("email", email)
+            .single();
+
+          if (!profile) {
+            return NextResponse.json([]);
+          }
+
+          // Try using diner_id if that's what the table actually uses
+          const { data: fallbackReviews, error: fallbackError } = await supabaseServer
+            .from("diner_reviews")
+            .select("*")
+            .eq("diner_id", (profile as { id: string }).id)
+            .order("created_at", { ascending: false });
+
+          if (fallbackError) {
+            console.error("Error fetching diner reviews (fallback):", fallbackError);
+            return NextResponse.json(
+              { error: "Failed to fetch reviews" },
+              { status: 500 }
+            );
+          }
+
+          return NextResponse.json(fallbackReviews || []);
+        }
+        
+        console.error("Error fetching diner reviews:", error);
+        return NextResponse.json(
+          { error: "Failed to fetch reviews" },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(reviews || []);
+    } catch (columnError) {
+      console.warn("Error with diner_email column, trying fallback approach:", columnError);
+      
+      // Final fallback: Get reviews via diner_id
+      const { data: profile } = await supabaseServer
+        .from("diner_profiles")
+        .select("id")
+        .eq("email", email)
+        .single();
+
+      if (!profile) {
+        return NextResponse.json([]);
+      }
+
+      const { data: fallbackReviews, error: fallbackError } = await supabaseServer
+        .from("diner_reviews")
+        .select("*")
+        .eq("diner_id", (profile as { id: string }).id)
+        .order("created_at", { ascending: false });
+
+      if (fallbackError) {
+        console.error("Error fetching diner reviews (final fallback):", fallbackError);
+        return NextResponse.json(
+          { error: "Failed to fetch reviews" },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(fallbackReviews || []);
     }
-
-    // Get reviews
-    const { data: reviews, error } = await supabaseServer
-      .from("diner_reviews")
-      .select("*")
-      .eq("diner_id", (profile as { id: string }).id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching diner reviews:", error);
-      return NextResponse.json(
-        { error: "Failed to fetch reviews" },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(reviews || []);
   } catch (error) {
     console.error("Diner reviews API error:", error);
     return NextResponse.json(

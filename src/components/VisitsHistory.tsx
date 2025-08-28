@@ -100,9 +100,10 @@ export default function VisitsHistory({
                       <h4 className="font-medium text-lg">
                         {visit.restaurants?.name || "Restaurant"}
                       </h4>
-                      <Badge variant="outline" className="text-xs">
-                        <Trophy className="h-3 w-3 mr-1" />+
-                        {visit.points_earned} pts
+                      {/* Points earned badge */}
+                      <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                        <Trophy className="h-3 w-3 mr-1" />
+                        +{visit.points_earned || 10} pts
                       </Badge>
                     </div>
 

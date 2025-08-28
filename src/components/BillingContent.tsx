@@ -210,8 +210,8 @@ export default function BillingContent() {
                 <CardTitle>No Restaurant Found</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="mb-4">Please create your restaurant first.</p>
-                <Button onClick={() => router.push("/profile/menu/manage")}>
+                <p className="mb-4">Please create your restaurant first in Business Profile.</p>
+                <Button onClick={() => router.push("/profile/business")}>
                   Create Restaurant
                 </Button>
               </CardContent>

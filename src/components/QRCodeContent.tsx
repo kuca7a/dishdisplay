@@ -160,11 +160,11 @@ export default function QRCodeContent() {
                       No Restaurant Found
                     </h3>
                     <p className="text-gray-600 mb-4">
-                      You need to create a restaurant first before generating a
+                      You need to create a restaurant first in Business Profile before generating a
                       QR code.
                     </p>
                     <Button
-                      onClick={() => router.push("/profile/menu/manage")}
+                      onClick={() => router.push("/profile/business")}
                       className="hover:cursor-pointer"
                     >
                       Create Restaurant

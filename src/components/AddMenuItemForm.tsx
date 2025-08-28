@@ -165,7 +165,7 @@ export function AddMenuItemForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
-      <DialogContent className={`max-w-md ${rubik.className}`}>
+      <DialogContent className={`max-w-2xl max-h-[90vh] overflow-y-auto ${rubik.className}`}>
         <DialogHeader>
           <DialogTitle>Add New Menu Item</DialogTitle>
           <DialogDescription>
@@ -174,45 +174,50 @@ export function AddMenuItemForm({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="item-name">Item Name *</Label>
-            <Input
-              id="item-name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder="e.g. Margherita Pizza"
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="item-time-to-make">Time to Make</Label>
-            <Input
-              id="item-time-to-make"
-              value={formData.time_to_make}
-              onChange={(e) =>
-                setFormData({ ...formData, time_to_make: e.target.value })
-              }
-              placeholder="e.g. 20 minutes"
-            />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Information Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="item-name">Item Name *</Label>
+              <Input
+                id="item-name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="e.g. Margherita Pizza"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="item-time-to-make">Time to Make</Label>
+              <Input
+                id="item-time-to-make"
+                value={formData.time_to_make}
+                onChange={(e) =>
+                  setFormData({ ...formData, time_to_make: e.target.value })
+                }
+                placeholder="e.g. 20 minutes"
+              />
+            </div>
           </div>
 
+          {/* Description */}
           <div>
-            <Label htmlFor="item-description">Description</Label>
+            <Label htmlFor="item-description">Short Description</Label>
             <Textarea
               id="item-description"
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              placeholder="Describe your dish..."
+              placeholder="Brief description for menu display..."
               rows={2}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* Price and Category Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="item-price">Price (£) *</Label>
               <Input
@@ -249,6 +254,21 @@ export function AddMenuItemForm({
                 </SelectContent>
               </Select>
             </div>
+
+            <div>
+              <Label htmlFor="calories">Calories *</Label>
+              <Input
+                id="calories"
+                type="number"
+                min="1"
+                value={formData.calories}
+                onChange={(e) =>
+                  setFormData({ ...formData, calories: e.target.value })
+                }
+                placeholder="e.g. 350"
+                required
+              />
+            </div>
           </div>
 
           {/* Image Upload */}
@@ -260,7 +280,7 @@ export function AddMenuItemForm({
             currentImageUrl={formData.image_url}
           />
 
-          {/* New Required Nutritional Information Fields */}
+          {/* Detailed Description */}
           <div>
             <Label htmlFor="detailed-description">Detailed Description *</Label>
             <Textarea
@@ -275,21 +295,7 @@ export function AddMenuItemForm({
             />
           </div>
 
-          <div>
-            <Label htmlFor="calories">Calories *</Label>
-            <Input
-              id="calories"
-              type="number"
-              min="1"
-              value={formData.calories}
-              onChange={(e) =>
-                setFormData({ ...formData, calories: e.target.value })
-              }
-              placeholder="e.g. 350"
-              required
-            />
-          </div>
-
+          {/* Ingredients */}
           <div>
             <Label htmlFor="ingredients">Ingredients *</Label>
             <Textarea
@@ -304,6 +310,7 @@ export function AddMenuItemForm({
             />
           </div>
 
+          {/* Allergens */}
           <div>
             <Label htmlFor="allergens">Allergens (comma-separated)</Label>
             <Input
