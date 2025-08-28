@@ -24,7 +24,9 @@ export interface ApiError {
 }
 
 export const dinerApiService = {
-  async logVisit(data: VisitData): Promise<{ success: boolean; error?: ApiError; pointsEarned?: number }> {
+  async logVisit(
+    data: VisitData
+  ): Promise<{ success: boolean; error?: ApiError; pointsEarned?: number }> {
     try {
       const response = await fetch("/api/diner/visits", {
         method: "POST",
@@ -41,15 +43,16 @@ export const dinerApiService = {
           success: false,
           error: {
             error: result.error || "Failed to log visit",
-            message: result.message || result.details || "Please try again later",
-            canRetry: response.status >= 500 || result.canRetry
-          }
+            message:
+              result.message || result.details || "Please try again later",
+            canRetry: response.status >= 500 || result.canRetry,
+          },
         };
       }
 
       return {
         success: true,
-        pointsEarned: result.points_earned || 0
+        pointsEarned: result.points_earned || 0,
       };
     } catch {
       return {
@@ -57,13 +60,15 @@ export const dinerApiService = {
         error: {
           error: "Network error",
           message: "Please check your connection and try again",
-          canRetry: true
-        }
+          canRetry: true,
+        },
       };
     }
   },
 
-  async submitReview(data: ReviewData): Promise<{ success: boolean; error?: ApiError; pointsEarned?: number }> {
+  async submitReview(
+    data: ReviewData
+  ): Promise<{ success: boolean; error?: ApiError; pointsEarned?: number }> {
     try {
       const response = await fetch("/api/diner/reviews", {
         method: "POST",
@@ -80,15 +85,16 @@ export const dinerApiService = {
           success: false,
           error: {
             error: result.error || "Failed to submit review",
-            message: result.message || result.details || "Please try again later",
-            canRetry: response.status >= 500 || result.canRetry
-          }
+            message:
+              result.message || result.details || "Please try again later",
+            canRetry: response.status >= 500 || result.canRetry,
+          },
         };
       }
 
       return {
         success: true,
-        pointsEarned: result.points_earned || 0
+        pointsEarned: result.points_earned || 0,
       };
     } catch {
       return {
@@ -96,8 +102,8 @@ export const dinerApiService = {
         error: {
           error: "Network error",
           message: "Please check your connection and try again",
-          canRetry: true
-        }
+          canRetry: true,
+        },
       };
     }
   },

@@ -2,6 +2,7 @@
 
 import { Auth0Provider } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
+import { Toaster } from "sonner";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -38,6 +39,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
       onRedirectCallback={onRedirectCallback}
     >
       {children}
+      <Toaster />
     </Auth0Provider>
   );
 };

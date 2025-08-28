@@ -12,11 +12,11 @@ interface ActionMenuProps {
   onEarnPoints: () => void;
 }
 
-export default function ActionMenu({ 
-  userEmail, 
-  onLogVisit, 
-  onWriteReview, 
-  onEarnPoints 
+export default function ActionMenu({
+  userEmail,
+  onLogVisit,
+  onWriteReview,
+  onEarnPoints,
 }: ActionMenuProps) {
   return (
     <Card className="fixed bottom-4 right-4 shadow-lg border-2 border-[#5F7161]/20 bg-white/95 backdrop-blur z-50">

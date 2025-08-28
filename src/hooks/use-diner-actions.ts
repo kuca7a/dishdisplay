@@ -10,7 +10,10 @@ export interface PhotoData {
   preview: string;
 }
 
-export function useDinerActions(restaurant: Restaurant, onSuccess: (message: string) => void) {
+export function useDinerActions(
+  restaurant: Restaurant,
+  onSuccess: (message: string) => void
+) {
   const { isAuthenticated, user } = useAuth0();
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
@@ -33,7 +36,7 @@ export function useDinerActions(restaurant: Restaurant, onSuccess: (message: str
 
     setIsSubmitting(true);
     setVisitError(""); // Clear any previous errors
-    
+
     try {
       const result = await dinerApiService.logVisit({
         restaurant_id: restaurant.id,
@@ -42,11 +45,13 @@ export function useDinerActions(restaurant: Restaurant, onSuccess: (message: str
         user_email: user.email,
         user_name: user.name || user.email.split("@")[0],
       });
-      
+
       if (result.success) {
         onSuccess(`Visit logged! +${result.pointsEarned} points earned.`);
       } else {
-        setVisitError(result.error?.message || "Failed to log visit. Please try again.");
+        setVisitError(
+          result.error?.message || "Failed to log visit. Please try again."
+        );
       }
     } catch {
       setVisitError("Failed to log visit. Please try again.");
@@ -60,22 +65,26 @@ export function useDinerActions(restaurant: Restaurant, onSuccess: (message: str
 
     setIsSubmitting(true);
     setReviewError(""); // Clear any previous errors
-    
+
     try {
       const result = await dinerApiService.submitReview({
         restaurant_id: restaurant.id,
         rating,
         content: reviewText,
-        photo_urls: reviewPhotos.map(p => p.url),
+        photo_urls: reviewPhotos.map((p) => p.url),
         user_email: user.email,
         user_name: user.name || user.email.split("@")[0],
       });
-      
+
       if (result.success) {
         resetReviewForm();
-        onSuccess(`Review submitted! +${result.pointsEarned} points earned. Thank you for sharing your experience.`);
+        onSuccess(
+          `Review submitted! +${result.pointsEarned} points earned. Thank you for sharing your experience.`
+        );
       } else {
-        setReviewError(result.error?.message || "Failed to submit review. Please try again.");
+        setReviewError(
+          result.error?.message || "Failed to submit review. Please try again."
+        );
       }
     } catch {
       setReviewError("Failed to submit review. Please try again.");
@@ -89,14 +98,18 @@ export function useDinerActions(restaurant: Restaurant, onSuccess: (message: str
 
     setUploadingPhotos(true);
     setReviewError(""); // Clear any previous errors
-    
+
     try {
       const photoData = await dinerApiService.uploadPhoto(file);
       if (photoData) {
         setReviewPhotos((prev) => [...prev, photoData]);
       }
     } catch (error) {
-      setReviewError(error instanceof Error ? error.message : "Failed to upload photo. Please try again.");
+      setReviewError(
+        error instanceof Error
+          ? error.message
+          : "Failed to upload photo. Please try again."
+      );
     } finally {
       setUploadingPhotos(false);
     }

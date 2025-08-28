@@ -31,9 +31,11 @@ export class DinerValidationService {
       const hoursRemaining = Math.ceil(24 - hoursElapsed);
       return {
         allowed: false,
-        reason: `You can only log one visit per restaurant every 24 hours. Try again in ${hoursRemaining} hour${hoursRemaining !== 1 ? 's' : ''}.`,
+        reason: `You can only log one visit per restaurant every 24 hours. Try again in ${hoursRemaining} hour${
+          hoursRemaining !== 1 ? "s" : ""
+        }.`,
         retryAfter: hoursRemaining,
-        canRetry: true
+        canRetry: true,
       };
     }
 
@@ -58,9 +60,11 @@ export class DinerValidationService {
         const daysRemaining = Math.ceil(7 - daysElapsed);
         return {
           allowed: false,
-          reason: `You can only submit one review per restaurant every 7 days. Try again in ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}.`,
+          reason: `You can only submit one review per restaurant every 7 days. Try again in ${daysRemaining} day${
+            daysRemaining !== 1 ? "s" : ""
+          }.`,
           retryAfter: daysRemaining * 24,
-          canRetry: true
+          canRetry: true,
         };
       }
     }
@@ -69,8 +73,9 @@ export class DinerValidationService {
     if (todayReviewCount >= 3) {
       return {
         allowed: false,
-        reason: "You can only submit up to 3 reviews per day. This helps maintain review quality and prevents spam.",
-        canRetry: true
+        reason:
+          "You can only submit up to 3 reviews per day. This helps maintain review quality and prevents spam.",
+        canRetry: true,
       };
     }
 
@@ -78,8 +83,9 @@ export class DinerValidationService {
     if (!lastVisitDate) {
       return {
         allowed: false,
-        reason: "You need to have visited this restaurant within the last 30 days to leave a review. Please log a visit first!",
-        canRetry: false
+        reason:
+          "You need to have visited this restaurant within the last 30 days to leave a review. Please log a visit first!",
+        canRetry: false,
       };
     }
 
@@ -90,8 +96,9 @@ export class DinerValidationService {
     if (daysElapsed > 30) {
       return {
         allowed: false,
-        reason: "You need to have visited this restaurant within the last 30 days to leave a review. Please log a visit first!",
-        canRetry: false
+        reason:
+          "You need to have visited this restaurant within the last 30 days to leave a review. Please log a visit first!",
+        canRetry: false,
       };
     }
 
@@ -119,17 +126,21 @@ export class DinerValidationService {
     if (photos && photos.length > 0) {
       const photoBonus = Math.min(photos.length * 5, 15); // Max 15 bonus for photos
       bonusPoints += photoBonus;
-      bonuses.push(`+${photoBonus} for ${photos.length} photo${photos.length !== 1 ? 's' : ''}`);
+      bonuses.push(
+        `+${photoBonus} for ${photos.length} photo${
+          photos.length !== 1 ? "s" : ""
+        }`
+      );
     }
 
     // Cap total points at 50
     const totalPoints = Math.min(basePoints + bonusPoints, 50);
-    
+
     return {
       basePoints,
       bonusPoints,
       totalPoints,
-      bonuses
+      bonuses,
     };
   }
 
@@ -141,21 +152,27 @@ export class DinerValidationService {
       basePoints: 10,
       bonusPoints: 0,
       totalPoints: 10,
-      bonuses: []
+      bonuses: [],
     };
   }
 
   /**
    * Validate review content quality
    */
-  static validateReviewContent(rating: number, reviewText: string): { valid: boolean; reason?: string } {
+  static validateReviewContent(
+    rating: number,
+    reviewText: string
+  ): { valid: boolean; reason?: string } {
     if (rating < 1 || rating > 5) {
       return { valid: false, reason: "Rating must be between 1 and 5 stars" };
     }
 
     // Allow empty reviews for now, but could add minimum length requirement
     if (reviewText && reviewText.length > 1000) {
-      return { valid: false, reason: "Review text cannot exceed 1000 characters" };
+      return {
+        valid: false,
+        reason: "Review text cannot exceed 1000 characters",
+      };
     }
 
     return { valid: true };

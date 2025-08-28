@@ -8,7 +8,10 @@ interface SuccessMessageProps {
   onClose?: () => void;
 }
 
-export default function SuccessMessage({ message, onClose }: SuccessMessageProps) {
+export default function SuccessMessage({
+  message,
+  onClose,
+}: SuccessMessageProps) {
   if (!message) return null;
 
   return (

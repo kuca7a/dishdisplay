@@ -233,13 +233,16 @@ export default function DinerAccountSettingsContent() {
                         This action cannot be undone.
                       </p>
                       <ul className="text-xs text-red-600 space-y-1 mb-4">
-                        <li>• All diner profile data will be permanently deleted</li>
+                        <li>
+                          • All diner profile data will be permanently deleted
+                        </li>
                         <li>• Visit history and reviews will be removed</li>
                         <li>• Earned points and badges will be lost</li>
                         <li>• Achievements and streak data will be deleted</li>
                         {dinerProfile?.display_name && (
                           <li>
-                            • Profile "{dinerProfile.display_name}" will be deleted
+                            • Profile "{dinerProfile.display_name}" will be
+                            deleted
                           </li>
                         )}
                       </ul>
@@ -249,7 +252,9 @@ export default function DinerAccountSettingsContent() {
                     variant="destructive"
                     onClick={() => {
                       // TODO: Implement diner account deletion
-                      alert("Account deletion for diners will be implemented soon.");
+                      alert(
+                        "Account deletion for diners will be implemented soon."
+                      );
                     }}
                     className="bg-red-600 hover:bg-red-700"
                   >

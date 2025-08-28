@@ -72,7 +72,9 @@ export default function EarnPointsModal({
                   <p className="text-sm text-gray-600">Share your experience</p>
                 </div>
               </div>
-              <Badge className="bg-yellow-100 text-yellow-800">+25-40 pts</Badge>
+              <Badge className="bg-yellow-100 text-yellow-800">
+                +25-40 pts
+              </Badge>
             </div>
           </div>
 
@@ -94,7 +96,9 @@ export default function EarnPointsModal({
                   </p>
                 </div>
               </div>
-              <Badge className="bg-purple-100 text-purple-800">Up to 50 pts</Badge>
+              <Badge className="bg-purple-100 text-purple-800">
+                Up to 50 pts
+              </Badge>
             </div>
           </div>
 
@@ -119,7 +123,9 @@ export default function EarnPointsModal({
               </div>
             </div>
             <div className="text-xs text-gray-500 mt-2 p-2 bg-blue-50 rounded">
-              <strong>Fair Play:</strong> One visit per restaurant per day, one review per restaurant per week. This ensures authentic experiences!
+              <strong>Fair Play:</strong> One visit per restaurant per day, one
+              review per restaurant per week. This ensures authentic
+              experiences!
             </div>
           </div>
         </div>
