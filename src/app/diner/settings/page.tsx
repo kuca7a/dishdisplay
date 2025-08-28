@@ -12,10 +12,7 @@ const DinerAccountSettingsContent = dynamic(
 
 export default function DinerSettingsPage() {
   return (
-    <SmartRedirect 
-      requireAuth={true}
-      allowedUserTypes={['diner']}
-    >
+    <SmartRedirect requireAuth={true} allowedUserTypes={["diner"]}>
       <DinerAccountSettingsContent />
     </SmartRedirect>
   );

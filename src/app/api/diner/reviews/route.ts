@@ -21,8 +21,10 @@ export async function GET(request: NextRequest) {
       if (error) {
         // Check if the error is due to missing diner_email column
         if (error.code === "42703" || error.message.includes("diner_email")) {
-          console.warn("diner_email column not available, trying to find alternative approach");
-          
+          console.warn(
+            "diner_email column not available, trying to find alternative approach"
+          );
+
           // Fallback: Get reviews via diner_id by first getting profile
           const { data: profile } = await supabaseServer
             .from("diner_profiles")
@@ -35,14 +37,18 @@ export async function GET(request: NextRequest) {
           }
 
           // Try using diner_id if that's what the table actually uses
-          const { data: fallbackReviews, error: fallbackError } = await supabaseServer
-            .from("diner_reviews")
-            .select("*")
-            .eq("diner_id", (profile as { id: string }).id)
-            .order("created_at", { ascending: false });
+          const { data: fallbackReviews, error: fallbackError } =
+            await supabaseServer
+              .from("diner_reviews")
+              .select("*")
+              .eq("diner_id", (profile as { id: string }).id)
+              .order("created_at", { ascending: false });
 
           if (fallbackError) {
-            console.error("Error fetching diner reviews (fallback):", fallbackError);
+            console.error(
+              "Error fetching diner reviews (fallback):",
+              fallbackError
+            );
             return NextResponse.json(
               { error: "Failed to fetch reviews" },
               { status: 500 }
@@ -51,7 +57,7 @@ export async function GET(request: NextRequest) {
 
           return NextResponse.json(fallbackReviews || []);
         }
-        
+
         console.error("Error fetching diner reviews:", error);
         return NextResponse.json(
           { error: "Failed to fetch reviews" },
@@ -61,8 +67,11 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json(reviews || []);
     } catch (columnError) {
-      console.warn("Error with diner_email column, trying fallback approach:", columnError);
-      
+      console.warn(
+        "Error with diner_email column, trying fallback approach:",
+        columnError
+      );
+
       // Final fallback: Get reviews via diner_id
       const { data: profile } = await supabaseServer
         .from("diner_profiles")
@@ -74,14 +83,18 @@ export async function GET(request: NextRequest) {
         return NextResponse.json([]);
       }
 
-      const { data: fallbackReviews, error: fallbackError } = await supabaseServer
-        .from("diner_reviews")
-        .select("*")
-        .eq("diner_id", (profile as { id: string }).id)
-        .order("created_at", { ascending: false });
+      const { data: fallbackReviews, error: fallbackError } =
+        await supabaseServer
+          .from("diner_reviews")
+          .select("*")
+          .eq("diner_id", (profile as { id: string }).id)
+          .order("created_at", { ascending: false });
 
       if (fallbackError) {
-        console.error("Error fetching diner reviews (final fallback):", fallbackError);
+        console.error(
+          "Error fetching diner reviews (final fallback):",
+          fallbackError
+        );
         return NextResponse.json(
           { error: "Failed to fetch reviews" },
           { status: 500 }
@@ -102,7 +115,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { restaurant_id, rating, review_text, photos, user_email, user_name } = body;
+    const {
+      restaurant_id,
+      rating,
+      review_text,
+      photos,
+      user_email,
+      user_name,
+    } = body;
 
     if (!restaurant_id || !rating) {
       return NextResponse.json(
@@ -260,7 +280,7 @@ export async function POST(request: NextRequest) {
     }
 
     // **ANTI-SPAM CHECKS**: Multiple validation layers
-    
+
     // 1. Check for existing review within 7 days (one review per restaurant per week)
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -276,16 +296,22 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (recentReview) {
-      const lastReviewTime = new Date((recentReview as { created_at: string }).created_at);
+      const lastReviewTime = new Date(
+        (recentReview as { created_at: string }).created_at
+      );
       const timeDiff = Date.now() - lastReviewTime.getTime();
-      const daysRemaining = Math.ceil((7 * 24 * 60 * 60 * 1000 - timeDiff) / (24 * 60 * 60 * 1000));
-      
+      const daysRemaining = Math.ceil(
+        (7 * 24 * 60 * 60 * 1000 - timeDiff) / (24 * 60 * 60 * 1000)
+      );
+
       return NextResponse.json(
         {
           error: "Review limit reached",
-          message: `You can only submit one review per restaurant every 7 days. Try again in ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}.`,
+          message: `You can only submit one review per restaurant every 7 days. Try again in ${daysRemaining} day${
+            daysRemaining !== 1 ? "s" : ""
+          }.`,
           canRetry: true,
-          timeRemaining: daysRemaining
+          timeRemaining: daysRemaining,
         },
         { status: 429 }
       );
@@ -305,8 +331,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Daily review limit reached",
-          message: "You can only submit up to 3 reviews per day. This helps maintain review quality and prevents spam.",
-          canRetry: true
+          message:
+            "You can only submit up to 3 reviews per day. This helps maintain review quality and prevents spam.",
+          canRetry: true,
         },
         { status: 429 }
       );
@@ -330,8 +357,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: "No recent visit found",
-          message: "You need to have visited this restaurant within the last 30 days to leave a review. Please log a visit first!",
-          canRetry: false
+          message:
+            "You need to have visited this restaurant within the last 30 days to leave a review. Please log a visit first!",
+          canRetry: false,
         },
         { status: 400 }
       );
@@ -417,17 +445,17 @@ export async function POST(request: NextRequest) {
 
     // Calculate review points based on quality
     let reviewPoints = 25; // Base points for review
-    
+
     // Bonus points for detailed review (minimum 20 characters)
     if (review_text && review_text.length >= 20) {
       reviewPoints += 10; // +10 for thoughtful review
     }
-    
+
     // Bonus points for photos
     if (photos && photos.length > 0) {
       reviewPoints += photos.length * 5; // +5 per photo, max reasonable bonus
     }
-    
+
     // Cap total review points at 50 to prevent gaming
     reviewPoints = Math.min(reviewPoints, 50);
 
@@ -484,13 +512,18 @@ export async function POST(request: NextRequest) {
           });
 
         if (leaderboardPointsError) {
-          console.warn("Error logging leaderboard points:", leaderboardPointsError);
+          console.warn(
+            "Error logging leaderboard points:",
+            leaderboardPointsError
+          );
           // Don't fail the request if leaderboard points logging fails
         } else {
           console.log("Leaderboard points logged successfully");
         }
       } else {
-        console.warn("No active leaderboard period found, points not logged for leaderboard");
+        console.warn(
+          "No active leaderboard period found, points not logged for leaderboard"
+        );
       }
     }
 

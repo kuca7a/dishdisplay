@@ -255,7 +255,7 @@ export default function MenuItemDetailPage() {
                 {(() => {
                   const val = item.time_to_make.trim();
                   const lower = val.toLowerCase();
-                  if (lower.endsWith("minute") || lower.endsWith("minutes")) {
+                  if (lower.endsWith("minute") || lower.endsWith("minutes") || lower.endsWith("min")) {
                     return val;
                   }
                   return val + " minutes";

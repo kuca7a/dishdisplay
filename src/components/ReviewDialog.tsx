@@ -55,9 +55,9 @@ export default function ReviewDialog({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isPhotoReview = selectedAction === "photo-review";
-  const isSubmitDisabled = 
-    rating === 0 || 
-    isSubmitting || 
+  const isSubmitDisabled =
+    rating === 0 ||
+    isSubmitting ||
     uploadingPhotos ||
     (isPhotoReview && (reviewPhotos.length === 0 || reviewText.length < 10));
 
@@ -73,7 +73,7 @@ export default function ReviewDialog({
       }
       await onPhotoUpload(file);
     }
-    
+
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -82,7 +82,7 @@ export default function ReviewDialog({
 
   const handleSubmit = () => {
     if (rating === 0) return;
-    
+
     // Clear any previous errors before validation
     onClearError?.();
 
@@ -108,10 +108,9 @@ export default function ReviewDialog({
             {isPhotoReview ? "Photo Review" : "Write Review"} - {restaurantName}
           </DialogTitle>
           <DialogDescription>
-            {isPhotoReview 
+            {isPhotoReview
               ? "Share your experience with photos and detailed review (+40 points)"
-              : "Share your dining experience (+25 points)"
-            }
+              : "Share your dining experience (+25 points)"}
           </DialogDescription>
         </DialogHeader>
 
@@ -156,9 +155,10 @@ export default function ReviewDialog({
             </Label>
             <Textarea
               id="review-text"
-              placeholder={isPhotoReview 
-                ? "Write a detailed review to accompany your photos (minimum 10 characters)..."
-                : "Tell us about your experience..."
+              placeholder={
+                isPhotoReview
+                  ? "Write a detailed review to accompany your photos (minimum 10 characters)..."
+                  : "Tell us about your experience..."
               }
               value={reviewText}
               onChange={(e) => onReviewTextChange(e.target.value)}
