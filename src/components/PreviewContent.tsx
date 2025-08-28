@@ -98,12 +98,12 @@ export default function PreviewContent() {
           <div className="text-6xl mb-4">🍽️</div>
           <h1 className="text-2xl font-bold mb-4">No Restaurant Found</h1>
           <p className="text-gray-600 mb-6">
-            Please create a restaurant first before previewing the customer
+            Please create a restaurant first in Business Profile before previewing the customer
             menu.
           </p>
           <div className="space-y-3">
             <button
-              onClick={() => (window.location.href = "/profile/menu/manage")}
+              onClick={() => (window.location.href = "/profile/business")}
               className="block w-full px-4 py-2 bg-[#5F7161] text-white rounded-md hover:bg-[#4C5B4F] transition-colors"
             >
               Create Restaurant

@@ -1,6 +1,6 @@
 "use client";
 
-import { User, MapPin, Star, MessageCircleQuestion, Home } from "lucide-react";
+import { UserRoundPen, Star, MessageCircleQuestion } from "lucide-react";
 import {
   Sidebar,
   SidebarHeader,
@@ -27,47 +27,16 @@ const dinerData = {
     {
       title: "My Profile",
       url: "#",
-      icon: User,
+      icon: UserRoundPen,
       isActive: true,
       items: [
-        {
-          title: "Profile Overview",
-          url: "/diner",
-        },
-        {
-          title: "Visit History",
-          url: "/diner#visits",
-        },
-        {
-          title: "My Reviews",
-          url: "/diner#reviews",
-        },
         {
           title: "Points & Rewards",
           url: "/diner#rewards",
         },
         {
-          title: "Achievements",
-          url: "/diner#badges",
-        },
-      ],
-    },
-    {
-      title: "Discover",
-      url: "#",
-      icon: MapPin,
-      items: [
-        {
-          title: "Find Restaurants",
-          url: "/discover",
-        },
-        {
-          title: "Browse Menus",
-          url: "/browse",
-        },
-        {
-          title: "Popular Places",
-          url: "/popular",
+          title: "Settings",
+          url: "/diner/settings",
         },
       ],
     },
@@ -77,16 +46,8 @@ const dinerData = {
       icon: Star,
       items: [
         {
-          title: "Recent Reviews",
-          url: "/reviews",
-        },
-        {
           title: "Leaderboard",
           url: "/diner/leaderboard",
-        },
-        {
-          title: "Food Competitions",
-          url: "/competitions",
         },
       ],
     },
@@ -101,24 +62,32 @@ const dinerData = {
 };
 
 export function DinerSidebar() {
-  const { user } = useAuth0();
+  const { user, isAuthenticated } = useAuth0();
+
+  const sidebarUser =
+    isAuthenticated && user
+      ? {
+          name: user.name || user.nickname || "User",
+          email: user.email || "",
+          avatar: user.picture || "/avatars/default.jpg",
+        }
+      : {
+          name: "Guest",
+          email: "",
+          avatar: "/avatars/default.jpg",
+        };
 
   return (
-    <Sidebar>
+    <Sidebar variant="inset">
       <SidebarHeader>
+        <div className="flex items-center px-6 py-4">
+          <h1 className={`text-xl font-semibold text-[#5F7161] ${notable.className}`}>
+            DISH DISPLAY
+          </h1>
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="/diner">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Home className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className={`font-semibold ${notable.className}`}>DISH DISPLAY</span>
-                  <span className="text-xs">Diner Portal</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
+            <SidebarMenuButton size="lg" asChild></SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -127,15 +96,7 @@ export function DinerSidebar() {
         <NavSecondary items={dinerData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {user && (
-          <NavUser
-            user={{
-              name: user.name || "",
-              email: user.email || "",
-              avatar: user.picture || "",
-            }}
-          />
-        )}
+        <NavUser user={sidebarUser} />
       </SidebarFooter>
     </Sidebar>
   );

@@ -106,22 +106,55 @@ export const dinerProfileService = {
     return data;
   },
 
-  // Get public profiles (for community features)
+    // Get public profiles for leaderboard
   async getPublicProfiles(limit = 50): Promise<DinerProfile[]> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
     }
 
-    const { data, error } = await supabase
-      .from("diner_profiles")
-      .select("*")
-      .eq("is_public", true)
-      .order("total_points", { ascending: false })
-      .limit(limit);
+    try {
+      const { data, error } = await supabase
+        .from("diner_profiles")
+        .select("*")
+        .eq("is_public", true)
+        .order("total_points", { ascending: false })
+        .limit(limit);
 
-    if (error) throw error;
-    return data || [];
+      if (error) {
+        // Check if the error is due to missing is_public column
+        if (error.code === "42703" || error.message.includes("is_public")) {
+          console.warn("is_public column not available, returning all profiles");
+          
+          // Fallback: get all profiles (treat as public)
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from("diner_profiles")
+            .select("*")
+            .order("total_points", { ascending: false })
+            .limit(limit);
+
+          if (fallbackError) throw fallbackError;
+          
+          // Add is_public: true to all returned profiles
+          return (fallbackData || []).map(profile => ({ ...profile, is_public: true }));
+        }
+        throw error;
+      }
+
+      return data || [];
+    } catch (columnError) {
+      console.warn("Error with is_public column, falling back to all profiles:", columnError);
+      
+      // Final fallback: get all profiles
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from("diner_profiles")
+        .select("*")
+        .order("total_points", { ascending: false })
+        .limit(limit);
+
+      if (fallbackError) throw fallbackError;
+      return (fallbackData || []).map(profile => ({ ...profile, is_public: true }));
+    }
   },
 
   // Calculate profile completion and award bonus if applicable
@@ -130,19 +163,62 @@ export const dinerProfileService = {
     bonusAwarded: boolean;
     bonusPoints: number;
     missingFields: string[];
+    profileCompletionSupported: boolean;
   }> {
     const supabase = getSupabaseClient();
     if (!supabase) {
       throw new Error("Database not available");
     }
 
-    const { data: profile, error } = await supabase
-      .from("diner_profiles")
-      .select("*")
-      .eq("email", email)
-      .single();
+    let profile;
+    let profileCompletionSupported = true;
 
-    if (error) throw error;
+    try {
+      // Try to get profile with completion columns
+      const { data, error } = await supabase
+        .from("diner_profiles")
+        .select("*, profile_completion_bonus_claimed, profile_completion_percentage")
+        .eq("email", email)
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          // Profile doesn't exist
+          return {
+            completionPercentage: 0,
+            bonusAwarded: false,
+            bonusPoints: 0,
+            missingFields: ['Profile Photo', 'Bio (10+ characters)', 'Dietary Preferences', 'Location'],
+            profileCompletionSupported: false
+          };
+        }
+        
+        // Check if the error is due to missing columns
+        if (error.code === "42703" || error.message.includes("does not exist")) {
+          console.warn("Profile completion columns not available, falling back to basic calculation");
+          profileCompletionSupported = false;
+        } else {
+          throw error;
+        }
+      } else {
+        profile = data;
+      }
+    } catch (columnError) {
+      console.warn("Profile completion columns not available:", columnError);
+      profileCompletionSupported = false;
+    }
+
+    // Fallback: get basic profile without completion columns
+    if (!profileCompletionSupported || !profile) {
+      const { data: basicProfile, error: basicError } = await supabase
+        .from("diner_profiles")
+        .select("*")
+        .eq("email", email)
+        .single();
+
+      if (basicError) throw basicError;
+      profile = { ...basicProfile, profile_completion_bonus_claimed: false, profile_completion_percentage: 0 };
+    }
 
     // Calculate completion percentage
     const completionFields = {
@@ -176,21 +252,46 @@ export const dinerProfileService = {
       bonusPoints = 25;
       bonusAwarded = true;
 
-      // Update profile with bonus
-      await supabase
-        .from("diner_profiles")
-        .update({
-          profile_completion_bonus_claimed: true,
-          profile_completion_percentage: completionPercentage,
-          total_points: (profile.total_points || 0) + bonusPoints,
-        })
-        .eq("email", email);
-    } else {
-      // Just update completion percentage
-      await supabase
-        .from("diner_profiles")
-        .update({ profile_completion_percentage: completionPercentage })
-        .eq("email", email);
+      // Try to update profile with bonus (only if columns exist)
+      if (profileCompletionSupported) {
+        try {
+          await supabase
+            .from("diner_profiles")
+            .update({
+              profile_completion_bonus_claimed: true,
+              profile_completion_percentage: completionPercentage,
+              total_points: (profile.total_points || 0) + bonusPoints,
+            })
+            .eq("email", email);
+        } catch (updateError) {
+          console.warn("Could not update profile completion status:", updateError);
+          // Award points anyway without tracking the bonus claim
+          await supabase
+            .from("diner_profiles")
+            .update({
+              total_points: (profile.total_points || 0) + bonusPoints,
+            })
+            .eq("email", email);
+        }
+      } else {
+        // Just update total points without completion tracking
+        await supabase
+          .from("diner_profiles")
+          .update({
+            total_points: (profile.total_points || 0) + bonusPoints,
+          })
+          .eq("email", email);
+      }
+    } else if (profileCompletionSupported) {
+      // Just update completion percentage if columns exist
+      try {
+        await supabase
+          .from("diner_profiles")
+          .update({ profile_completion_percentage: completionPercentage })
+          .eq("email", email);
+      } catch (updateError) {
+        console.warn("Could not update profile completion percentage:", updateError);
+      }
     }
 
     return {
@@ -198,6 +299,7 @@ export const dinerProfileService = {
       bonusAwarded,
       bonusPoints,
       missingFields,
+      profileCompletionSupported,
     };
   },
 };
@@ -530,8 +632,7 @@ export const dinerVisitService = {
         *,
         diner_profiles:diner_email (
           display_name,
-          profile_photo_url,
-          is_public
+          profile_photo_url
         )
       `
       )
@@ -693,28 +794,99 @@ export const dinerReviewService = {
       throw new Error("Database not available");
     }
 
-    const { data, error } = await supabase
-      .from("diner_reviews")
-      .select(
+    try {
+      const { data, error } = await supabase
+        .from("diner_reviews")
+        .select(
+          `
+          *,
+          diner_profiles:diner_email (
+            display_name,
+            profile_photo_url,
+            is_public
+          ),
+          diner_visits:visit_id (
+            visit_date
+          )
         `
-        *,
-        diner_profiles:diner_email (
-          display_name,
-          profile_photo_url,
-          is_public
-        ),
-        diner_visits:visit_id (
-          visit_date
         )
-      `
-      )
-      .eq("restaurant_id", restaurantId)
-      .eq("is_public", true)
-      .order("created_at", { ascending: false })
-      .limit(limit);
+        .eq("restaurant_id", restaurantId)
+        .eq("is_public", true)
+        .order("created_at", { ascending: false })
+        .limit(limit);
 
-    if (error) throw error;
-    return data || [];
+      if (error) {
+        // Check if the error is due to missing is_public column
+        if (error.code === "42703" || error.message.includes("is_public")) {
+          console.warn("is_public column not available in reviews, returning all reviews");
+          
+          // Fallback: get all reviews without is_public filter
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from("diner_reviews")
+            .select(
+              `
+              *,
+              diner_profiles:diner_email (
+                display_name,
+                profile_photo_url
+              ),
+              diner_visits:visit_id (
+                visit_date
+              )
+            `
+            )
+            .eq("restaurant_id", restaurantId)
+            .order("created_at", { ascending: false })
+            .limit(limit);
+
+          if (fallbackError) throw fallbackError;
+          
+          // Add is_public: true to all returned reviews and profiles
+          return (fallbackData || []).map(review => ({
+            ...review,
+            is_public: true,
+            diner_profiles: review.diner_profiles ? {
+              ...review.diner_profiles,
+              is_public: true
+            } : null
+          }));
+        }
+        throw error;
+      }
+
+      return data || [];
+    } catch (columnError) {
+      console.warn("Error with is_public column in reviews, falling back:", columnError);
+      
+      // Final fallback: get all reviews
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from("diner_reviews")
+        .select(
+          `
+          *,
+          diner_profiles:diner_email (
+            display_name,
+            profile_photo_url
+          ),
+          diner_visits:visit_id (
+            visit_date
+          )
+        `
+        )
+        .eq("restaurant_id", restaurantId)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+      if (fallbackError) throw fallbackError;
+      return (fallbackData || []).map(review => ({
+        ...review,
+        is_public: true,
+        diner_profiles: review.diner_profiles ? {
+          ...review.diner_profiles,
+          is_public: true
+        } : null
+      }));
+    }
   },
 
   // Get all reviews for restaurant (including private data) - for restaurant owners
@@ -776,8 +948,7 @@ export const competitionService = {
         *,
         diner_profiles:diner_email (
           display_name,
-          profile_photo_url,
-          is_public
+          profile_photo_url
         )
       `
       )

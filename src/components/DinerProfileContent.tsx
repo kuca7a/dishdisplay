@@ -8,7 +8,6 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { DinerSidebar } from "@/components/diner-sidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -32,11 +31,10 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  User,
-  Trophy,
-  MapPin,
   Star,
+  MapPin,
   Calendar,
+  User,
   Camera,
   Settings,
   Medal,
@@ -44,6 +42,7 @@ import {
   Heart,
   Eye,
   EyeOff,
+  Trophy,
 } from "lucide-react";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import {
@@ -212,7 +211,10 @@ export default function DinerProfileContent() {
   };
 
   const formatJoinDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-GB", {
+    if (!dateString) return "today";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "today";
+    return date.toLocaleDateString("en-GB", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -247,7 +249,7 @@ export default function DinerProfileContent() {
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
+            <div className="w-px h-4 bg-border mr-2" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
@@ -262,31 +264,28 @@ export default function DinerProfileContent() {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-6 p-6">
-          <div className="max-w-6xl mx-auto w-full space-y-6">
-            {/* Header */}
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <User className="h-8 w-8 text-[#5F7161]" />
-                <h1 className="text-3xl font-bold">My Diner Profile</h1>
-              </div>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Track your restaurant visits, manage reviews, and earn rewards
-              </p>
-            </div>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="flex items-center gap-2">
+            <User className="h-8 w-8 text-[#5F7161]" />
+            <h1
+              className={`${rubik.className} text-3xl text-gray-800 font-medium`}
+            >
+              Diner Profile
+            </h1>
+          </div>
 
-            {error && (
-              <Card className="border-red-200 bg-red-50">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 text-red-800">
-                    <span>{error}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+          {error && (
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-2 text-red-800">
+                  <span>{error}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-            {/* Profile Overview */}
-            <Card>
+          {/* Profile Overview */}
+          <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -305,7 +304,7 @@ export default function DinerProfileContent() {
                       <CardDescription className="flex items-center gap-2 mt-1">
                         <Calendar className="h-4 w-4" />
                         Member since{" "}
-                        {profile ? formatJoinDate(profile.join_date) : "today"}
+                        {profile?.join_date ? formatJoinDate(profile.join_date) : "today"}
                       </CardDescription>
                       <div className="flex items-center gap-1 mt-2">
                         {profile?.is_public ? (
@@ -452,16 +451,16 @@ export default function DinerProfileContent() {
               </Card>
             </div>
 
-            {/* Main Content Tabs */}
-            <Tabs defaultValue="visits" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="visits">Visit History</TabsTrigger>
-                <TabsTrigger value="reviews">My Reviews</TabsTrigger>
-                <TabsTrigger value="rewards">Points & Rewards</TabsTrigger>
-                <TabsTrigger value="badges">Badges</TabsTrigger>
-              </TabsList>
+          {/* Main Content Tabs */}
+          <Tabs defaultValue="visits" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="visits">Visit History</TabsTrigger>
+              <TabsTrigger value="reviews">My Reviews</TabsTrigger>
+              <TabsTrigger value="rewards">Points & Rewards</TabsTrigger>
+              <TabsTrigger value="badges">Badges</TabsTrigger>
+            </TabsList>
 
-              <TabsContent value="visits" className="space-y-4">
+            <TabsContent value="visits" className="space-y-4">
                 <VisitsHistory
                   visits={visits}
                   onWriteReview={(visitId: string) => {
@@ -469,9 +468,9 @@ export default function DinerProfileContent() {
                     setShowReviewForm(true);
                   }}
                 />
-              </TabsContent>
+            </TabsContent>
 
-              <TabsContent value="reviews" className="space-y-4">
+            <TabsContent value="reviews" className="space-y-4">
                 <Card>
                   <CardHeader>
                     <CardTitle>My Reviews</CardTitle>
@@ -530,7 +529,10 @@ export default function DinerProfileContent() {
                               </p>
                             )}
                             <div className="flex items-center justify-between mt-3 text-sm text-gray-500">
-                              <span>+{review.points_earned} points earned</span>
+                              <span className="flex items-center gap-1">
+                                <Trophy className="h-4 w-4 text-green-600" />
+                                +{review.points_earned || 25} points earned
+                              </span>
                               {review.photo_urls &&
                                 review.photo_urls.length > 0 && (
                                   <div className="flex items-center gap-1">
@@ -549,7 +551,7 @@ export default function DinerProfileContent() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="rewards">
+            <TabsContent value="rewards">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2">
                     <PointsAndRewards totalPoints={profile?.total_points || 0} />
@@ -560,7 +562,7 @@ export default function DinerProfileContent() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="badges" className="space-y-4">
+            <TabsContent value="badges" className="space-y-4">
                 <Card>
                   <CardHeader>
                     <CardTitle>Achievements</CardTitle>
@@ -619,9 +621,8 @@ export default function DinerProfileContent() {
                     )}
                   </CardContent>
                 </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Review Form Modal */}

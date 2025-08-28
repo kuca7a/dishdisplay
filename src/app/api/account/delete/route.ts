@@ -29,21 +29,23 @@ export async function POST(request: NextRequest) {
 
     if (restaurant.owner_email !== userEmail) {
       return NextResponse.json(
-        { error: "Unauthorized: You don't own this restaurant" },
+        { error: "You are not authorized to delete this restaurant" },
         { status: 403 }
       );
     }
 
-    if (restaurant.name !== confirmationText) {
+    // Validate confirmation text
+    const expectedConfirmation = `DELETE ${restaurant.name}`;
+    if (confirmationText !== expectedConfirmation) {
       return NextResponse.json(
-        { error: "Restaurant name confirmation doesn't match" },
+        { error: "Confirmation text does not match" },
         { status: 400 }
       );
     }
 
     console.log("Verification passed, starting deletion process...");
 
-    // Step 1: Get all menu items for this restaurant (to delete associated images)
+    // Get all menu items for this restaurant
     const menuItems = await menuItemService.getByRestaurantId(restaurantId);
     console.log(`Found ${menuItems.length} menu items to delete`);
 

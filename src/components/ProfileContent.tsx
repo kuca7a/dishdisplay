@@ -243,33 +243,44 @@ export default function ProfileContent() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className={rubik.className}>
-        <div>
-          <header className="flex flex-col gap-2 h-auto shrink-0 items-start px-4 pt-4">
-            <span className="text-xl font-semibold">
-              {greeting}
-              {user?.name ? `, ${user.name}` : "!"}
-            </span>
-            <div className="flex h-16 items-center gap-2 w-full">
-              <SidebarTrigger className="-ml-1" />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="/profile">Dashboard</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Overview</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-          </header>
+        <header className="flex h-16 shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/profile">Dashboard</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Overview</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
 
-          <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="flex items-center gap-2">
+            <BuildingOfficeIcon className="h-8 w-8 text-[#5F7161]" />
+            <h1
+              className={`${rubik.className} text-3xl text-gray-800 font-medium`}
+            >
+              Dashboard
+            </h1>
+          </div>
+
+          <div className="space-y-4">
+            {/* Greeting */}
+            <Card>
+              <CardContent className="pt-6">
+                <span className="text-xl font-semibold">
+                  {greeting}
+                  {user?.name ? `, ${user.name}` : "!"}
+                </span>
+              </CardContent>
+            </Card>
             {/* Progress Overview */}
             <Card>
               <CardHeader>

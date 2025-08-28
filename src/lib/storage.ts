@@ -30,7 +30,6 @@ export const initializeStorageBucket = async (): Promise<{
       await supabase.storage.listBuckets();
 
     if (listError) {
-      console.error("Error listing buckets:", listError);
       return { success: false, error: listError.message };
     }
 
@@ -38,7 +37,7 @@ export const initializeStorageBucket = async (): Promise<{
 
     if (!bucketExists) {
       // Create bucket with public access
-      const { data, error: createError } = await supabase.storage.createBucket(
+      const { error: createError } = await supabase.storage.createBucket(
         BUCKET_NAME,
         {
           public: true,
@@ -48,16 +47,12 @@ export const initializeStorageBucket = async (): Promise<{
       );
 
       if (createError) {
-        console.error("Error creating bucket:", createError);
         return { success: false, error: createError.message };
       }
-
-      console.log("Storage bucket created successfully:", data);
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Storage initialization error:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -84,13 +79,6 @@ export const uploadMenuImage = async (
       return { error: "Image must be smaller than 5MB" };
     }
 
-    console.log("Uploading image via API route:", {
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type,
-      restaurantId,
-    });
-
     // Create form data for API request
     const formData = new FormData();
     formData.append("file", file);
@@ -105,7 +93,6 @@ export const uploadMenuImage = async (
     const result = await response.json();
 
     if (!response.ok) {
-      console.error("API upload error:", result);
       return {
         error: result.error || "Failed to upload image",
         details: result.details,
@@ -119,14 +106,11 @@ export const uploadMenuImage = async (
       };
     }
 
-    console.log("Upload successful:", result.url);
-
     return {
       url: result.url,
       path: result.path,
     };
-  } catch (error) {
-    console.error("Upload error:", error);
+  } catch {
     return { error: "Failed to upload image" };
   }
 };
@@ -146,13 +130,11 @@ export const deleteMenuImage = async (imagePath: string): Promise<boolean> => {
     const { error } = await supabase.storage.from(BUCKET_NAME).remove([path]);
 
     if (error) {
-      console.error("Error deleting image:", error);
       return false;
     }
 
     return true;
-  } catch (error) {
-    console.error("Error deleting image:", error);
+  } catch {
     return false;
   }
 };

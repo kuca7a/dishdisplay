@@ -188,7 +188,7 @@ export default function MediaBrandingContent() {
     e.preventDefault();
     if (!restaurant) {
       setError(
-        "No restaurant found. Please create a restaurant first in Menu > Manage."
+        "No restaurant found. Please create a restaurant first in Business Profile."
       );
       return;
     }
@@ -610,8 +610,8 @@ export default function MediaBrandingContent() {
                 <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-blue-700 text-sm">
                     <strong>No restaurant found.</strong> To create your
-                    restaurant profile, go to <strong>Menu → Manage</strong> and
-                    add your first restaurant.
+                    restaurant profile, go to <strong>Business Profile</strong> and
+                    add your restaurant information.
                   </p>
                 </div>
               )}

@@ -139,29 +139,47 @@ export default function BusinessProfileContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!restaurant) {
-      setError(
-        "No restaurant found. Please create a restaurant first in Menu > Manage."
-      );
-      return;
-    }
 
     try {
       setSaving(true);
       setError(null);
 
-      await restaurantService.update(restaurant.id, formData);
+      if (restaurant) {
+        // Update existing restaurant
+        await restaurantService.update(restaurant.id, formData);
+        
+        // Invalidate cache for updated restaurant data
+        cachedDataService.invalidateRestaurantCache(restaurant.id, user?.email);
+        
+        setSuccessMessage("Business profile updated successfully!");
+      } else {
+        // Create new restaurant
+        if (!user?.email) {
+          setError("User email is required to create a restaurant.");
+          return;
+        }
 
-      // Invalidate cache for updated restaurant data
-      cachedDataService.invalidateRestaurantCache(restaurant.id, user?.email);
+        const newRestaurantData = {
+          ...formData,
+          owner_email: user.email,
+        };
 
-      setSuccessMessage("Business profile updated successfully!");
+        const newRestaurant = await restaurantService.create(newRestaurantData);
+        
+        // Invalidate cache to ensure fresh data
+        cachedDataService.invalidateRestaurantCache(newRestaurant.id, user.email);
+        
+        setSuccessMessage("Restaurant created successfully!");
+        
+        // Update the restaurant state with the new restaurant
+        setRestaurant(newRestaurant);
+      }
 
       // Reload data to get the updated info
       await loadRestaurantData();
     } catch (err) {
-      console.error("Error updating restaurant:", err);
-      setError("Failed to update business profile. Please try again.");
+      console.error("Error saving restaurant:", err);
+      setError("Failed to save business profile. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -370,10 +388,12 @@ export default function BusinessProfileContent() {
                       {saving ? (
                         <div className="flex items-center">
                           <ThreeDotsLoader size="sm" />
-                          <span className="ml-2">Saving Changes...</span>
+                          <span className="ml-2">
+                            {restaurant ? "Saving Changes..." : "Creating Restaurant..."}
+                          </span>
                         </div>
                       ) : (
-                        "Save Business Profile"
+                        restaurant ? "Save Business Profile" : "Create Restaurant"
                       )}
                     </Button>
                   </div>
@@ -382,9 +402,7 @@ export default function BusinessProfileContent() {
                 {!restaurant && (
                   <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <p className="text-blue-700 text-sm">
-                      <strong>No restaurant found.</strong> To create your
-                      restaurant profile, go to <strong>Menu → Manage</strong>{" "}
-                      and add your first restaurant.
+                      <strong>Welcome to Dish Display!</strong> Fill out the form above to create your restaurant profile and get started.
                     </p>
                   </div>
                 )}
