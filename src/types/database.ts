@@ -72,6 +72,9 @@ export interface MenuItem {
   calories: number; // Required calorie count
   allergens: string[]; // Required allergens list as JSON array
   ingredients: string; // Required ingredients text
+  // Review fields
+  review_count: number; // Number of reviews for this item
+  average_rating?: number; // Average rating (1-5 stars)
   created_at: string;
   updated_at: string;
 }
@@ -496,6 +499,14 @@ export interface MenuPerformanceItem {
   views_change_percentage: number;
 }
 
+export interface EnhancedMenuPerformanceItem extends MenuPerformanceItem {
+  price: number;
+  performance_score: number;
+  engagement_level: 'Low' | 'Medium' | 'High';
+  peak_hour: number;
+  peak_hour_label: string;
+}
+
 export interface RecentActivity {
   id: string;
   type: 'menu_view' | 'qr_scan' | 'item_view' | 'visit_marked' | 'review_submitted';
@@ -567,4 +578,40 @@ export interface LeaderboardData {
     id: string;
     name: string;
   };
+}
+
+// Menu Item Review System
+export interface MenuItemReview {
+  id: string;
+  menu_item_id: string;
+  diner_id: string;
+  restaurant_id: string;
+  rating: number; // 1-5 stars
+  review_text?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MenuItemReviewWithDiner {
+  id: string;
+  menu_item_id: string;
+  diner_id: string;
+  restaurant_id: string;
+  rating: number;
+  review_text?: string;
+  created_at: string;
+  updated_at: string;
+  diner_email: string;
+  diner_name: string;
+  diner_avatar?: string;
+  diner_points: number;
+  diner_level: string;
+}
+
+export interface CreateMenuItemReviewData {
+  menu_item_id: string;
+  diner_id: string;
+  restaurant_id: string;
+  rating: number;
+  review_text?: string;
 }

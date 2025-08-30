@@ -4,6 +4,7 @@ import {
   AnalyticsEvent,
   AnalyticsOverview,
   MenuPerformanceItem,
+  EnhancedMenuPerformanceItem,
   RecentActivity,
 } from "@/types/database";
 
@@ -13,6 +14,13 @@ export class AnalyticsService {
     data: CreateAnalyticsEventData
   ): Promise<AnalyticsEvent | null> {
     try {
+      console.log('📊 Analytics Service - Tracking event:', {
+        event_type: data.event_type,
+        restaurant_id: data.restaurant_id,
+        duration_seconds: data.duration_seconds,
+        event_data: data.event_data
+      });
+
       const supabase = getSupabaseClient();
       const { data: event, error } = await supabase
         .from("analytics_events")
@@ -35,9 +43,15 @@ export class AnalyticsService {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Analytics Service - Database error:', error);
+        throw error;
+      }
+
+      console.log('✅ Analytics Service - Event saved:', event);
       return event;
-    } catch {
+    } catch (error) {
+      console.error('❌ Analytics Service - Failed to track event:', error);
       return null;
     }
   }
@@ -386,6 +400,242 @@ export class AnalyticsService {
     if (userAgent.includes("Safari")) return "Safari";
     if (userAgent.includes("Edge")) return "Edge";
     return "Other";
+  }
+
+  // Get peak activity hours for a restaurant
+  async getPeakActivityHours(
+    restaurantId: string,
+    days: number = 30
+  ): Promise<{ hour: number; count: number; label: string }[]> {
+    try {
+      const supabase = getSupabaseClient();
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(endDate.getDate() - days);
+
+      const { data, error } = await supabase
+        .from("analytics_events")
+        .select("timestamp")
+        .eq("restaurant_id", restaurantId)
+        .in("event_type", ["qr_scan", "menu_view"])
+        .gte("timestamp", startDate.toISOString())
+        .lte("timestamp", endDate.toISOString());
+
+      if (error) throw error;
+
+      // Group by hour of day
+      const hourlyData = new Array(24).fill(0).map((_, hour) => ({
+        hour,
+        count: 0,
+        label: this.formatHourLabel(hour),
+      }));
+
+      (data || []).forEach((event) => {
+        const hour = new Date(event.timestamp).getHours();
+        hourlyData[hour].count += 1;
+      });
+
+      return hourlyData;
+    } catch {
+      return new Array(24).fill(0).map((_, hour) => ({
+        hour,
+        count: 0,
+        label: this.formatHourLabel(hour),
+      }));
+    }
+  }
+
+  // Get enhanced menu performance with scoring
+  async getEnhancedMenuPerformance(
+    restaurantId: string,
+    days: number = 30
+  ): Promise<EnhancedMenuPerformanceItem[]> {
+    try {
+      const supabase = getSupabaseClient();
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(endDate.getDate() - days);
+
+      // Get item view events and detail clicks for the period
+      const { data: events, error: eventsError } = await supabase
+        .from("analytics_events")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .in("event_type", ["item_view", "item_detail_click"])
+        .gte("timestamp", startDate.toISOString())
+        .lte("timestamp", endDate.toISOString());
+
+      if (eventsError) throw eventsError;
+
+      // Get menu items to join with analytics data
+      const { data: menuItems, error: menuError } = await supabase
+        .from("menu_items")
+        .select("id, name, category, image_url, price")
+        .eq("restaurant_id", restaurantId);
+
+      if (menuError) throw menuError;
+
+      // Aggregate analytics by menu item
+      const itemMap = new Map<
+        string,
+        {
+          total_views: number;
+          total_clicks: number;
+          unique_viewers: Set<string>;
+          total_view_time: number;
+          click_sessions: Set<string>;
+          peak_hour: number;
+          hourly_distribution: number[];
+          engagement_sessions: number;
+        }
+      >();
+
+      (events || []).forEach((event) => {
+        const itemId =
+          event.event_data?.item_id || event.event_data?.menu_item_id;
+        if (!itemId) return;
+
+        const hour = new Date(event.timestamp).getHours();
+        const isClick = event.event_type === "item_detail_click";
+        const isView = event.event_type === "item_view";
+
+        if (itemMap.has(itemId)) {
+          const existing = itemMap.get(itemId)!;
+          if (isView) {
+            existing.total_views += 1;
+            existing.unique_viewers.add(event.session_id);
+            existing.total_view_time += event.duration_seconds || 0;
+            existing.hourly_distribution[hour] += 1;
+            // Count as engaged session if view time > 3 seconds
+            if ((event.duration_seconds || 0) > 3) {
+              existing.engagement_sessions += 1;
+            }
+          }
+          if (isClick) {
+            existing.total_clicks += 1;
+            existing.click_sessions.add(event.session_id);
+          }
+        } else {
+          const hourlyDist = new Array(24).fill(0);
+          if (isView) hourlyDist[hour] = 1;
+          
+          itemMap.set(itemId, {
+            total_views: isView ? 1 : 0,
+            total_clicks: isClick ? 1 : 0,
+            unique_viewers: isView ? new Set([event.session_id]) : new Set(),
+            total_view_time: isView ? (event.duration_seconds || 0) : 0,
+            click_sessions: isClick ? new Set([event.session_id]) : new Set(),
+            peak_hour: hour,
+            hourly_distribution: hourlyDist,
+            engagement_sessions: (isView && (event.duration_seconds || 0) > 3) ? 1 : 0,
+          });
+        }
+      });
+
+      // Calculate overall metrics for enhanced scoring
+      const allViews = Array.from(itemMap.values()).map(item => item.total_views);
+      const allViewTimes = Array.from(itemMap.values()).map(item => 
+        item.total_views > 0 ? item.total_view_time / item.total_views : 0
+      );
+      const allEngagementRates = Array.from(itemMap.values()).map(item => 
+        item.total_views > 0 ? item.engagement_sessions / item.total_views : 0
+      );
+
+      const maxViews = Math.max(...allViews, 1);
+      const maxAvgViewTime = Math.max(...allViewTimes, 1);
+      const maxEngagementRate = Math.max(...allEngagementRates, 0.01);
+
+      // Combine with menu item details and calculate performance scores
+      const performance = (menuItems || [])
+        .map((item) => {
+          const analytics = itemMap.get(item.id);
+          if (!analytics) {
+            return {
+              menu_item_id: item.id,
+              name: item.name,
+              category: item.category,
+              image_url: item.image_url,
+              price: item.price,
+              total_views: 0,
+              unique_viewers: 0,
+              average_view_time: 0,
+              views_change_percentage: 0,
+              performance_score: 0,
+              engagement_level: 'Low' as const,
+              peak_hour: 12,
+              peak_hour_label: '12:00 PM',
+            };
+          }
+
+          const avgViewTime = analytics.total_views > 0 
+            ? analytics.total_view_time / analytics.total_views 
+            : 0;
+
+          // Calculate engagement rate (sessions with >3 seconds view time)
+          const engagementRate = analytics.total_views > 0 
+            ? analytics.engagement_sessions / analytics.total_views 
+            : 0;
+
+          // Calculate click-through rate (unique clicks vs unique viewers)
+          const clickThroughRate = analytics.unique_viewers.size > 0 
+            ? analytics.click_sessions.size / analytics.unique_viewers.size 
+            : 0;
+
+          // Find peak hour
+          const peakHourIndex = analytics.hourly_distribution
+            .indexOf(Math.max(...analytics.hourly_distribution));
+
+          // Enhanced performance score calculation (0-100)
+          // Weighted scoring based on multiple engagement factors
+          const viewPopularityScore = (analytics.total_views / maxViews) * 25; // 25% weight
+          const timeEngagementScore = (avgViewTime / maxAvgViewTime) * 30; // 30% weight  
+          const qualityEngagementScore = (engagementRate / maxEngagementRate) * 25; // 25% weight
+          const clickInterestScore = Math.min(clickThroughRate * 100, 20); // 20% weight (capped at 20)
+          
+          const performanceScore = Math.round(
+            viewPopularityScore + timeEngagementScore + qualityEngagementScore + clickInterestScore
+          );
+
+          // Determine engagement level based on multiple factors
+          let engagementLevel: 'Low' | 'Medium' | 'High';
+          if (performanceScore >= 70 && engagementRate > 0.3 && avgViewTime > 5) {
+            engagementLevel = 'High';
+          } else if (performanceScore >= 40 && (engagementRate > 0.2 || avgViewTime > 3)) {
+            engagementLevel = 'Medium';
+          } else {
+            engagementLevel = 'Low';
+          }
+
+          return {
+            menu_item_id: item.id,
+            name: item.name,
+            category: item.category,
+            image_url: item.image_url,
+            price: item.price,
+            total_views: analytics.total_views,
+            unique_viewers: analytics.unique_viewers.size,
+            average_view_time: avgViewTime,
+            views_change_percentage: 0, // TODO: Calculate change from previous period
+            performance_score: performanceScore,
+            engagement_level: engagementLevel,
+            peak_hour: peakHourIndex,
+            peak_hour_label: this.formatHourLabel(peakHourIndex),
+          } as EnhancedMenuPerformanceItem;
+        })
+        .sort((a, b) => b.performance_score - a.performance_score);
+
+      return performance;
+    } catch {
+      return [];
+    }
+  }
+
+  // Helper method to format hour labels
+  private formatHourLabel(hour: number): string {
+    if (hour === 0) return '12:00 AM';
+    if (hour === 12) return '12:00 PM';
+    if (hour < 12) return `${hour}:00 AM`;
+    return `${hour - 12}:00 PM`;
   }
 
   // Generate a session ID for tracking
