@@ -18,7 +18,7 @@ export class MenuItemReviewService {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as unknown as MenuItemReviewWithDiner[];
     } catch (error) {
       console.error("Error fetching menu item reviews:", error);
       return [];
@@ -41,7 +41,7 @@ export class MenuItemReviewService {
         .single();
 
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
-      return data;
+      return data as unknown as MenuItemReview | null;
     } catch (error) {
       console.error("Error fetching diner review:", error);
       return null;
@@ -55,12 +55,12 @@ export class MenuItemReviewService {
       
       const { data, error } = await supabase
         .from("menu_item_reviews")
-        .insert([reviewData])
+        .insert([reviewData as unknown as Record<string, unknown>])
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+      return data as unknown as MenuItemReview;
     } catch (error) {
       console.error("Error creating menu item review:", error);
       throw error;
@@ -86,7 +86,7 @@ export class MenuItemReviewService {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as unknown as MenuItemReview;
     } catch (error) {
       console.error("Error updating menu item review:", error);
       throw error;
@@ -127,7 +127,7 @@ export class MenuItemReviewService {
 
       if (error) throw error;
 
-      const reviews = data || [];
+      const reviews = (data || []) as { rating: number }[];
       const total_reviews = reviews.length;
       const average_rating = total_reviews > 0 
         ? reviews.reduce((sum: number, r: { rating: number }) => sum + r.rating, 0) / total_reviews 
@@ -172,7 +172,7 @@ export class MenuItemReviewService {
         .limit(limit);
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as unknown as MenuItemReviewWithDiner[];
     } catch (error) {
       console.error("Error fetching restaurant reviews:", error);
       return [];

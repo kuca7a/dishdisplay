@@ -3,10 +3,10 @@ import { menuItemReviewService } from "@/lib/menu-item-reviews";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     const updates = await request.json();
 
     // Validate rating if provided
@@ -38,10 +38,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     
     const success = await menuItemReviewService.deleteReview(id);
     
