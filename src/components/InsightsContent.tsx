@@ -8,7 +8,7 @@ import ReviewsSection from "@/components/ReviewsSection";
 import VisitStatsCard from "@/components/VisitStatsCard";
 import { restaurantService } from "@/lib/database";
 import { analyticsService } from "@/lib/analytics";
-import { Restaurant, AnalyticsOverview, MenuPerformanceItem, RecentActivity } from "@/types/database";
+import { Restaurant, AnalyticsOverview, MenuPerformanceItem, EnhancedMenuPerformanceItem, RecentActivity } from "@/types/database";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -32,6 +32,9 @@ import {
 } from "@/components/ui/card";
 import { BarChart, TrendingUp, Users, Eye, Clock } from "lucide-react";
 
+import PeakHoursChart from "@/components/PeakHoursChart";
+import EnhancedMenuPerformance from "@/components/EnhancedMenuPerformance";
+
 import { Rubik } from "next/font/google";
 
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
@@ -49,6 +52,8 @@ export default function InsightsContent() {
   const [loadingRestaurant, setLoadingRestaurant] = useState(true);
   const [analytics, setAnalytics] = useState<AnalyticsOverview | null>(null);
   const [menuPerformance, setMenuPerformance] = useState<MenuPerformanceItem[]>([]);
+  const [enhancedMenuPerformance, setEnhancedMenuPerformance] = useState<EnhancedMenuPerformanceItem[]>([]);
+  const [peakHours, setPeakHours] = useState<{ hour: number; count: number; label: string }[]>([]);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loadingAnalytics, setLoadingAnalytics] = useState(true);
 
@@ -86,14 +91,18 @@ export default function InsightsContent() {
         setLoadingAnalytics(true);
         
         // Load analytics data in parallel
-        const [analyticsOverview, performance, activity] = await Promise.all([
+        const [analyticsOverview, performance, enhancedPerformance, peakHoursData, activity] = await Promise.all([
           analyticsService.getAnalyticsOverview(restaurant.id),
           analyticsService.getMenuPerformance(restaurant.id),
+          analyticsService.getEnhancedMenuPerformance(restaurant.id),
+          analyticsService.getPeakActivityHours(restaurant.id),
           analyticsService.getRecentActivity(restaurant.id)
         ]);
 
         setAnalytics(analyticsOverview);
         setMenuPerformance(performance);
+        setEnhancedMenuPerformance(enhancedPerformance);
+        setPeakHours(peakHoursData);
         setRecentActivity(activity);
       } catch (err) {
         console.error("Error loading analytics data:", err);
@@ -287,6 +296,15 @@ export default function InsightsContent() {
                     )}
                   </CardContent>
                 </Card>
+              </div>
+
+              {/* Advanced Analytics Section */}
+              <div className="grid gap-6 lg:grid-cols-2">
+                {/* Peak Activity Hours */}
+                <PeakHoursChart data={peakHours} loading={loadingAnalytics} />
+                
+                {/* Enhanced Menu Performance */}
+                <EnhancedMenuPerformance data={enhancedMenuPerformance} loading={loadingAnalytics} />
               </div>
 
               {/* Charts and Analytics */}

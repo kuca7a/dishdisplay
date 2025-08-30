@@ -59,5 +59,7 @@ export function transformExploreToMenuItem(
     calories: exploreItem.estimated_calories,
     allergens: exploreItem.dietary_tags || [],
     ingredients: exploreItem.ingredients?.map(ing => ing.name).join(', ') || '',
+    review_count: 0,
+    average_rating: undefined,
   };
 }

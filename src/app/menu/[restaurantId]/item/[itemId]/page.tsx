@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { cachedDataService } from "@/lib/cache";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import { useAnalytics } from "@/hooks/use-analytics";
+import { MenuItemReviewSection } from "@/components/MenuItemReviewSection";
 
 export default function MenuItemDetailPage() {
   const params = useParams();
@@ -53,7 +54,7 @@ export default function MenuItemDetailPage() {
         setRestaurant(restaurantData);
         setItem(foundItem);
         
-        // Track detailed item view with timing
+        // Track detailed item view with initial timing
         setTimeout(() => {
           trackItemView(foundItem.id, foundItem.name, pageStartTime);
         }, 1000); // Small delay to ensure page is fully loaded
@@ -67,6 +68,35 @@ export default function MenuItemDetailPage() {
 
     loadItemData();
   }, [restaurantId, itemId, trackItemView, pageStartTime]);
+
+  // Track page duration in real-time for item views
+  useEffect(() => {
+    if (!restaurant || !item) return;
+
+    // Send periodic duration updates every 10 seconds
+    const interval = setInterval(() => {
+      const currentDuration = Math.round((Date.now() - pageStartTime) / 1000);
+      if (currentDuration >= 10) { // Only track meaningful durations
+        trackItemView(item.id, item.name, pageStartTime);
+        console.log(`📊 Item view duration update: ${currentDuration}s for ${item.name}`);
+      }
+    }, 10000); // Update every 10 seconds
+
+    // Track final duration on page unload
+    const handleBeforeUnload = () => {
+      const finalDuration = Math.round((Date.now() - pageStartTime) / 1000);
+      console.log('📤 Item page exit - final duration:', finalDuration);
+      // Track one final time with the complete duration
+      trackItemView(item.id, item.name, pageStartTime);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [restaurant, item, pageStartTime, trackItemView]);
 
   const handleBack = () => {
     router.back();
@@ -267,6 +297,15 @@ export default function MenuItemDetailPage() {
             </div>
           </div>
         )}
+
+        {/* Review Section */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <MenuItemReviewSection
+            menuItemId={item.id}
+            restaurantId={restaurant.id}
+            menuItemName={item.name}
+          />
+        </div>
       </div>
     </div>
   );
