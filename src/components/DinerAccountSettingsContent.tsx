@@ -76,7 +76,7 @@ export default function DinerAccountSettingsContent() {
       >
         <div className="text-center">
           <ThreeDotsLoader size="md" />
-          <p className="mt-4">Loading...</p>
+          <p className="mt-4">Loading Account Settings...</p>
         </div>
       </div>
     );

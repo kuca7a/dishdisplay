@@ -19,23 +19,19 @@ export const useAnalytics = ({ restaurantId, enabled = true }: UseAnalyticsProps
     return sessionId;
   }, []);
 
-  // Track item view with timing
+  // Track item view with timing and timeout protection
   const trackItemView = useCallback(async (itemId: string, itemName: string, startTime?: number) => {
     if (!enabled || !restaurantId || typeof window === 'undefined') return;
 
     const sessionId = getSessionId();
     if (!sessionId) return;
 
-    const duration = startTime ? Math.round((Date.now() - startTime) / 1000) : null;
-
-    console.log('🎯 Tracking item view:', {
-      itemId,
-      itemName,
-      startTime,
-      duration,
-      calculatedDuration: duration,
-      currentTime: Date.now()
-    });
+    let duration = startTime ? Math.round((Date.now() - startTime) / 1000) : null;
+    
+    // Cap duration at 30 minutes (1800 seconds) to prevent overnight sessions
+    if (duration !== null) {
+      duration = Math.min(duration, 1800);
+    }
 
     try {
       await analyticsService.trackEvent({
@@ -46,12 +42,10 @@ export const useAnalytics = ({ restaurantId, enabled = true }: UseAnalyticsProps
           item_id: itemId,
           item_name: itemName
         },
-        duration_seconds: duration || undefined, // Pass duration as separate field, not in event_data
+        duration_seconds: duration || undefined,
         page_url: window.location.href,
         referrer_url: document.referrer
       });
-
-      console.log('✅ Analytics event sent successfully');
 
       // Update session tracking
       await analyticsService.trackSession(sessionId, restaurantId, window.location.href);
@@ -60,12 +54,15 @@ export const useAnalytics = ({ restaurantId, enabled = true }: UseAnalyticsProps
     }
   }, [restaurantId, enabled, getSessionId]);
 
-  // Track menu view
+  // Track menu view with timeout protection
   const trackMenuView = useCallback(async (duration?: number) => {
     if (!enabled || !restaurantId || typeof window === 'undefined') return;
 
     const sessionId = getSessionId();
     if (!sessionId) return;
+
+    // Cap duration at 30 minutes (1800 seconds) to prevent overnight sessions
+    const cappedDuration = duration ? Math.min(duration, 1800) : undefined;
 
     try {
       await analyticsService.trackEvent({
@@ -73,7 +70,7 @@ export const useAnalytics = ({ restaurantId, enabled = true }: UseAnalyticsProps
         event_type: 'menu_view',
         session_id: sessionId,
         event_data: {},
-        duration_seconds: duration,
+        duration_seconds: cappedDuration,
         page_url: window.location.href,
         referrer_url: document.referrer
       });
@@ -85,12 +82,15 @@ export const useAnalytics = ({ restaurantId, enabled = true }: UseAnalyticsProps
     }
   }, [restaurantId, enabled, getSessionId]);
 
-  // Track QR scan
+  // Track QR scan with timeout protection
   const trackQrScan = useCallback(async (tableNumber?: string, duration?: number) => {
     if (!enabled || !restaurantId || typeof window === 'undefined') return;
 
     const sessionId = getSessionId();
     if (!sessionId) return;
+
+    // Cap duration at 30 minutes (1800 seconds) to prevent overnight sessions
+    const cappedDuration = duration ? Math.min(duration, 1800) : undefined;
 
     try {
       await analyticsService.trackEvent({
@@ -98,7 +98,7 @@ export const useAnalytics = ({ restaurantId, enabled = true }: UseAnalyticsProps
         event_type: 'qr_scan',
         session_id: sessionId,
         event_data: tableNumber ? { table_number: tableNumber } : {},
-        duration_seconds: duration,
+        duration_seconds: cappedDuration,
         page_url: window.location.href,
         referrer_url: document.referrer
       });
@@ -121,7 +121,8 @@ export const useAnalytics = ({ restaurantId, enabled = true }: UseAnalyticsProps
       await analyticsService.trackEvent({
         restaurant_id: restaurantId,
         event_type: 'visit_marked',
-        session_id: sessionId
+        session_id: sessionId,
+        event_data: {}
       });
     } catch (error) {
       console.error('Error tracking visit marked:', error);

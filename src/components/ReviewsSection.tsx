@@ -8,9 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, MessageSquare, TrendingUp, Utensils } from "lucide-react";
+import { Star, MessageSquare, TrendingUp } from "lucide-react";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
 interface MenuItemReviewWithDetails {
   id: string;
@@ -21,7 +20,11 @@ interface MenuItemReviewWithDetails {
   diner_name: string;
   diner_avatar?: string;
   menu_item_id: string;
-  menu_item_name?: string;
+  menu_item_name: string;
+  menu_item_description: string;
+  menu_item_price: number;
+  menu_item_image_url?: string;
+  menu_item_category: string;
 }
 
 interface ReviewsSectionProps {
@@ -105,7 +108,7 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+            <ThreeDotsLoader size="md" />
             <p className="text-gray-500 mt-2">Loading reviews...</p>
           </div>
         </CardContent>
@@ -127,25 +130,30 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Total Reviews */}
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Total Reviews with trend indicator */}
+            <div className="text-center space-y-2">
+              <div className="text-4xl font-bold text-gray-900">
                 {stats.totalReviews}
               </div>
-              <p className="text-sm text-gray-500 mt-1">Total Reviews</p>
+              <p className="text-sm font-medium text-gray-700">Total Reviews</p>
+              <p className="text-xs text-gray-500">
+                {stats.totalReviews > 0 
+                  ? "Customer feedback received" 
+                  : "Waiting for first review"}
+              </p>
             </div>
 
-            {/* Average Rating */}
-            <div className="text-center">
-              <div className={`text-3xl font-bold ${getRatingColor(stats.averageRating)}`}>
-                {stats.averageRating.toFixed(1)}
+            {/* Average Rating with enhanced star display */}
+            <div className="text-center space-y-3">
+              <div className={`text-4xl font-bold ${getRatingColor(stats.averageRating)}`}>
+                {stats.averageRating > 0 ? stats.averageRating.toFixed(1) : "--"}
               </div>
-              <div className="flex items-center justify-center mt-1">
+              <div className="flex items-center justify-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${
+                    className={`h-5 w-5 ${
                       i < Math.floor(stats.averageRating)
                         ? "text-yellow-400 fill-current"
                         : "text-gray-300"
@@ -153,19 +161,34 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
                   />
                 ))}
               </div>
-              <p className="text-sm text-gray-500 mt-1">Average Rating</p>
+              <p className="text-sm font-medium text-gray-700">Average Rating</p>
+              <p className="text-xs text-gray-500">
+                {stats.averageRating >= 4.5 
+                  ? "Excellent satisfaction" 
+                  : stats.averageRating >= 3.5 
+                  ? "Good satisfaction" 
+                  : stats.averageRating > 0 
+                  ? "Room for improvement" 
+                  : "No ratings yet"}
+              </p>
             </div>
 
-            {/* Rating Distribution */}
-            <div className="space-y-2">
+            {/* Rating Distribution with improved spacing */}
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-gray-700 text-center mb-4">
+                Rating Breakdown
+              </p>
               {Object.entries(stats.ratingDistribution)
                 .reverse()
                 .map(([rating, count]) => (
-                  <div key={rating} className="flex items-center gap-2 text-sm">
-                    <span className="w-3">{rating}★</span>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
+                  <div key={rating} className="flex items-center gap-3 text-sm">
+                    <div className="flex items-center gap-1 w-8">
+                      <span className="text-gray-700 font-medium">{rating}</span>
+                      <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                    </div>
+                    <div className="flex-1 bg-gray-100 rounded-full h-3">
                       <div
-                        className="bg-yellow-400 h-2 rounded-full"
+                        className="bg-gradient-to-r from-yellow-400 to-yellow-500 h-3 rounded-full transition-all duration-300"
                         style={{
                           width: stats.totalReviews > 0 
                             ? `${(count / stats.totalReviews) * 100}%` 
@@ -173,11 +196,50 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
                         }}
                       ></div>
                     </div>
-                    <span className="w-6 text-gray-600">{count}</span>
+                    <span className="w-8 text-gray-600 font-medium text-right">{count}</span>
+                    <span className="w-10 text-xs text-gray-500 text-right">
+                      {stats.totalReviews > 0 ? `${Math.round((count / stats.totalReviews) * 100)}%` : "0%"}
+                    </span>
                   </div>
                 ))}
+              {stats.totalReviews === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-xs text-gray-400 italic">
+                    Rating distribution will appear when you receive reviews
+                  </p>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Additional insights row */}
+          {stats.totalReviews > 0 && (
+            <div className="mt-8 pt-6 border-t border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div className="bg-green-50 rounded-lg p-4">
+                  <div className="text-lg font-bold text-green-700">
+                    {Math.round((stats.ratingDistribution[5] + stats.ratingDistribution[4]) / stats.totalReviews * 100)}%
+                  </div>
+                  <p className="text-xs text-green-600 font-medium">Positive Reviews</p>
+                  <p className="text-xs text-green-500">4+ star ratings</p>
+                </div>
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <div className="text-lg font-bold text-blue-700">
+                    {reviews.filter(r => r.review_text && r.review_text.length > 20).length}
+                  </div>
+                  <p className="text-xs text-blue-600 font-medium">Detailed Reviews</p>
+                  <p className="text-xs text-blue-500">With written feedback</p>
+                </div>
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <div className="text-lg font-bold text-purple-700">
+                    {new Set(reviews.map(r => r.menu_item_id)).size}
+                  </div>
+                  <p className="text-xs text-purple-600 font-medium">Items Reviewed</p>
+                  <p className="text-xs text-purple-500">Different menu items</p>
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -204,55 +266,47 @@ export default function ReviewsSection({ restaurantId }: ReviewsSectionProps) {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {reviews.slice(0, 10).map((review) => (
-                <div key={review.id} className="border rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={review.diner_avatar} />
-                      <AvatarFallback>
-                        {review.diner_name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {review.diner_name}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`h-4 w-4 ${
-                                    i < review.rating
-                                      ? "text-yellow-400 fill-current"
-                                      : "text-gray-300"
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                            {review.menu_item_name && (
-                              <Badge variant="outline" className="text-xs">
-                                <Utensils className="h-3 w-3 mr-1" />
-                                {review.menu_item_name}
-                              </Badge>
-                            )}
-                          </div>
+                <div key={review.id} className="border rounded-lg p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      {/* Header with name, rating, and menu item */}
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium text-gray-900">
+                          {review.diner_name}
+                        </span>
+                        <span className="text-gray-400">•</span>
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-3 w-3 ${
+                                i < review.rating
+                                  ? "text-yellow-400 fill-current"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
                         </div>
-                        <span className="text-sm text-gray-500">
-                          {formatDate(review.created_at)}
+                        <span className="text-gray-400">•</span>
+                        <span className="text-sm font-medium text-blue-600">
+                          {review.menu_item_name}
                         </span>
                       </div>
 
+                      {/* Review text */}
                       {review.review_text && (
-                        <p className="text-gray-700 mt-2 text-sm leading-relaxed">
+                        <p className="text-gray-700 text-sm leading-relaxed">
                           {review.review_text}
                         </p>
                       )}
                     </div>
+
+                    {/* Date */}
+                    <span className="text-xs text-gray-500 whitespace-nowrap">
+                      {formatDate(review.created_at)}
+                    </span>
                   </div>
                 </div>
               ))}

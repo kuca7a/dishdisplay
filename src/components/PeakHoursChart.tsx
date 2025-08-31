@@ -8,7 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Clock, TrendingUp } from "lucide-react";
+import { Clock, TrendingUp, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PeakHoursData {
   hour: number;
@@ -19,9 +20,10 @@ interface PeakHoursData {
 interface PeakHoursChartProps {
   data: PeakHoursData[];
   loading?: boolean;
+  onRefresh?: () => void;
 }
 
-export default function PeakHoursChart({ data, loading }: PeakHoursChartProps) {
+export default function PeakHoursChart({ data, loading, onRefresh }: PeakHoursChartProps) {
   if (loading) {
     return (
       <Card>
@@ -54,51 +56,62 @@ export default function PeakHoursChart({ data, loading }: PeakHoursChartProps) {
     current.count > prev.count ? current : prev
   );
 
-  // Get top 5 busiest hours
+  // Get top 4 busiest hours (reduced from 5)
   const topHours = [...data]
     .sort((a, b) => b.count - a.count)
-    .slice(0, 5)
+    .slice(0, 4)
     .filter(h => h.count > 0);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Clock className="h-5 w-5" />
-          Peak Activity Hours
-        </CardTitle>
-        <CardDescription>
-          When customers scan QR codes and view your menu most
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Peak Activity Hours
+            </CardTitle>
+            <CardDescription>
+              When customers scan QR codes and view your menu most
+            </CardDescription>
+          </div>
+          {onRefresh && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onRefresh}
+              disabled={loading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          )}
+        </div>
       </CardHeader>
-      <CardContent>
-        {topHours.length > 0 ? (
-          <div className="space-y-4">
-            {/* Peak hour highlight */}
-            <div className="p-4 bg-[#5F7161]/5 border border-[#5F7161]/20 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-[#5F7161]">Peak Hour</p>
-                  <p className="text-2xl font-bold">{peakHour.label}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600">Total Views</p>
-                  <p className="text-xl font-semibold">{peakHour.count}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Hourly breakdown */}
-            <div className="space-y-3">
+            <CardContent className="pt-4">
+        {topHours.length === 0 ? (
+          <div className="text-center py-6">
+            <Clock className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+            <h3 className="text-sm font-medium text-gray-600 mb-1">
+              No peak hours data yet
+            </h3>
+            <p className="text-xs text-gray-500">
+              Data will appear once customers start viewing your menu
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {/* Activity bars */}
+            <div className="space-y-2">
               <h4 className="font-medium text-sm text-gray-700">Top Busy Hours</h4>
               {topHours.map((hour, index) => (
-                <div key={hour.hour} className="flex items-center gap-4">
-                  <div className="w-16 text-sm font-medium text-gray-600">
+                <div key={hour.hour} className="flex items-center gap-3">
+                  <div className="w-14 text-xs font-medium text-gray-600">
                     {hour.label}
                   </div>
-                  <div className="flex-1 bg-gray-200 rounded-full h-3 relative">
+                  <div className="flex-1 bg-gray-200 rounded-full h-2 relative">
                     <div
-                      className={`h-3 rounded-full ${
+                      className={`h-2 rounded-full ${
                         index === 0 
                           ? 'bg-[#5F7161]' 
                           : index === 1 
@@ -110,45 +123,24 @@ export default function PeakHoursChart({ data, loading }: PeakHoursChartProps) {
                       }}
                     />
                   </div>
-                  <div className="w-8 text-sm font-medium text-right">
+                  <div className="w-6 text-xs font-medium text-right">
                     {hour.count}
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Insights */}
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            {/* Compact insights */}
+            <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start gap-2">
-                <TrendingUp className="h-4 w-4 text-blue-600 mt-0.5" />
+                <TrendingUp className="h-3 w-3 text-blue-600 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-blue-800">
-                    Optimization Tip
-                  </p>
-                  <p className="text-xs text-blue-700">
-                    {peakHour.count > 0 && (
-                      <>
-                        Your busiest time is {peakHour.label}. Consider promoting 
-                        special offers during slower hours ({
-                          data
-                            .filter(h => h.count > 0)
-                            .sort((a, b) => a.count - b.count)
-                            .slice(0, 2)
-                            .map(h => h.label)
-                            .join(', ')
-                        }) to balance demand.
-                      </>
-                    )}
+                  <p className="text-xs font-medium text-blue-800">
+                    Peak: {peakHour.label} ({peakHour.count} views)
                   </p>
                 </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            <Clock className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>No activity data yet</p>
-            <p className="text-sm">Data will appear when customers scan your QR codes</p>
           </div>
         )}
       </CardContent>

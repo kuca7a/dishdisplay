@@ -197,9 +197,6 @@ export default function MediaBrandingContent() {
       setSaving(true);
       setError(null);
 
-      console.log("Updating restaurant with branding data:", formData);
-      console.log("Restaurant ID:", restaurant.id);
-
       await restaurantService.update(restaurant.id, formData);
 
       setSuccessMessage("Media & Branding updated successfully!");
@@ -249,7 +246,7 @@ export default function MediaBrandingContent() {
       >
         <div className="text-center">
           <ThreeDotsLoader size="md" />
-          <p className="mt-4">Loading...</p>
+          <p className="mt-4">Loading Media & Branding...</p>
         </div>
       </div>
     );

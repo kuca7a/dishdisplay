@@ -30,9 +30,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { BarChart, TrendingUp, Users, Eye, Clock } from "lucide-react";
 
 import PeakHoursChart from "@/components/PeakHoursChart";
+import MonthComparison from "@/components/MonthComparison";
 import EnhancedMenuPerformance from "@/components/EnhancedMenuPerformance";
 
 import { Rubik } from "next/font/google";
@@ -90,7 +96,7 @@ export default function InsightsContent() {
       try {
         setLoadingAnalytics(true);
         
-        // Load analytics data in parallel
+        // Load analytics data in parallel with cache busting
         const [analyticsOverview, performance, enhancedPerformance, peakHoursData, activity] = await Promise.all([
           analyticsService.getAnalyticsOverview(restaurant.id),
           analyticsService.getMenuPerformance(restaurant.id),
@@ -115,6 +121,22 @@ export default function InsightsContent() {
       loadAnalyticsData();
     }
   }, [restaurant, loadingRestaurant]);
+
+  // Add a refresh function for testing
+  const refreshAnalytics = async () => {
+    if (!restaurant) return;
+    
+    setLoadingAnalytics(true);
+    
+    try {
+      const peakHoursData = await analyticsService.getPeakActivityHours(restaurant.id);
+      setPeakHours(peakHoursData);
+    } catch (err) {
+      console.error("Error refreshing analytics:", err);
+    } finally {
+      setLoadingAnalytics(false);
+    }
+  };
 
   const formatTime = (seconds: number): string => {
     if (seconds < 60) return `${seconds}s`;
@@ -152,7 +174,7 @@ export default function InsightsContent() {
       >
         <div className="text-center">
           <ThreeDotsLoader size="md" />
-          <p className="mt-4">Loading...</p>
+          <p className="mt-4">Loading Insights...</p>
         </div>
       </div>
     );
@@ -203,7 +225,14 @@ export default function InsightsContent() {
                     <CardTitle className="text-sm font-medium">
                       Menu Views
                     </CardTitle>
-                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Total number of times customers have viewed your menu</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </CardHeader>
                   <CardContent>
                     {loadingAnalytics ? (
@@ -228,7 +257,14 @@ export default function InsightsContent() {
                     <CardTitle className="text-sm font-medium">
                       QR Scans
                     </CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Number of times customers scanned QR codes to access your menu</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </CardHeader>
                   <CardContent>
                     {loadingAnalytics ? (
@@ -253,7 +289,14 @@ export default function InsightsContent() {
                     <CardTitle className="text-sm font-medium">
                       Avg. View Time
                     </CardTitle>
-                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Average time customers spend viewing each individual menu item</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </CardHeader>
                   <CardContent>
                     {loadingAnalytics ? (
@@ -278,7 +321,14 @@ export default function InsightsContent() {
                     <CardTitle className="text-sm font-medium">
                       Unique Visitors
                     </CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Number of distinct customers who have visited your menu this month</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </CardHeader>
                   <CardContent>
                     {loadingAnalytics ? (
@@ -288,9 +338,9 @@ export default function InsightsContent() {
                         <div className="text-2xl font-bold">{analytics?.uniqueVisitors || 0}</div>
                         <p className="text-xs text-muted-foreground">
                           <span className={analytics && analytics.uniqueVisitorsChange >= 0 ? "text-green-600" : "text-red-600"}>
-                            {analytics ? formatChange(analytics.uniqueVisitorsChange).text : '+0.0%'}
+                            {analytics ? formatChange(analytics.uniqueVisitorsChange).text : '--'}
                           </span>
-                          {' '}from last month
+                          {analytics ? ' from last month' : ' (no data)'}
                         </p>
                       </>
                     )}
@@ -300,10 +350,75 @@ export default function InsightsContent() {
 
               {/* Advanced Analytics Section */}
               <div className="grid gap-6 lg:grid-cols-2">
-                {/* Peak Activity Hours */}
-                <PeakHoursChart data={peakHours} loading={loadingAnalytics} />
+                {/* Left Column - Peak Hours and Recent Activity */}
+                <div className="space-y-6">
+                  {/* Peak Activity Hours */}
+                  <PeakHoursChart 
+                    data={peakHours} 
+                    loading={loadingAnalytics} 
+                    onRefresh={refreshAnalytics}
+                  />
+                  
+                  {/* Recent Activity */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recent Activity</CardTitle>
+                      <CardDescription>
+                        Latest interactions with your menu
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {loadingAnalytics ? (
+                        <div className="space-y-4">
+                          {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex items-center gap-4 p-4 border rounded-lg animate-pulse">
+                              <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                              <div className="flex-1">
+                                <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                                <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : recentActivity.length > 0 ? (
+                        <div className="space-y-4">
+                          {recentActivity.slice(0, 5).map((activity) => {
+                            const getActivityColor = (type: string) => {
+                              switch (type) {
+                                case 'qr_scan': return 'bg-green-500';
+                                case 'menu_view': return 'bg-blue-500';
+                                case 'item_view': return 'bg-purple-500';
+                                case 'visit_marked': return 'bg-[#5F7161]';
+                                case 'review_submitted': return 'bg-yellow-500';
+                                default: return 'bg-gray-500';
+                              }
+                            };
+
+                            return (
+                              <div key={activity.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                                <div className={`w-2 h-2 ${getActivityColor(activity.type)} rounded-full`}></div>
+                                <div className="flex-1">
+                                  <p className="font-medium">{activity.description}</p>
+                                  <p className="text-sm text-gray-600">
+                                    {formatActivityTime(activity.timestamp)}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <BarChart className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                          <p>No recent activity</p>
+                          <p className="text-sm">Activity will appear when customers interact with your menu</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
                 
-                {/* Enhanced Menu Performance */}
+                {/* Right Column - Menu Performance Score */}
                 <EnhancedMenuPerformance data={enhancedMenuPerformance} loading={loadingAnalytics} />
               </div>
 
@@ -363,63 +478,12 @@ export default function InsightsContent() {
                 )}
               </div>
 
-              {/* Recent Activity */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
-                  <CardDescription>
-                    Latest interactions with your menu
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {loadingAnalytics ? (
-                    <div className="space-y-4">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="flex items-center gap-4 p-4 border rounded-lg animate-pulse">
-                          <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                          <div className="flex-1">
-                            <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-                            <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : recentActivity.length > 0 ? (
-                    <div className="space-y-4">
-                      {recentActivity.slice(0, 5).map((activity) => {
-                        const getActivityColor = (type: string) => {
-                          switch (type) {
-                            case 'qr_scan': return 'bg-green-500';
-                            case 'menu_view': return 'bg-blue-500';
-                            case 'item_view': return 'bg-purple-500';
-                            case 'visit_marked': return 'bg-[#5F7161]';
-                            case 'review_submitted': return 'bg-yellow-500';
-                            default: return 'bg-gray-500';
-                          }
-                        };
-
-                        return (
-                          <div key={activity.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                            <div className={`w-2 h-2 ${getActivityColor(activity.type)} rounded-full`}></div>
-                            <div className="flex-1">
-                              <p className="font-medium">{activity.description}</p>
-                              <p className="text-sm text-gray-600">
-                                {formatActivityTime(activity.timestamp)}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      <BarChart className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                      <p>No recent activity</p>
-                      <p className="text-sm">Activity will appear when customers interact with your menu</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            {/* Month Comparison Section */}
+            {restaurant && (
+              <div className="col-span-1 lg:col-span-2">
+                <MonthComparison restaurantId={restaurant.id} />
+              </div>
+            )}
             </div>
           </div>
         </div>

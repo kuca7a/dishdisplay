@@ -193,7 +193,7 @@ export default function BillingContent() {
       >
         <div className="text-center">
           <ThreeDotsLoader size="md" />
-          <p className="mt-4">Loading...</p>
+          <p className="mt-4">Loading Billing...</p>
         </div>
       </div>
     );

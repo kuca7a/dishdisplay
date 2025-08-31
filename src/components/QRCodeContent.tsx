@@ -81,7 +81,7 @@ export default function QRCodeContent() {
       >
         <div className="text-center">
           <ThreeDotsLoader size="md" />
-          <p className="mt-4">Loading...</p>
+          <p className="mt-4">Loading QR Code...</p>
         </div>
       </div>
     );
@@ -129,7 +129,7 @@ export default function QRCodeContent() {
                 <div className="flex items-center justify-center py-12">
                   <div className="text-center">
                     <ThreeDotsLoader size="md" />
-                    <p className="mt-4">Loading...</p>
+                    <p className="mt-4">Loading QR Code...</p>
                   </div>
                 </div>
               )}
