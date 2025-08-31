@@ -51,35 +51,17 @@ export default function CustomerMenuPage() {
     router.push(`/menu/${restaurantId}/item/${item.id}`);
   };
 
-  // Check if this is a QR code scan (detect common QR scan indicators)
+  // Enhanced QR scan detection
   const checkForQRScan = useCallback(() => {
-    if (typeof window === 'undefined') return false;
-    
     const urlParams = new URLSearchParams(window.location.search);
     const referrer = document.referrer;
     
-    // Debug logging
-    console.log('QR Scan Detection Debug:');
-    console.log('- URL params:', Array.from(urlParams.entries()));
-    console.log('- Referrer:', referrer);
-    console.log('- Has qr param:', urlParams.has('qr'));
-    console.log('- Has scan param:', urlParams.has('scan'));
-    console.log('- Has table param:', urlParams.has('table'));
-    console.log('- No referrer:', !referrer);
-    console.log('- Referrer includes qr:', referrer.includes('qr'));
-    
-    // More specific QR scan indicators - only treat as QR scan if there are explicit indicators
-    const isQrScan = (
-      urlParams.has('qr') || 
-      urlParams.has('scan') ||
+    // Check for QR scan indicators
+    return urlParams.has('qr') || 
+      urlParams.has('scan') || 
       urlParams.has('table') ||
-      referrer.includes('qr') ||
-      referrer.includes('scan') ||
-      referrer.includes('table')
-    );
-    
-    console.log('- Final QR scan decision:', isQrScan);
-    return isQrScan;
+      !referrer || 
+      referrer.includes('qr');
   }, []);
 
   useEffect(() => {
@@ -104,12 +86,13 @@ export default function CustomerMenuPage() {
         
         // Track analytics - check if this was a QR scan first
         setTimeout(() => {
-          const duration = Math.round((Date.now() - pageStartTime) / 1000);
+          const rawDuration = Math.round((Date.now() - pageStartTime) / 1000);
+          // Cap duration at 30 minutes (1800 seconds) to prevent overnight sessions
+          const duration = Math.min(rawDuration, 1800);
+          
           if (checkForQRScan()) {
-            console.log('🔍 Tracking QR scan event with duration:', duration);
             trackQrScan();
           } else {
-            console.log('👁️ Tracking menu view event with duration:', duration);
             trackMenuView(duration);
           }
         }, 1000); // Small delay to ensure page is fully loaded
@@ -124,12 +107,14 @@ export default function CustomerMenuPage() {
     loadMenuData();
   }, [restaurantId, trackMenuView, trackQrScan, checkForQRScan, pageStartTime]);
 
-  // Track page exit duration
+  // Track page exit duration with timeout protection
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (restaurant) {
-        const duration = Math.round((Date.now() - pageStartTime) / 1000);
-        console.log('📤 Page exit - sending duration update:', duration);
+        const rawDuration = Math.round((Date.now() - pageStartTime) / 1000);
+        // Cap duration at 30 minutes (1800 seconds) to prevent overnight sessions
+        const duration = Math.min(rawDuration, 1800);
+        
         // Send a final event with the total page duration
         navigator.sendBeacon('/api/analytics/duration', JSON.stringify({
           restaurantId: restaurant.id,

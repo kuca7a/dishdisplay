@@ -48,7 +48,7 @@ export default function SupportContent() {
       >
         <div className="text-center">
           <ThreeDotsLoader size="md" />
-          <p className="mt-4">Loading...</p>
+          <p className="mt-4">Loading Support...</p>
         </div>
       </div>
     );

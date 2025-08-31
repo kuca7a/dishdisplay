@@ -237,7 +237,7 @@ export default function MenuExploreContent() {
       >
         <div className="text-center">
           <ThreeDotsLoader size="md" />
-          <p className="mt-4">Loading...</p>
+          <p className="mt-4">Loading Menu...</p>
         </div>
       </div>
     );

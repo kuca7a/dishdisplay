@@ -1,6 +1,5 @@
 import { getSupabaseClient } from "./supabase";
 import {
-  CreateAnalyticsEventData,
   AnalyticsEvent,
   AnalyticsOverview,
   MenuPerformanceItem,
@@ -11,48 +10,26 @@ import {
 export class AnalyticsService {
   // Track an analytics event
   async trackEvent(
-    data: CreateAnalyticsEventData
-  ): Promise<AnalyticsEvent | null> {
+    event: Omit<AnalyticsEvent, 'id' | 'timestamp' | 'created_at'>
+  ): Promise<void> {
     try {
-      console.log('📊 Analytics Service - Tracking event:', {
-        event_type: data.event_type,
-        restaurant_id: data.restaurant_id,
-        duration_seconds: data.duration_seconds,
-        event_data: data.event_data
-      });
-
       const supabase = getSupabaseClient();
-      const { data: event, error } = await supabase
-        .from("analytics_events")
-        .insert([
-          {
-            restaurant_id: data.restaurant_id,
-            event_type: data.event_type,
-            session_id: data.session_id,
-            event_data: data.event_data || {},
-            duration_seconds: data.duration_seconds,
-            referrer_url: data.referrer_url,
-            page_url: data.page_url,
-            user_agent:
-              typeof window !== "undefined"
-                ? window.navigator.userAgent
-                : undefined,
-            timestamp: new Date().toISOString(),
-          },
-        ])
-        .select()
-        .single();
+      
+      const { error } = await supabase
+        .from('analytics_events')
+        .insert({
+          ...event,
+          timestamp: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+        });
 
       if (error) {
         console.error('❌ Analytics Service - Database error:', error);
         throw error;
       }
-
-      console.log('✅ Analytics Service - Event saved:', event);
-      return event;
     } catch (error) {
       console.error('❌ Analytics Service - Failed to track event:', error);
-      return null;
+      throw error;
     }
   }
 
@@ -109,16 +86,18 @@ export class AnalyticsService {
       const eventsWithDuration = (currentEvents || []).filter(
         (e) => e.duration_seconds && e.duration_seconds > 0
       );
+      // Cap any existing excessive durations at 30 minutes (1800 seconds) for calculation
       const totalDurationFromEvents = eventsWithDuration.reduce(
-        (sum, e) => sum + (e.duration_seconds || 0),
+        (sum, e) => sum + Math.min(e.duration_seconds || 0, 1800),
         0
       );
 
-      // Calculate average view time per session based on events with duration
-      // If no duration data, calculate a basic estimate based on number of interactions per session
+      // Calculate average view time per item view (not per session)
+      // If no duration data, calculate a basic estimate
       let currentAvgTime = 0;
       if (eventsWithDuration.length > 0) {
-        currentAvgTime = Math.round(totalDurationFromEvents / currentSessions);
+        // Correct calculation: total duration / number of item views with duration
+        currentAvgTime = Math.round(totalDurationFromEvents / eventsWithDuration.length);
       } else if (currentSessions > 0) {
         // Fallback: estimate 30 seconds per menu view + 10 seconds per item view
         const menuViews = (currentEvents || []).filter(
@@ -127,8 +106,11 @@ export class AnalyticsService {
         const itemViews = (currentEvents || []).filter(
           (e) => e.event_type === "item_view"
         ).length;
-        const estimatedTime = menuViews * 30 + itemViews * 10;
-        currentAvgTime = Math.round(estimatedTime / currentSessions);
+        const totalViews = menuViews + itemViews;
+        if (totalViews > 0) {
+          const estimatedTime = menuViews * 30 + itemViews * 10;
+          currentAvgTime = Math.round(estimatedTime / totalViews);
+        }
       }
 
       // Calculate previous period metrics
@@ -147,14 +129,16 @@ export class AnalyticsService {
       const prevEventsWithDuration = (prevEvents || []).filter(
         (e) => e.duration_seconds && e.duration_seconds > 0
       );
+      // Cap any existing excessive durations at 30 minutes (1800 seconds) for calculation
       const prevTotalDurationFromEvents = prevEventsWithDuration.reduce(
-        (sum, e) => sum + (e.duration_seconds || 0),
+        (sum, e) => sum + Math.min(e.duration_seconds || 0, 1800),
         0
       );
 
       let prevAvgTime = 0;
       if (prevEventsWithDuration.length > 0) {
-        prevAvgTime = Math.round(prevTotalDurationFromEvents / prevSessions);
+        // Correct calculation: total duration / number of item views with duration
+        prevAvgTime = Math.round(prevTotalDurationFromEvents / prevEventsWithDuration.length);
       } else if (prevSessions > 0) {
         const prevMenuViewsCount = (prevEvents || []).filter(
           (e) => e.event_type === "menu_view"
@@ -162,9 +146,12 @@ export class AnalyticsService {
         const prevItemViewsCount = (prevEvents || []).filter(
           (e) => e.event_type === "item_view"
         ).length;
-        const prevEstimatedTime =
-          prevMenuViewsCount * 30 + prevItemViewsCount * 10;
-        prevAvgTime = Math.round(prevEstimatedTime / prevSessions);
+        const prevTotalViews = prevMenuViewsCount + prevItemViewsCount;
+        if (prevTotalViews > 0) {
+          const prevEstimatedTime =
+            prevMenuViewsCount * 30 + prevItemViewsCount * 10;
+          prevAvgTime = Math.round(prevEstimatedTime / prevTotalViews);
+        }
       }
 
       // Calculate percentage changes
@@ -213,8 +200,13 @@ export class AnalyticsService {
       const startDate = new Date();
       startDate.setDate(endDate.getDate() - days);
 
-      // Get item view events for the period
-      const { data: events, error: eventsError } = await supabase
+      // Calculate previous period dates for comparison
+      const previousEndDate = new Date(startDate);
+      const previousStartDate = new Date();
+      previousStartDate.setDate(previousEndDate.getDate() - days);
+
+      // Get item view events for current period
+      const { data: currentEvents, error: currentEventsError } = await supabase
         .from("analytics_events")
         .select("*")
         .eq("restaurant_id", restaurantId)
@@ -222,7 +214,18 @@ export class AnalyticsService {
         .gte("timestamp", startDate.toISOString())
         .lte("timestamp", endDate.toISOString());
 
-      if (eventsError) throw eventsError;
+      if (currentEventsError) throw currentEventsError;
+
+      // Get item view events for previous period
+      const { data: previousEvents, error: previousEventsError } = await supabase
+        .from("analytics_events")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .eq("event_type", "item_view")
+        .gte("timestamp", previousStartDate.toISOString())
+        .lte("timestamp", previousEndDate.toISOString());
+
+      if (previousEventsError) throw previousEventsError;
 
       // Get menu items to join with analytics data
       const { data: menuItems, error: menuError } = await supabase
@@ -232,8 +235,8 @@ export class AnalyticsService {
 
       if (menuError) throw menuError;
 
-      // Aggregate analytics by menu item
-      const itemMap = new Map<
+      // Aggregate current period analytics by menu item
+      const currentItemMap = new Map<
         string,
         {
           total_views: number;
@@ -242,43 +245,64 @@ export class AnalyticsService {
         }
       >();
 
-      (events || []).forEach((event) => {
+      (currentEvents || []).forEach((event) => {
         const itemId =
           event.event_data?.item_id || event.event_data?.menu_item_id;
         if (!itemId) return;
 
-        if (itemMap.has(itemId)) {
-          const existing = itemMap.get(itemId)!;
+        if (currentItemMap.has(itemId)) {
+          const existing = currentItemMap.get(itemId)!;
           existing.total_views += 1;
           existing.unique_viewers.add(event.session_id);
-          existing.total_view_time += event.duration_seconds || 0;
+          existing.total_view_time += Math.min(event.duration_seconds || 0, 1800);
         } else {
-          itemMap.set(itemId, {
+          currentItemMap.set(itemId, {
             total_views: 1,
             unique_viewers: new Set([event.session_id]),
-            total_view_time: event.duration_seconds || 0,
+            total_view_time: Math.min(event.duration_seconds || 0, 1800),
           });
         }
       });
 
-      // Combine with menu item details
+      // Aggregate previous period analytics by menu item
+      const previousItemMap = new Map<string, number>();
+      (previousEvents || []).forEach((event) => {
+        const itemId =
+          event.event_data?.item_id || event.event_data?.menu_item_id;
+        if (!itemId) return;
+
+        previousItemMap.set(itemId, (previousItemMap.get(itemId) || 0) + 1);
+      });
+
+      // Combine with menu item details and calculate percentage changes
       const performance = (menuItems || [])
         .map((item) => {
-          const analytics = itemMap.get(item.id);
-          if (!analytics) return null;
+          const currentAnalytics = currentItemMap.get(item.id);
+          if (!currentAnalytics) return null;
+
+          const currentViews = currentAnalytics.total_views;
+          const previousViews = previousItemMap.get(item.id) || 0;
+          
+          // Calculate percentage change
+          let viewsChangePercentage = 0;
+          if (previousViews > 0) {
+            viewsChangePercentage = ((currentViews - previousViews) / previousViews) * 100;
+          } else if (currentViews > 0) {
+            viewsChangePercentage = 100; // New item with views = 100% increase
+          }
 
           return {
             menu_item_id: item.id,
             name: item.name,
             category: item.category,
             image_url: item.image_url,
-            total_views: analytics.total_views,
-            unique_viewers: analytics.unique_viewers.size,
+            total_views: currentViews,
+            unique_viewers: currentAnalytics.unique_viewers.size,
             average_view_time:
-              analytics.total_views > 0
-                ? analytics.total_view_time / analytics.total_views
+              currentViews > 0
+                ? currentAnalytics.total_view_time / currentViews
                 : 0,
-            views_change_percentage: 0, // TODO: Calculate change from previous period
+            views_change_percentage: Math.round(viewsChangePercentage * 10) / 10, // Round to 1 decimal place
           } as MenuPerformanceItem;
         })
         .filter((item) => item !== null) as MenuPerformanceItem[];
@@ -288,7 +312,10 @@ export class AnalyticsService {
         .slice(0, 10); // Top 10 items
 
       return result;
-    } catch {
+
+      return result;
+    } catch (error) {
+      console.error('❌ Error in getMenuPerformance:', error);
       return [];
     }
   }
@@ -421,7 +448,10 @@ export class AnalyticsService {
         .gte("timestamp", startDate.toISOString())
         .lte("timestamp", endDate.toISOString());
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error fetching peak hours data:', error);
+        throw error;
+      }
 
       // Group by hour of day
       const hourlyData = new Array(24).fill(0).map((_, hour) => ({
@@ -436,7 +466,8 @@ export class AnalyticsService {
       });
 
       return hourlyData;
-    } catch {
+    } catch (error) {
+      console.error('❌ Error in getPeakActivityHours:', error);
       return new Array(24).fill(0).map((_, hour) => ({
         hour,
         count: 0,
@@ -455,6 +486,29 @@ export class AnalyticsService {
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(endDate.getDate() - days);
+
+      // Calculate previous period dates for comparison
+      const previousEndDate = new Date(startDate);
+      const previousStartDate = new Date(startDate);
+      previousStartDate.setDate(previousEndDate.getDate() - days);
+
+      // Get previous period data for comparison
+      const { data: previousEvents } = await supabase
+        .from("analytics_events")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .eq("event_type", "item_view")
+        .gte("timestamp", previousStartDate.toISOString())
+        .lte("timestamp", previousEndDate.toISOString());
+
+      // Create map of previous period views by menu item
+      const previousItemMap = new Map<string, number>();
+      (previousEvents || []).forEach((event) => {
+        const itemId = event.metadata?.menu_item_id;
+        if (itemId) {
+          previousItemMap.set(itemId, (previousItemMap.get(itemId) || 0) + 1);
+        }
+      });
 
       // Get item view events and detail clicks for the period
       const { data: events, error: eventsError } = await supabase
@@ -504,10 +558,11 @@ export class AnalyticsService {
           if (isView) {
             existing.total_views += 1;
             existing.unique_viewers.add(event.session_id);
-            existing.total_view_time += event.duration_seconds || 0;
+            existing.total_view_time += Math.min(event.duration_seconds || 0, 1800);
             existing.hourly_distribution[hour] += 1;
-            // Count as engaged session if view time > 3 seconds
-            if ((event.duration_seconds || 0) > 3) {
+            // Count as engaged session if view time > 3 seconds (but cap at 30 min)
+            const cappedDuration = Math.min(event.duration_seconds || 0, 1800);
+            if (cappedDuration > 3) {
               existing.engagement_sessions += 1;
             }
           }
@@ -519,15 +574,17 @@ export class AnalyticsService {
           const hourlyDist = new Array(24).fill(0);
           if (isView) hourlyDist[hour] = 1;
           
+          const cappedDuration = Math.min(event.duration_seconds || 0, 1800);
+          
           itemMap.set(itemId, {
             total_views: isView ? 1 : 0,
             total_clicks: isClick ? 1 : 0,
             unique_viewers: isView ? new Set([event.session_id]) : new Set(),
-            total_view_time: isView ? (event.duration_seconds || 0) : 0,
+            total_view_time: isView ? cappedDuration : 0,
             click_sessions: isClick ? new Set([event.session_id]) : new Set(),
             peak_hour: hour,
             hourly_distribution: hourlyDist,
-            engagement_sessions: (isView && (event.duration_seconds || 0) > 3) ? 1 : 0,
+            engagement_sessions: (isView && cappedDuration > 3) ? 1 : 0,
           });
         }
       });
@@ -581,6 +638,16 @@ export class AnalyticsService {
             ? analytics.click_sessions.size / analytics.unique_viewers.size 
             : 0;
 
+          // Calculate views change percentage for this item
+          const currentViews = analytics.total_views;
+          const previousViews = previousItemMap.get(item.id) || 0;
+          let viewsChangePercentage = 0;
+          if (previousViews > 0) {
+            viewsChangePercentage = ((currentViews - previousViews) / previousViews) * 100;
+          } else if (currentViews > 0) {
+            viewsChangePercentage = 100; // New item with views = 100% increase
+          }
+
           // Find peak hour
           const peakHourIndex = analytics.hourly_distribution
             .indexOf(Math.max(...analytics.hourly_distribution));
@@ -615,7 +682,7 @@ export class AnalyticsService {
             total_views: analytics.total_views,
             unique_viewers: analytics.unique_viewers.size,
             average_view_time: avgViewTime,
-            views_change_percentage: 0, // TODO: Calculate change from previous period
+            views_change_percentage: Math.round(viewsChangePercentage * 10) / 10, // Round to 1 decimal place
             performance_score: performanceScore,
             engagement_level: engagementLevel,
             peak_hour: peakHourIndex,

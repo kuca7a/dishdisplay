@@ -231,7 +231,7 @@ export default function ProfileContent() {
           <div className="flex items-center justify-center h-screen">
             <div className="text-center">
               <ThreeDotsLoader size="md" />
-              <p className="mt-4">Loading...</p>
+              <p className="mt-4">Loading Profile...</p>
             </div>
           </div>
         </SidebarInset>

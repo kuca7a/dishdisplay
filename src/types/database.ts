@@ -606,6 +606,12 @@ export interface MenuItemReviewWithDiner {
   diner_avatar?: string;
   diner_points: number;
   diner_level: string;
+  // Menu item details
+  menu_item_name: string;
+  menu_item_description: string;
+  menu_item_price: number;
+  menu_item_image_url?: string;
+  menu_item_category: string;
 }
 
 export interface CreateMenuItemReviewData {
