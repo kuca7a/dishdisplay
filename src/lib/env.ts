@@ -32,11 +32,12 @@ const envSchema = z.object({
   AUTH0_CLIENT_ID: z.string().min(1, "Auth0 client ID is required").optional(),
   AUTH0_CLIENT_SECRET: z.string().min(1, "Auth0 client secret is required").optional(),
 
-  // Payments (Stripe)
+  // Payments (Stripe) - Optional for build, required for runtime
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z
     .string()
-    .min(1, "Stripe publishable key is required"),
-  STRIPE_SECRET_KEY: z.string().min(1, "Stripe secret key is required"),
+    .min(1, "Stripe publishable key is required")
+    .optional(),
+  STRIPE_SECRET_KEY: z.string().min(1, "Stripe secret key is required").optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   STRIPE_PRICE_ID_PRO_MONTHLY: z.string().optional(),
   STRIPE_PRICE_ID_PRO_YEARLY: z.string().optional(),
@@ -141,8 +142,8 @@ export const auth = {
 
 // Stripe configuration
 export const stripe = {
-  publishableKey: env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-  secretKey: env.STRIPE_SECRET_KEY,
+  publishableKey: env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+  secretKey: env.STRIPE_SECRET_KEY || "",
   webhookSecret: env.STRIPE_WEBHOOK_SECRET,
   priceIds: {
     proMonthly: env.STRIPE_PRICE_ID_PRO_MONTHLY,
@@ -218,6 +219,16 @@ export function validateProductionConfig() {
       key: "AUTH0_CLIENT_SECRET",
       value: env.AUTH0_CLIENT_SECRET,
       message: "Auth0 client secret must be set in production",
+    },
+    {
+      key: "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+      value: env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      message: "Stripe publishable key must be set in production",
+    },
+    {
+      key: "STRIPE_SECRET_KEY",
+      value: env.STRIPE_SECRET_KEY,
+      message: "Stripe secret key must be set in production",
     },
     {
       key: "STRIPE_WEBHOOK_SECRET",
