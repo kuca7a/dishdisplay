@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /api/
+Disallow: /profile/
+Disallow: /diner/
+
+# Allow important pages
+Allow: /api/health
+Allow: /menu/
+Allow: /login
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+
+# Sitemap
+Sitemap: https://dishdisplay.com/sitemap.xml
+
+# Crawl delay (be respectful)
+Crawl-delay: 1
+
+# Block specific bots if needed
+# User-agent: BadBot
+# Disallow: /
