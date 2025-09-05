@@ -46,16 +46,19 @@ export function usePerformanceMonitoring(
         // Collect layout shift metrics
         if (
           entry.entryType === "layout-shift" &&
-          !(entry as any).hadRecentInput
+          !(entry as PerformanceEntry & { hadRecentInput?: boolean })
+            .hadRecentInput
         ) {
           metrics.cumulativeLayoutShift =
-            (metrics.cumulativeLayoutShift || 0) + (entry as any).value;
+            (metrics.cumulativeLayoutShift || 0) +
+            (entry as PerformanceEntry & { value: number }).value;
         }
 
         // Collect first input delay
         if (entry.entryType === "first-input") {
           metrics.firstInputDelay =
-            (entry as any).processingStart - entry.startTime;
+            (entry as PerformanceEntry & { processingStart: number })
+              .processingStart - entry.startTime;
         }
       }
 
@@ -76,11 +79,11 @@ export function usePerformanceMonitoring(
       observer.observe({
         entryTypes: ["navigation", "paint", "layout-shift", "first-input"],
       });
-    } catch (e) {
+    } catch {
       // Fallback for browsers that don't support all entry types
       try {
         observer.observe({ entryTypes: ["navigation", "paint"] });
-      } catch (e) {
+      } catch {
         console.warn("Performance observer not supported");
       }
     }
@@ -117,7 +120,7 @@ export function measureWebVitals() {
       reportWebVital({
         name: "LCP",
         value: entry.startTime,
-        id: (entry as any).id || "unknown",
+        id: (entry as PerformanceEntry & { id?: string }).id || "unknown",
       });
     }
   }).observe({ entryTypes: ["largest-contentful-paint"] });
@@ -127,8 +130,10 @@ export function measureWebVitals() {
     for (const entry of list.getEntries()) {
       reportWebVital({
         name: "FID",
-        value: (entry as any).processingStart - entry.startTime,
-        id: (entry as any).id || "unknown",
+        value:
+          (entry as PerformanceEntry & { processingStart: number })
+            .processingStart - entry.startTime,
+        id: (entry as PerformanceEntry & { id?: string }).id || "unknown",
       });
     }
   }).observe({ entryTypes: ["first-input"] });
@@ -137,12 +142,15 @@ export function measureWebVitals() {
   let clsValue = 0;
   new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      if (!(entry as any).hadRecentInput) {
-        clsValue += (entry as any).value;
+      if (
+        !(entry as PerformanceEntry & { hadRecentInput?: boolean })
+          .hadRecentInput
+      ) {
+        clsValue += (entry as PerformanceEntry & { value: number }).value;
         reportWebVital({
           name: "CLS",
           value: clsValue,
-          id: (entry as any).id || "unknown",
+          id: (entry as PerformanceEntry & { id?: string }).id || "unknown",
         });
       }
     }
@@ -223,7 +231,7 @@ export function monitorBundleSize() {
 
   try {
     observer.observe({ entryTypes: ["resource"] });
-  } catch (e) {
+  } catch {
     console.warn("Resource performance observer not supported");
   }
 
