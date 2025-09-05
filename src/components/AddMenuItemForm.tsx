@@ -26,6 +26,8 @@ import { Plus } from "lucide-react";
 import { menuItemService } from "@/lib/database";
 import { CreateMenuItemData, MenuItem } from "@/types/database";
 import { ImageUpload } from "@/components/ImageUpload";
+import { createMenuItemSchema } from "@/lib/validation";
+import { z } from "zod";
 
 const rubik = Rubik({
   weight: ["300", "400", "500", "600"],
@@ -71,47 +73,37 @@ export function AddMenuItemForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name.trim() || !formData.price || !formData.category) {
-      alert("Please fill in all required fields");
-      return;
-    }
-
-    // Validate new required fields
-    if (!formData.detailed_description.trim()) {
-      alert("Please provide a detailed description");
-      return;
-    }
-
-    if (!formData.calories || parseInt(formData.calories) <= 0) {
-      alert("Please enter a valid calorie count");
-      return;
-    }
-
-    if (!formData.ingredients.trim()) {
-      alert("Please list the ingredients");
-      return;
-    }
-
-    const price = parseFloat(formData.price);
-    if (isNaN(price) || price <= 0) {
-      alert("Please enter a valid price");
-      return;
-    }
-
-    const calories = parseInt(formData.calories);
-    if (isNaN(calories) || calories <= 0) {
-      alert("Please enter a valid calorie count");
-      return;
-    }
-
     try {
+      // Validate basic required fields
+      createMenuItemSchema
+        .pick({
+          name: true,
+          price: true,
+          category: true,
+          description: true,
+          detailed_description: true,
+          ingredients: true,
+          calories: true,
+          restaurant_id: true,
+        })
+        .parse({
+          name: formData.name,
+          price: parseFloat(formData.price),
+          category: formData.category,
+          description: formData.description,
+          detailed_description: formData.detailed_description,
+          ingredients: formData.ingredients,
+          calories: parseInt(formData.calories),
+          restaurant_id: restaurantId,
+        });
+
       setLoading(true);
 
       const menuItemData: CreateMenuItemData = {
         restaurant_id: restaurantId,
         name: formData.name.trim(),
         description: formData.description.trim() || undefined,
-        price: price,
+        price: parseFloat(formData.price),
         category: formData.category as
           | "appetizer"
           | "main"
@@ -122,7 +114,7 @@ export function AddMenuItemForm({
         time_to_make: formData.time_to_make.trim() || undefined,
         // New required nutritional fields
         detailed_description: formData.detailed_description.trim(),
-        calories: calories,
+        calories: parseInt(formData.calories),
         allergens: formData.allergens,
         ingredients: formData.ingredients.trim(),
       };
@@ -149,7 +141,16 @@ export function AddMenuItemForm({
       onSuccess(newItem);
     } catch (error) {
       console.error("Error creating menu item:", error);
-      alert("Failed to create menu item. Please try again.");
+
+      // Handle validation errors
+      if (error instanceof z.ZodError) {
+        const errorMessages = error.issues
+          .map((err: z.ZodIssue) => err.message)
+          .join(", ");
+        alert(`Validation error: ${errorMessages}`);
+      } else {
+        alert("Failed to create menu item. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -165,7 +166,9 @@ export function AddMenuItemForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
-      <DialogContent className={`max-w-2xl max-h-[90vh] overflow-y-auto ${rubik.className}`}>
+      <DialogContent
+        className={`max-w-2xl max-h-[90vh] overflow-y-auto ${rubik.className}`}
+      >
         <DialogHeader>
           <DialogTitle>Add New Menu Item</DialogTitle>
           <DialogDescription>
@@ -287,7 +290,10 @@ export function AddMenuItemForm({
               id="detailed-description"
               value={formData.detailed_description}
               onChange={(e) =>
-                setFormData({ ...formData, detailed_description: e.target.value })
+                setFormData({
+                  ...formData,
+                  detailed_description: e.target.value,
+                })
               }
               placeholder="Provide a detailed description of the dish, its preparation, and what makes it special..."
               rows={3}
@@ -319,8 +325,8 @@ export function AddMenuItemForm({
               onChange={(e) => {
                 const allergenList = e.target.value
                   .split(",")
-                  .map(item => item.trim())
-                  .filter(item => item.length > 0);
+                  .map((item) => item.trim())
+                  .filter((item) => item.length > 0);
                 setFormData({ ...formData, allergens: allergenList });
               }}
               placeholder="e.g. Gluten, Dairy, Nuts, Eggs"

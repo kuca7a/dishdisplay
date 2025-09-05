@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSupabaseClient } from "@/lib/supabase-server";
+import { apiRateLimit } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const rateLimitResponse = await apiRateLimit(request);
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
     // Log environment status
     console.log("API: Environment check", {
       hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -31,15 +38,18 @@ export async function GET(request: NextRequest) {
       const { data: testData, error: testError } = await supabase
         .from("restaurants")
         .select("count", { count: "exact", head: true });
-      
+
       console.log("API: Basic connection test:", { testData, testError });
 
       if (testError) {
         console.error("API: Basic connection failed:", testError);
-        return NextResponse.json({ 
-          error: "Database connection failed",
-          details: testError.message 
-        }, { status: 500 });
+        return NextResponse.json(
+          {
+            error: "Database connection failed",
+            details: testError.message,
+          },
+          { status: 500 }
+        );
       }
 
       // Get restaurant using service role (bypasses RLS)
@@ -55,11 +65,14 @@ export async function GET(request: NextRequest) {
           hint: error.hint,
           code: error.code,
         });
-        return NextResponse.json({ 
-          error: error.message,
-          details: error.details,
-          hint: error.hint 
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            error: error.message,
+            details: error.details,
+            hint: error.hint,
+          },
+          { status: 400 }
+        );
       }
 
       if (!data || data.length === 0) {
@@ -83,9 +96,9 @@ export async function GET(request: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
     });
     return NextResponse.json(
-      { 
+      {
         error: "Internal server error",
-        message: error instanceof Error ? error.message : "Unknown error"
+        message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );
