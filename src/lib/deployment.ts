@@ -234,6 +234,16 @@ export const features = {
 
 // Build-time configuration validation
 export function validateDeploymentConfig() {
+  // Skip validation during build time
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    return {
+      environment: process.env.NODE_ENV || "development",
+      platform: "build",
+      features: [],
+      ready: true,
+    };
+  }
+
   const requiredForProduction = [
     { key: "NEXT_PUBLIC_BASE_URL", value: env.NEXT_PUBLIC_BASE_URL },
     { key: "NEXT_PUBLIC_SUPABASE_URL", value: env.NEXT_PUBLIC_SUPABASE_URL },

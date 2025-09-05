@@ -141,8 +141,14 @@ export function generateSEO({
       hasMenu: fullUrl,
     };
 
+    // Filter out undefined values from existing other metadata
+    const existingOther = metadata.other || {};
+    const filteredOther = Object.fromEntries(
+      Object.entries(existingOther).filter(([, value]) => value !== undefined)
+    );
+
     metadata.other = {
-      ...metadata.other,
+      ...filteredOther,
       "structured-data": JSON.stringify(structuredData),
     };
   }
@@ -165,8 +171,14 @@ export function generateSEO({
       }),
     };
 
+    // Filter out undefined values from existing other metadata
+    const existingOther = metadata.other || {};
+    const filteredOther = Object.fromEntries(
+      Object.entries(existingOther).filter(([, value]) => value !== undefined)
+    );
+
     metadata.other = {
-      ...metadata.other,
+      ...filteredOther,
       "structured-data-menu": JSON.stringify(structuredData),
     };
   }

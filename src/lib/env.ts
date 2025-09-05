@@ -22,14 +22,15 @@ const envSchema = z.object({
     .min(1, "Supabase anon key is required"),
   SUPABASE_SERVICE_KEY: z.string().min(1, "Supabase service key is required"),
 
-  // Authentication (Auth0)
+  // Authentication (Auth0) - Optional for build, required for runtime
   AUTH0_SECRET: z
     .string()
-    .min(32, "Auth0 secret must be at least 32 characters"),
-  AUTH0_BASE_URL: z.string().url("Invalid Auth0 base URL"),
-  AUTH0_ISSUER_BASE_URL: z.string().url("Invalid Auth0 issuer URL"),
-  AUTH0_CLIENT_ID: z.string().min(1, "Auth0 client ID is required"),
-  AUTH0_CLIENT_SECRET: z.string().min(1, "Auth0 client secret is required"),
+    .min(32, "Auth0 secret must be at least 32 characters")
+    .optional(),
+  AUTH0_BASE_URL: z.string().url("Invalid Auth0 base URL").optional(),
+  AUTH0_ISSUER_BASE_URL: z.string().url("Invalid Auth0 issuer URL").optional(),
+  AUTH0_CLIENT_ID: z.string().min(1, "Auth0 client ID is required").optional(),
+  AUTH0_CLIENT_SECRET: z.string().min(1, "Auth0 client secret is required").optional(),
 
   // Payments (Stripe)
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z
@@ -131,11 +132,11 @@ export const database = {
 
 // Auth configuration
 export const auth = {
-  secret: env.AUTH0_SECRET,
-  baseUrl: env.AUTH0_BASE_URL,
-  issuerBaseUrl: env.AUTH0_ISSUER_BASE_URL,
-  clientId: env.AUTH0_CLIENT_ID,
-  clientSecret: env.AUTH0_CLIENT_SECRET,
+  secret: env.AUTH0_SECRET || "",
+  baseUrl: env.AUTH0_BASE_URL || "",
+  issuerBaseUrl: env.AUTH0_ISSUER_BASE_URL || "",
+  clientId: env.AUTH0_CLIENT_ID || "",
+  clientSecret: env.AUTH0_CLIENT_SECRET || "",
 } as const;
 
 // Stripe configuration
@@ -204,6 +205,21 @@ export function validateProductionConfig() {
       message: "JWT secret must be set in production",
     },
     {
+      key: "AUTH0_SECRET",
+      value: env.AUTH0_SECRET,
+      message: "Auth0 secret must be set in production",
+    },
+    {
+      key: "AUTH0_CLIENT_ID",
+      value: env.AUTH0_CLIENT_ID,
+      message: "Auth0 client ID must be set in production",
+    },
+    {
+      key: "AUTH0_CLIENT_SECRET",
+      value: env.AUTH0_CLIENT_SECRET,
+      message: "Auth0 client secret must be set in production",
+    },
+    {
       key: "STRIPE_WEBHOOK_SECRET",
       value: env.STRIPE_WEBHOOK_SECRET,
       message: "Stripe webhook secret must be set in production",
@@ -234,7 +250,7 @@ export function getEnvironmentStatus() {
   };
 }
 
-// Validate environment on import (in production)
-if (isProduction) {
+// Validate environment on import (only in production runtime, not build)
+if (isProduction && process.env.NEXT_PHASE !== "phase-production-build") {
   validateProductionConfig();
 }
