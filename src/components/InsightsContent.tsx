@@ -40,6 +40,7 @@ import { BarChart, TrendingUp, Users, Eye, Clock } from "lucide-react";
 import PeakHoursChart from "@/components/PeakHoursChart";
 import MonthComparison from "@/components/MonthComparison";
 import EnhancedMenuPerformance from "@/components/EnhancedMenuPerformance";
+import ExportAnalytics from "@/components/ExportAnalytics";
 
 import { Rubik } from "next/font/google";
 
@@ -477,6 +478,16 @@ export default function InsightsContent() {
                   <VisitStatsCard restaurantId={restaurant.id} />
                 )}
               </div>
+
+            {/* Export Analytics Section */}
+            {restaurant && !loadingRestaurant && (
+              <div className="col-span-1 lg:col-span-2">
+                <ExportAnalytics 
+                  restaurantId={restaurant.id} 
+                  restaurantName={restaurant.name} 
+                />
+              </div>
+            )}
 
             {/* Month Comparison Section */}
             {restaurant && (
