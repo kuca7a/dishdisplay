@@ -427,6 +427,7 @@ export default function MenuManageContent() {
               <AddMenuItemForm
                 restaurantId={restaurant.id}
                 onSuccess={handleAddMenuItem}
+                data-onboarding="add-menu-item"
               />
             </div>
 

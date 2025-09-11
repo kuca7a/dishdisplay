@@ -3,6 +3,7 @@ import { Rubik } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import OnboardingProvider from "@/components/OnboardingProvider";
 
 const rubik = Rubik({
   weight: ["300", "400", "500", "600"],
@@ -64,7 +65,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${rubik.className}`}>
         <ErrorBoundary>
-          <Providers>{children}</Providers>
+          <Providers>
+            <OnboardingProvider>
+              {children}
+            </OnboardingProvider>
+          </Providers>
         </ErrorBoundary>
       </body>
     </html>

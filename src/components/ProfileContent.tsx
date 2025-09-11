@@ -36,6 +36,7 @@ import {
 import { CheckCircleIcon as CheckCircleSolidIcon } from "@heroicons/react/24/solid";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 import { useRestaurantData } from "@/hooks/use-cached-data";
+import OnboardingControl from "@/components/OnboardingControl";
 
 import { Rubik } from "next/font/google";
 
@@ -273,7 +274,7 @@ export default function ProfileContent() {
 
           <div className="space-y-4">
             {/* Greeting */}
-            <Card>
+            <Card data-onboarding="welcome">
               <CardContent className="pt-6">
                 <span className="text-xl font-semibold">
                   {greeting}
@@ -479,6 +480,9 @@ export default function ProfileContent() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Onboarding Control */}
+            <OnboardingControl />
 
             {/* Quick Stats */}
             {restaurant && (
