@@ -47,16 +47,44 @@ interface GoogleMapProps {
 }
 
 // Google Maps types
+interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+interface LatLngBounds {
+  extend(latLng: LatLng): void;
+}
+
+interface GoogleMap {
+  setCenter(center: LatLng): void;
+  setZoom(zoom: number): void;
+  getZoom(): number;
+  fitBounds(bounds: LatLngBounds): void;
+}
+
+interface InfoWindow {
+  open(map: GoogleMap, marker: GoogleMarker): void;
+  close(): void;
+}
+
+interface GoogleMarker {
+  setMap(map: GoogleMap | null): void;
+  addListener(event: string, handler: () => void): void;
+  hoverInfoWindow?: InfoWindow;
+  clickInfoWindow?: InfoWindow;
+}
+
 interface GoogleMapsWindow extends Window {
   google: {
     maps: {
-      Map: new (element: HTMLElement, options: any) => any;
-      Marker: new (options: any) => any;
-      InfoWindow: new (options: any) => any;
-      LatLng: new (lat: number, lng: number) => any;
-      LatLngBounds: new () => any;
+      Map: new (element: HTMLElement, options: unknown) => GoogleMap;
+      Marker: new (options: unknown) => GoogleMarker;
+      InfoWindow: new (options?: unknown) => InfoWindow;
+      LatLng: new (lat: number, lng: number) => LatLng;
+      LatLngBounds: new () => LatLngBounds;
       SymbolPath: {
-        CIRCLE: any;
+        CIRCLE: unknown;
       };
     };
   };
@@ -73,8 +101,8 @@ export default function GoogleMap({
   zoom = 12
 }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
+  const mapInstance = useRef<GoogleMap | null>(null);
+  const markersRef = useRef<GoogleMarker[]>([]);
 
   const initializeMap = useCallback(() => {
     if (!mapRef.current || !window.google) return;
@@ -193,10 +221,12 @@ export default function GoogleMap({
       // Hover events
       marker.addListener('mouseover', () => {
         // Close any open click info windows first
-        markersRef.current.forEach((m: any) => {
+        markersRef.current.forEach((m: GoogleMarker) => {
           if (m.clickInfoWindow) m.clickInfoWindow.close();
         });
-        hoverInfoWindow.open(mapInstance.current, marker);
+        if (mapInstance.current) {
+          hoverInfoWindow.open(mapInstance.current, marker);
+        }
       });
 
       marker.addListener('mouseout', () => {
@@ -206,17 +236,19 @@ export default function GoogleMap({
       // Click events
       marker.addListener('click', () => {
         // Close all hover info windows
-        markersRef.current.forEach((m: any) => {
+        markersRef.current.forEach((m: GoogleMarker) => {
           if (m.hoverInfoWindow) m.hoverInfoWindow.close();
         });
         
         // Close all other click info windows
-        markersRef.current.forEach((m: any) => {
+        markersRef.current.forEach((m: GoogleMarker) => {
           if (m.clickInfoWindow && m !== marker) m.clickInfoWindow.close();
         });
         
         // Open this click info window
-        clickInfoWindow.open(mapInstance.current, marker);
+        if (mapInstance.current) {
+          clickInfoWindow.open(mapInstance.current, marker);
+        }
         
         // Call selection callback
         if (onRestaurantSelect) {
@@ -225,8 +257,8 @@ export default function GoogleMap({
       });
 
       // Store references to info windows
-      (marker as any).hoverInfoWindow = hoverInfoWindow;
-      (marker as any).clickInfoWindow = clickInfoWindow;
+      marker.hoverInfoWindow = hoverInfoWindow;
+      marker.clickInfoWindow = clickInfoWindow;
       markersRef.current.push(marker);
     });
 
@@ -247,7 +279,7 @@ export default function GoogleMap({
     
     const loadGoogleMaps = async () => {
       // Check if Google Maps is already loaded
-      if ((window as any).google?.maps) {
+      if ((window as GoogleMapsWindow).google?.maps) {
         console.log('Google Maps already loaded, initializing map...');
         initializeMap();
         return;
@@ -259,7 +291,7 @@ export default function GoogleMap({
         console.log('Google Maps script already exists, waiting...');
         // Wait for existing script to finish loading
         const checkLoaded = setInterval(() => {
-          if ((window as any).google?.maps) {
+          if ((window as GoogleMapsWindow).google?.maps) {
             clearInterval(checkLoaded);
             initializeMap();
           }
@@ -292,8 +324,8 @@ export default function GoogleMap({
     return () => {
       // Cleanup markers and info windows
       markersRef.current.forEach(marker => {
-        if ((marker as any).hoverInfoWindow) (marker as any).hoverInfoWindow.close();
-        if ((marker as any).clickInfoWindow) (marker as any).clickInfoWindow.close();
+        if (marker.hoverInfoWindow) marker.hoverInfoWindow.close();
+        if (marker.clickInfoWindow) marker.clickInfoWindow.close();
         marker.setMap(null);
       });
       markersRef.current = [];

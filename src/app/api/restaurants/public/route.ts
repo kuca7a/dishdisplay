@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       `)
       .not("latitude", "is", null)
       .not("longitude", "is", null)
-      .order("name") as { data: RestaurantData[] | null, error: any };
+      .order("name") as { data: RestaurantData[] | null, error: Error | null };
 
     if (error) {
       console.error("API: Error fetching public restaurants:", error);
