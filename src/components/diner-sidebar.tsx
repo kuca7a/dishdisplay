@@ -1,6 +1,6 @@
 "use client";
 
-import { UserRoundPen, Star, MessageCircleQuestion } from "lucide-react";
+import { Home, Trophy, Search, Coins } from "lucide-react";
 import {
   Sidebar,
   SidebarHeader,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth0 } from "@auth0/auth0-react";
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import { Notable } from "next/font/google";
 
@@ -22,41 +21,33 @@ const notable = Notable({
   display: "swap",
 });
 
+// This is sample data.
 const dinerData = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
   navMain: [
     {
-      title: "My Profile",
-      url: "#",
-      icon: UserRoundPen,
-      isActive: true,
-      items: [
-        {
-          title: "Points & Rewards",
-          url: "/diner#rewards",
-        },
-        {
-          title: "Settings",
-          url: "/diner/settings",
-        },
-      ],
+      title: "Dashboard",
+      url: "/diner",
+      icon: Home,
     },
     {
-      title: "Community",
-      url: "#",
-      icon: Star,
-      items: [
-        {
-          title: "Leaderboard",
-          url: "/diner/leaderboard",
-        },
-      ],
+      title: "Discovery",
+      url: "/discover",
+      icon: Search,
     },
-  ],
-  navSecondary: [
     {
-      title: "Support",
-      url: "/support",
-      icon: MessageCircleQuestion,
+      title: "Leaderboard",
+      url: "/diner/leaderboard",
+      icon: Trophy,
+    },
+    {
+      title: "Points & Rewards",
+      url: "/diner/points",
+      icon: Coins,
     },
   ],
 };
@@ -93,7 +84,6 @@ export function DinerSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={dinerData.navMain} />
-        <NavSecondary items={dinerData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={sidebarUser} />

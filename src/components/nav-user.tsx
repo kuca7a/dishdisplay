@@ -1,7 +1,7 @@
 "use client";
 
 import { Rubik } from "next/font/google";
-import { ChevronsUpDown, LogOut, MessageSquare, Shield } from "lucide-react";
+import { ChevronsUpDown, LogOut, MessageSquare, Shield, Settings } from "lucide-react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 
@@ -98,6 +98,13 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => router.push("/diner/settings")}
+                className="cursor-pointer"
+              >
+                <Settings />
+                Settings
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => router.push("/profile/feedback")}
                 className="cursor-pointer"
