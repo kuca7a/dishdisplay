@@ -40,6 +40,12 @@ const Navbar = () => {
           <div className="hidden md:flex items-center flex-1 justify-center">
             <div className="flex items-center space-x-8">
               <Link
+                href="/discover"
+                className="text-black font-medium hover:text-gray-700 transition-colors"
+              >
+                Discover
+              </Link>
+              <Link
                 href="/about"
                 className="text-black font-medium hover:text-gray-700 transition-colors"
               >
@@ -141,6 +147,13 @@ const Navbar = () => {
                 Profile
               </Link>
             )}
+            <Link
+              href="/discover"
+              className="text-black font-medium hover:text-gray-700 transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Discover
+            </Link>
             <Link
               href="/about"
               className="text-black font-medium hover:text-gray-700 transition-colors"
