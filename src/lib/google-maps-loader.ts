@@ -1,5 +1,12 @@
 "use client";
 
+// Type definition for Google Maps on window
+interface GoogleMapsWindow extends Window {
+  google?: {
+    maps?: unknown;
+  };
+}
+
 // Google Maps loader service - ensures API is loaded only once
 class GoogleMapsLoader {
   private static instance: GoogleMapsLoader;
@@ -17,7 +24,7 @@ class GoogleMapsLoader {
   public load(apiKey: string): Promise<void> {
     return new Promise((resolve, reject) => {
       // If already loaded, resolve immediately
-      if (this.isLoaded && (window as any).google) {
+      if (this.isLoaded && (window as GoogleMapsWindow).google) {
         resolve();
         return;
       }
@@ -67,7 +74,7 @@ class GoogleMapsLoader {
   }
 
   public isGoogleMapsLoaded(): boolean {
-    return this.isLoaded && !!(window as any).google?.maps;
+    return this.isLoaded && !!(window as GoogleMapsWindow).google?.maps;
   }
 }
 
