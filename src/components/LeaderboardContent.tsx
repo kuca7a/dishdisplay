@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, Medal, Award, Users, Calendar, Star } from "lucide-react";
 import { LeaderboardData } from "@/types/database";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+import { useWinnerNotifications } from "@/hooks/use-winner-notifications";
 
 export default function LeaderboardContent() {
   const { user, isAuthenticated } = useAuth0();
@@ -21,6 +22,9 @@ export default function LeaderboardContent() {
     useState<LeaderboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize winner notifications (will show toasts automatically)
+  useWinnerNotifications(isAuthenticated ? user?.email || null : null);
 
   useEffect(() => {
     const loadLeaderboard = async () => {
@@ -368,7 +372,8 @@ export default function LeaderboardContent() {
                     Detailed Review Bonus
                   </p>
                   <p className="text-xs sm:text-sm text-green-600">
-                    Write 50+ characters for extra points</p>
+                    Write 50+ characters for extra points
+                  </p>
                 </div>
               </div>
             </div>
