@@ -459,71 +459,54 @@ export async function POST(request: NextRequest) {
     // Cap total review points at 50 to prevent gaming
     reviewPoints = Math.min(reviewPoints, 50);
 
-    // Get current active leaderboard period
-    const { data: activePeriod } = await supabaseServer
-      .from("leaderboard_periods")
-      .select("id")
-      .eq("status", "active")
-      .single();
-
-    // Get current points and reviews count
+    // Update total reviews count (still needed for statistics)
     const { data: currentProfile } = await supabaseServer
       .from("diner_profiles")
-      .select("total_points, total_reviews")
+      .select("total_reviews")
       .eq("id", (profile as { id: string }).id)
       .single();
 
     if (currentProfile) {
-      const currentPoints =
-        (currentProfile as { total_points: number }).total_points || 0;
       const currentReviews =
         (currentProfile as { total_reviews: number }).total_reviews || 0;
 
-      // Update profile totals
-      const { error: pointsError } = await supabaseServer
+      // Update only review count (points are now period-specific only)
+      const { error: profileUpdateError } = await supabaseServer
         .from("diner_profiles")
         .update({
-          total_points: currentPoints + reviewPoints,
           total_reviews: currentReviews + 1,
         })
         .eq("id", (profile as { id: string }).id);
 
-      if (pointsError) {
+      if (profileUpdateError) {
         console.warn(
-          "Error awarding points (review still saved):",
-          pointsError
+          "Error updating profile stats (review still saved):",
+          profileUpdateError
         );
-        // Don't fail the request if points update fails
-      } else {
-        console.log(`Points awarded successfully: +${reviewPoints} points`);
       }
 
-      // Also create entry in diner_points table for leaderboard if period exists
-      if (activePeriod) {
-        const { error: leaderboardPointsError } = await supabaseServer
-          .from("diner_points")
-          .insert({
-            diner_id: (profile as { id: string }).id,
-            points: reviewPoints,
-            earned_from: "review",
-            source_id: review?.id,
-            restaurant_id: restaurant_id,
-            leaderboard_period_id: activePeriod.id,
-          });
-
-        if (leaderboardPointsError) {
-          console.warn(
-            "Error logging leaderboard points:",
-            leaderboardPointsError
-          );
-          // Don't fail the request if leaderboard points logging fails
-        } else {
-          console.log("Leaderboard points logged successfully");
-        }
-      } else {
-        console.warn(
-          "No active leaderboard period found, points not logged for leaderboard"
+      // Award points through the new leaderboard system (period-specific)
+      try {
+        const { error: leaderboardError } = await supabaseServer.rpc(
+          "award_diner_points",
+          {
+            p_diner_email: (profile as { email: string }).email,
+            p_points: reviewPoints,
+            p_earned_from: "review",
+            p_source_id: review?.id,
+            p_restaurant_id: restaurant_id,
+          }
         );
+
+        if (leaderboardError) {
+          console.warn("Error awarding leaderboard points:", leaderboardError);
+        } else {
+          console.log(
+            `Points awarded successfully: +${reviewPoints} points for current weekly competition`
+          );
+        }
+      } catch (error) {
+        console.warn("Error awarding points:", error);
       }
     }
 

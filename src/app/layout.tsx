@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import OnboardingProvider from "@/components/OnboardingProvider";
+import { Toaster } from "sonner";
 
 const rubik = Rubik({
   weight: ["300", "400", "500", "600"],
@@ -66,11 +67,10 @@ export default function RootLayout({
       <body className={`${rubik.className}`}>
         <ErrorBoundary>
           <Providers>
-            <OnboardingProvider>
-              {children}
-            </OnboardingProvider>
+            <OnboardingProvider>{children}</OnboardingProvider>
           </Providers>
         </ErrorBoundary>
+        <Toaster />
       </body>
     </html>
   );

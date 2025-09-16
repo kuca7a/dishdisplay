@@ -66,7 +66,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { restaurant_id, visit_date, notes, user_email, user_name } = await request.json();
+    const { restaurant_id, visit_date, notes, user_email, user_name } =
+      await request.json();
 
     if (!restaurant_id) {
       return NextResponse.json(
@@ -234,16 +235,22 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (recentVisit) {
-      const lastVisitTime = new Date((recentVisit as { visit_date: string }).visit_date);
+      const lastVisitTime = new Date(
+        (recentVisit as { visit_date: string }).visit_date
+      );
       const timeDiff = Date.now() - lastVisitTime.getTime();
-      const hoursRemaining = Math.ceil((24 * 60 * 60 * 1000 - timeDiff) / (60 * 60 * 1000));
-      
+      const hoursRemaining = Math.ceil(
+        (24 * 60 * 60 * 1000 - timeDiff) / (60 * 60 * 1000)
+      );
+
       return NextResponse.json(
         {
           error: "Visit limit reached",
-          message: `You can only log one visit per restaurant every 24 hours. Try again in ${hoursRemaining} hour${hoursRemaining !== 1 ? 's' : ''}.`,
+          message: `You can only log one visit per restaurant every 24 hours. Try again in ${hoursRemaining} hour${
+            hoursRemaining !== 1 ? "s" : ""
+          }.`,
           canRetry: true,
-          timeRemaining: hoursRemaining
+          timeRemaining: hoursRemaining,
         },
         { status: 429 }
       );
@@ -281,66 +288,54 @@ export async function POST(request: NextRequest) {
     // Award points for the visit (10 points per visit)
     console.log("Awarding points for visit...");
 
-    // Get current active leaderboard period
-    const { data: activePeriod } = await supabaseServer
-      .from("leaderboard_periods")
-      .select("id")
-      .eq("status", "active")
-      .single();
-
-    // Get current points and visits count
+    // Update visit count (still needed for statistics)
     const { data: currentProfile } = await supabaseServer
       .from("diner_profiles")
-      .select("total_points, total_visits")
+      .select("total_visits")
       .eq("id", (profile as { id: string }).id)
       .single();
 
     if (currentProfile) {
-      const currentPoints =
-        (currentProfile as { total_points: number }).total_points || 0;
       const currentVisits =
         (currentProfile as { total_visits: number }).total_visits || 0;
 
-      // Update profile totals
-      const { error: pointsError } = await supabaseServer
+      // Update only visit count (points are now period-specific only)
+      const { error: profileUpdateError } = await supabaseServer
         .from("diner_profiles")
         .update({
-          total_points: currentPoints + 10,
           total_visits: currentVisits + 1,
         })
         .eq("id", (profile as { id: string }).id);
 
-      if (pointsError) {
+      if (profileUpdateError) {
         console.warn(
-          "Error awarding points (visit still logged):",
-          pointsError
+          "Error updating profile stats (visit still logged):",
+          profileUpdateError
         );
-        // Don't fail the request if points update fails
-      } else {
-        console.log("Points awarded successfully: +10 points");
       }
 
-      // Also create entry in diner_points table for leaderboard if period exists
-      if (activePeriod) {
-        const { error: leaderboardPointsError } = await supabaseServer
-          .from("diner_points")
-          .insert({
-            diner_id: (profile as { id: string }).id,
-            points: 10,
-            earned_from: "visit",
-            source_id: visit.id,
-            restaurant_id: restaurant_id,
-            leaderboard_period_id: activePeriod.id,
-          });
+      // Award points through the new leaderboard system (period-specific)
+      try {
+        const { error: leaderboardError } = await supabaseServer.rpc(
+          "award_diner_points",
+          {
+            p_diner_email: (profile as { email: string }).email,
+            p_points: 10,
+            p_earned_from: "visit",
+            p_source_id: visit.id,
+            p_restaurant_id: restaurant_id,
+          }
+        );
 
-        if (leaderboardPointsError) {
-          console.warn("Error logging leaderboard points:", leaderboardPointsError);
-          // Don't fail the request if leaderboard points logging fails
+        if (leaderboardError) {
+          console.warn("Error awarding leaderboard points:", leaderboardError);
         } else {
-          console.log("Leaderboard points logged successfully");
+          console.log(
+            "Points awarded successfully: +10 points for current weekly competition"
+          );
         }
-      } else {
-        console.warn("No active leaderboard period found, points not logged for leaderboard");
+      } catch (error) {
+        console.warn("Error awarding points:", error);
       }
     }
 

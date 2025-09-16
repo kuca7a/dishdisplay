@@ -1,21 +1,22 @@
 import { getSupabaseClient } from "./supabase";
-import { 
-  LeaderboardData,
-  LeaderboardEntry
-} from "@/types/database";
+import { LeaderboardData, LeaderboardEntry } from "@/types/database";
 
 export class LeaderboardService {
   private supabase = getSupabaseClient();
 
   // Award points for a visit
-  async awardVisitPoints(dinerId: string, visitId: string, restaurantId?: string): Promise<string | null> {
+  async awardVisitPoints(
+    dinerId: string,
+    visitId: string,
+    restaurantId?: string
+  ): Promise<string | null> {
     try {
-      const { data, error } = await this.supabase.rpc('award_diner_points', {
+      const { data, error } = await this.supabase.rpc("award_diner_points", {
         p_diner_id: dinerId,
         p_points: 10, // 10 points for visits
-        p_earned_from: 'visit',
+        p_earned_from: "visit",
         p_source_id: visitId,
-        p_restaurant_id: restaurantId
+        p_restaurant_id: restaurantId,
       });
 
       if (error) {
@@ -29,14 +30,18 @@ export class LeaderboardService {
   }
 
   // Award points for a review
-  async awardReviewPoints(dinerId: string, reviewId: string, restaurantId?: string): Promise<string | null> {
+  async awardReviewPoints(
+    dinerId: string,
+    reviewId: string,
+    restaurantId?: string
+  ): Promise<string | null> {
     try {
-      const { data, error } = await this.supabase.rpc('award_diner_points', {
+      const { data, error } = await this.supabase.rpc("award_diner_points", {
         p_diner_id: dinerId,
         p_points: 25, // 25 points for reviews
-        p_earned_from: 'review',
+        p_earned_from: "review",
         p_source_id: reviewId,
-        p_restaurant_id: restaurantId
+        p_restaurant_id: restaurantId,
       });
 
       if (error) {
@@ -50,39 +55,45 @@ export class LeaderboardService {
   }
 
   // Get current leaderboard data
-  async getCurrentLeaderboard(currentDinerEmail?: string): Promise<LeaderboardData | null> {
+  async getCurrentLeaderboard(
+    currentDinerEmail?: string
+  ): Promise<LeaderboardData | null> {
     try {
+      // First, ensure period management is up to date (complete expired periods, create new ones)
+      await this.managePeriods();
+
       // Get current active period
       const { data: periods, error: periodError } = await this.supabase
-        .from('leaderboard_periods')
-        .select('*')
-        .eq('status', 'active')
+        .from("leaderboard_periods")
+        .select("*")
+        .eq("status", "active")
         .single();
 
       if (periodError) {
         // If table doesn't exist (relation error), return a helpful message
-        if (periodError.message?.includes('relation') || periodError.message?.includes('does not exist')) {
+        if (
+          periodError.message?.includes("relation") ||
+          periodError.message?.includes("does not exist")
+        ) {
           return null;
         }
-        
-        // If no active period exists (0 rows), create one
-        if (periodError.code === 'PGRST116' && periodError.details?.includes('0 rows')) {
+
+        // If no active period exists after management, try creating one manually
+        if (
+          periodError.code === "PGRST116" &&
+          periodError.details?.includes("0 rows")
+        ) {
           const newPeriodId = await this.createCurrentWeekPeriod();
           if (newPeriodId) {
             // Retry with the new period
             return await this.getCurrentLeaderboard(currentDinerEmail);
           }
         }
-        
+
         return null;
       }
 
       if (!periods) {
-        const newPeriodId = await this.createCurrentWeekPeriod();
-        if (newPeriodId) {
-          // Retry with the new period
-          return await this.getCurrentLeaderboard(currentDinerEmail);
-        }
         return null;
       }
 
@@ -95,15 +106,17 @@ export class LeaderboardService {
 
       // Get top 10 rankings with diner profiles
       const { data: rankings, error: rankingsError } = await this.supabase
-        .from('leaderboard_rankings')
-        .select(`
+        .from("leaderboard_rankings")
+        .select(
+          `
           *,
           diner_profiles!inner (
             email
           )
-        `)
-        .eq('leaderboard_period_id', periods.id)
-        .order('rank', { ascending: true })
+        `
+        )
+        .eq("leaderboard_period_id", periods.id)
+        .order("rank", { ascending: true })
         .limit(10);
 
       if (rankingsError) {
@@ -114,21 +127,26 @@ export class LeaderboardService {
       const prizeRestaurant = await this.getPrizeRestaurant(periods.id);
 
       // Format top entries
-      const topEntries: LeaderboardEntry[] = (rankings || []).map((ranking) => ({
-        rank: ranking.rank,
-        diner_name: ranking.diner_profiles.email.split('@')[0], // Use email prefix as display name
-        total_points: ranking.total_points,
-        is_current_user: currentDinerEmail === ranking.diner_profiles.email,
-        is_winner: ranking.is_winner,
-        profile_photo_url: undefined // No profile photo for now
-      }));
+      const topEntries: LeaderboardEntry[] = (rankings || []).map(
+        (ranking) => ({
+          rank: ranking.rank,
+          diner_name: ranking.diner_profiles.email.split("@")[0], // Use email prefix as display name
+          total_points: ranking.total_points,
+          is_current_user: currentDinerEmail === ranking.diner_profiles.email,
+          is_winner: ranking.is_winner,
+          profile_photo_url: undefined, // No profile photo for now
+        })
+      );
 
       // Get current user's ranking if not in top 10
       let currentUserEntry: LeaderboardEntry | undefined;
       if (currentDinerEmail) {
-        const userInTop10 = topEntries.find(entry => entry.is_current_user);
+        const userInTop10 = topEntries.find((entry) => entry.is_current_user);
         if (!userInTop10) {
-          currentUserEntry = await this.getCurrentUserRanking(periods.id, currentDinerEmail);
+          currentUserEntry = await this.getCurrentUserRanking(
+            periods.id,
+            currentDinerEmail
+          );
         }
       }
 
@@ -136,7 +154,7 @@ export class LeaderboardService {
         current_period: periods,
         top_entries: topEntries,
         current_user_entry: currentUserEntry,
-        prize_restaurant: prizeRestaurant
+        prize_restaurant: prizeRestaurant,
       };
     } catch {
       return null;
@@ -144,18 +162,23 @@ export class LeaderboardService {
   }
 
   // Get current user's ranking
-  private async getCurrentUserRanking(periodId: string, dinerEmail: string): Promise<LeaderboardEntry | undefined> {
+  private async getCurrentUserRanking(
+    periodId: string,
+    dinerEmail: string
+  ): Promise<LeaderboardEntry | undefined> {
     try {
       const { data, error } = await this.supabase
-        .from('leaderboard_rankings')
-        .select(`
+        .from("leaderboard_rankings")
+        .select(
+          `
           *,
           diner_profiles!inner (
             email
           )
-        `)
-        .eq('leaderboard_period_id', periodId)
-        .eq('diner_profiles.email', dinerEmail)
+        `
+        )
+        .eq("leaderboard_period_id", periodId)
+        .eq("diner_profiles.email", dinerEmail)
         .maybeSingle(); // Use maybeSingle() instead of single() to handle no results
 
       if (error || !data) {
@@ -164,11 +187,11 @@ export class LeaderboardService {
 
       return {
         rank: data.rank,
-        diner_name: data.diner_profiles.email.split('@')[0], // Use email prefix as display name
+        diner_name: data.diner_profiles.email.split("@")[0], // Use email prefix as display name
         total_points: data.total_points,
         is_current_user: true,
         is_winner: data.is_winner,
-        profile_photo_url: undefined // No profile photo for now
+        profile_photo_url: undefined, // No profile photo for now
       };
     } catch {
       return undefined;
@@ -176,32 +199,43 @@ export class LeaderboardService {
   }
 
   // Get the restaurant that will provide the prize (most reviewed this week)
-  private async getPrizeRestaurant(periodId: string): Promise<{ id: string; name: string } | undefined> {
+  private async getPrizeRestaurant(
+    periodId: string
+  ): Promise<{ id: string; name: string } | undefined> {
     try {
       const { data, error } = await this.supabase
-        .from('diner_points')
-        .select(`
+        .from("diner_points")
+        .select(
+          `
           restaurant_id,
           restaurants!inner (
             id,
             name
           )
-        `)
-        .eq('leaderboard_period_id', periodId)
-        .eq('earned_from', 'review')
-        .not('restaurant_id', 'is', null);
+        `
+        )
+        .eq("leaderboard_period_id", periodId)
+        .eq("earned_from", "review")
+        .not("restaurant_id", "is", null);
 
       if (error || !data) {
         return undefined;
       }
 
       // Count reviews per restaurant
-      const restaurantCounts: { [key: string]: { count: number; restaurant: { id: string; name: string } } } = {};
-      
+      const restaurantCounts: {
+        [key: string]: {
+          count: number;
+          restaurant: { id: string; name: string };
+        };
+      } = {};
+
       data.forEach((point) => {
         const restaurantId = point.restaurant_id;
-        const restaurant = Array.isArray(point.restaurants) ? point.restaurants[0] : point.restaurants;
-        
+        const restaurant = Array.isArray(point.restaurants)
+          ? point.restaurants[0]
+          : point.restaurants;
+
         if (restaurantCounts[restaurantId]) {
           restaurantCounts[restaurantId].count++;
         } else {
@@ -209,8 +243,8 @@ export class LeaderboardService {
             count: 1,
             restaurant: {
               id: restaurant.id,
-              name: restaurant.name
-            }
+              name: restaurant.name,
+            },
           };
         }
       });
@@ -224,7 +258,7 @@ export class LeaderboardService {
           maxCount = count;
           prizeRestaurant = {
             id: restaurant.id,
-            name: restaurant.name
+            name: restaurant.name,
           };
         }
       });
@@ -240,9 +274,9 @@ export class LeaderboardService {
     try {
       // Get current period
       const { data: period, error: periodError } = await this.supabase
-        .from('leaderboard_periods')
-        .select('id')
-        .eq('status', 'active')
+        .from("leaderboard_periods")
+        .select("id")
+        .eq("status", "active")
         .single();
 
       if (periodError || !period) {
@@ -251,10 +285,10 @@ export class LeaderboardService {
 
       // Get diner's ranking
       const { data: ranking, error: rankingError } = await this.supabase
-        .from('leaderboard_rankings')
-        .select('total_points')
-        .eq('leaderboard_period_id', period.id)
-        .eq('diner_profiles.email', dinerEmail)
+        .from("leaderboard_rankings")
+        .select("total_points")
+        .eq("leaderboard_period_id", period.id)
+        .eq("diner_profiles.email", dinerEmail)
         .single();
 
       if (rankingError || !ranking) {
@@ -272,18 +306,21 @@ export class LeaderboardService {
     try {
       // Update period status to completed
       const { error: updateError } = await this.supabase
-        .from('leaderboard_periods')
-        .update({ status: 'completed' })
-        .eq('id', periodId);
+        .from("leaderboard_periods")
+        .update({ status: "completed" })
+        .eq("id", periodId);
 
       if (updateError) {
         return false;
       }
 
       // Final ranking update
-      const { error: rankingError } = await this.supabase.rpc('update_leaderboard_rankings', {
-        period_id: periodId
-      });
+      const { error: rankingError } = await this.supabase.rpc(
+        "update_leaderboard_rankings",
+        {
+          period_id: periodId,
+        }
+      );
 
       if (rankingError) {
         return false;
@@ -296,16 +333,19 @@ export class LeaderboardService {
   }
 
   // Create a new leaderboard period
-  async createNewPeriod(startDate: string, endDate: string): Promise<string | null> {
+  async createNewPeriod(
+    startDate: string,
+    endDate: string
+  ): Promise<string | null> {
     try {
       const { data, error } = await this.supabase
-        .from('leaderboard_periods')
+        .from("leaderboard_periods")
         .insert({
           start_date: startDate,
           end_date: endDate,
-          status: 'active'
+          status: "active",
         })
-        .select('id')
+        .select("id")
         .single();
 
       if (error) {
@@ -323,8 +363,8 @@ export class LeaderboardService {
    */
   async updateRankings(periodId: string): Promise<boolean> {
     try {
-      const { error } = await this.supabase.rpc('update_leaderboard_rankings', {
-        period_id: periodId
+      const { error } = await this.supabase.rpc("update_leaderboard_rankings", {
+        period_id: periodId,
       });
 
       if (error) {
@@ -342,7 +382,7 @@ export class LeaderboardService {
    */
   async refreshCurrentRankings(): Promise<boolean> {
     try {
-      const { error } = await this.supabase.rpc('refresh_current_leaderboard');
+      const { error } = await this.supabase.rpc("refresh_current_leaderboard");
       return !error;
     } catch {
       return false;
@@ -356,35 +396,88 @@ export class LeaderboardService {
     try {
       const now = new Date();
       const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-      
+
       // Calculate start of current week (Monday)
       const daysToMonday = currentDay === 0 ? -6 : 1 - currentDay;
       const startDate = new Date(now);
       startDate.setDate(now.getDate() + daysToMonday);
       startDate.setHours(0, 0, 0, 0);
-      
+
       // Calculate end of current week (Sunday)
       const endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + 6);
       endDate.setHours(23, 59, 59, 999);
-      
+
       const { data, error } = await this.supabase
-        .from('leaderboard_periods')
-        .insert([{
-          start_date: startDate.toISOString().split('T')[0], // DATE format: YYYY-MM-DD
-          end_date: endDate.toISOString().split('T')[0],     // DATE format: YYYY-MM-DD
-          status: 'active'
-        }])
-        .select('id')
+        .from("leaderboard_periods")
+        .insert([
+          {
+            start_date: startDate.toISOString().split("T")[0], // DATE format: YYYY-MM-DD
+            end_date: endDate.toISOString().split("T")[0], // DATE format: YYYY-MM-DD
+            status: "active",
+          },
+        ])
+        .select("id")
         .single();
-      
+
       if (error) {
         return null;
       }
-      
+
       return data.id;
     } catch {
       return null;
+    }
+  }
+
+  /**
+   * Manage leaderboard periods - complete expired ones and create new ones as needed
+   */
+  async managePeriods(): Promise<boolean> {
+    try {
+      const { error } = await this.supabase.rpc("manage_leaderboard_periods");
+      return !error;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Force start a new weekly period (useful for testing or manual management)
+   */
+  async startNewPeriod(forceNew: boolean = false): Promise<string | null> {
+    try {
+      const { data, error } = await this.supabase.rpc(
+        "start_new_leaderboard_period",
+        {
+          force_new: forceNew,
+        }
+      );
+
+      if (error) {
+        return null;
+      }
+
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Clean up old completed periods (keep last 4 weeks for history)
+   */
+  async cleanupOldPeriods(): Promise<number> {
+    try {
+      const { data, error } = await this.supabase.rpc("cleanup_old_periods");
+
+      if (error) {
+        return 0;
+      }
+
+      return data || 0;
+    } catch {
+      return 0;
     }
   }
 }
