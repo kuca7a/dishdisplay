@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 import PointsAndRewards from "@/components/PointsAndRewards";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
 interface DinerProfile {
   total_points: number;
@@ -40,9 +40,9 @@ export default function PointsRewardsContent() {
   if (loading) {
     return (
       <Card>
-        <CardContent className="flex items-center justify-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <span className="ml-2">Loading your points...</span>
+        <CardContent className="flex flex-col items-center justify-center p-8">
+          <ThreeDotsLoader size="md" />
+          <span className="mt-2 text-gray-600">Loading...</span>
         </CardContent>
       </Card>
     );

@@ -106,7 +106,7 @@ export default function MenuItemDetailPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <ThreeDotsLoader size="lg" color="#5F7161" />
+          <ThreeDotsLoader size="md" />
           <p className="text-lg text-gray-600 mt-4">Loading item details...</p>
         </div>
       </div>

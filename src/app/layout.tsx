@@ -3,7 +3,6 @@ import { Rubik } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import OnboardingProvider from "@/components/OnboardingProvider";
 import { Toaster } from "sonner";
 
 const rubik = Rubik({
@@ -64,10 +63,29 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap"
+          as="style"
+        />
+        <link
+          rel="preload"
+          href="/mockupPhone.png"
+          as="image"
+          type="image/png"
+        />
+        <link
+          rel="preload"
+          href="/mockupLaptop.png"
+          as="image"
+          type="image/png"
+        />
+      </head>
       <body className={`${rubik.className}`}>
         <ErrorBoundary>
           <Providers>
-            <OnboardingProvider>{children}</OnboardingProvider>
+            {children}
           </Providers>
         </ErrorBoundary>
         <Toaster />

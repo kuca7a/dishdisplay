@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MapPin, Clock } from "lucide-react";
 import { restaurantService } from "@/lib/database";
 import { Restaurant } from "@/types/database";
@@ -238,7 +239,7 @@ export default function LocationHoursContent() {
         className={`min-h-screen flex items-center justify-center ${rubik.className}`}
       >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" color="#5F7161" className="mb-4" />
+          <ThreeDotsLoader size="md" className="mb-4" />
           <p>Loading...</p>
         </div>
       </div>
@@ -293,14 +294,44 @@ export default function LocationHoursContent() {
 
           {/* Loading State */}
           {loading && (
-            <Card>
-              <CardContent className="p-8">
-                <div className="flex items-center justify-center">
-                  <ThreeDotsLoader size="md" color="#5F7161" className="mr-2" />
-                  <span>Loading location data...</span>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="space-y-4">
+              {/* Location Card Skeleton */}
+              <Card>
+                <CardHeader>
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-64" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Hours Card Skeleton */}
+              <Card>
+                <CardHeader>
+                  <Skeleton className="h-6 w-32" />
+                  <Skeleton className="h-4 w-56" />
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[...Array(7)].map((_, i) => (
+                    <div key={i} className="flex justify-between items-center">
+                      <Skeleton className="h-4 w-20" />
+                      <div className="flex gap-2">
+                        <Skeleton className="h-8 w-20" />
+                        <Skeleton className="h-8 w-20" />
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
           )}
 
           {/* Error State */}

@@ -158,7 +158,7 @@ export default function DiscoverPage() {
         className={`min-h-screen bg-gray-50 flex items-center justify-center ${rubik.className}`}
       >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" color="#5F7161" className="mb-4" />
+          <ThreeDotsLoader size="md" className="mb-4" />
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -185,8 +185,8 @@ export default function DiscoverPage() {
         <SidebarInset className={rubik.className}>
           <div className="flex items-center justify-center min-h-screen">
             <div className="text-center">
-              <ThreeDotsLoader size="lg" color="#5F7161" className="mb-4" />
-              <p className="text-gray-600">Loading restaurants...</p>
+              <ThreeDotsLoader size="md" className="mb-4" />
+              <p className="text-gray-600">Loading...</p>
             </div>
           </div>
         </SidebarInset>

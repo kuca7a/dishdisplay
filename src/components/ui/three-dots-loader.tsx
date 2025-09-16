@@ -26,29 +26,41 @@ export function ThreeDotsLoader({
   return (
     <div className={`flex items-center justify-center ${containerClasses[size]} ${className}`}>
       <div 
-        className={`${sizeClasses[size]} rounded-full animate-bounce`}
+        className={`${sizeClasses[size]} rounded-full`}
         style={{ 
           backgroundColor: color,
-          animationDelay: "0ms",
-          animationDuration: "1.4s"
+          animation: "bounce-scale 1.4s infinite ease-in-out",
+          animationDelay: "0ms"
         }}
       />
       <div 
-        className={`${sizeClasses[size]} rounded-full animate-bounce`}
+        className={`${sizeClasses[size]} rounded-full`}
         style={{ 
           backgroundColor: color,
-          animationDelay: "160ms", 
-          animationDuration: "1.4s"
+          animation: "bounce-scale 1.4s infinite ease-in-out",
+          animationDelay: "160ms"
         }}
       />
       <div 
-        className={`${sizeClasses[size]} rounded-full animate-bounce`}
+        className={`${sizeClasses[size]} rounded-full`}
         style={{ 
           backgroundColor: color,
-          animationDelay: "320ms",
-          animationDuration: "1.4s"
+          animation: "bounce-scale 1.4s infinite ease-in-out",
+          animationDelay: "320ms"
         }}
       />
+      <style jsx>{`
+        @keyframes bounce-scale {
+          0%, 80%, 100% { 
+            transform: scale(0.8);
+            opacity: 0.5;
+          }
+          40% { 
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 }

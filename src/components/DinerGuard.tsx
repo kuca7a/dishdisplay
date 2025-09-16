@@ -22,7 +22,7 @@ export default function DinerGuard({ children }: DinerGuardProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <ThreeDotsLoader size="lg" color="#5F7161" />
+        <ThreeDotsLoader size="md" />
       </div>
     );
   }

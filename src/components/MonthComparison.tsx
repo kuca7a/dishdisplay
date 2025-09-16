@@ -28,6 +28,7 @@ import {
   X
 } from "lucide-react";
 import { analyticsComparisonService, ComparisonData } from "@/lib/analytics-comparison";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
 interface MonthComparisonProps {
   restaurantId: string;
@@ -257,9 +258,9 @@ export default function MonthComparison({ restaurantId }: MonthComparisonProps) 
         )}
 
         {loading && (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-500">Loading comparison...</p>
+          <div className="flex flex-col items-center justify-center py-8">
+            <ThreeDotsLoader size="md" />
+            <p className="mt-2 text-gray-500">Loading...</p>
           </div>
         )}
 

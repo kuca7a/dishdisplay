@@ -153,7 +153,7 @@ export default function CustomerMenuPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <ThreeDotsLoader size="lg" color="#5F7161" />
+          <ThreeDotsLoader size="md" />
           <p className="text-lg text-gray-600 mt-4">Loading menu...</p>
         </div>
       </div>

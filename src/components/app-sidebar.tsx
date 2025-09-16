@@ -45,7 +45,6 @@ const data = {
         {
           title: "Business  Profile",
           url: "/profile/business-profile",
-          "data-onboarding": "business-profile",
         },
         {
           title: "Location & Hours",
@@ -69,7 +68,6 @@ const data = {
         {
           title: "Manage",
           url: "/profile/menu/manage",
-          "data-onboarding": "menu-manage",
         },
         {
           title: "Explore",
@@ -81,7 +79,6 @@ const data = {
       title: "QR Code",
       url: "/profile/qr-code",
       icon: QrCode,
-      "data-onboarding": "qr-code",
     },
     {
       title: "Preview",
@@ -92,7 +89,6 @@ const data = {
       title: "Insights",
       url: "/profile/insights",
       icon: WandSparkles,
-      "data-onboarding": "insights",
     },
     {
       title: "Subscription",

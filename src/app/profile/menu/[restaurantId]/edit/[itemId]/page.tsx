@@ -190,7 +190,7 @@ export default function EditMenuItemPage() {
         <SidebarInset>
           <div className="flex h-full w-full items-center justify-center">
             <div className="text-center">
-              <ThreeDotsLoader size="lg" color="#5F7161" />
+              <ThreeDotsLoader size="md" />
               <p className="text-lg text-gray-600 mt-4">Loading menu item...</p>
             </div>
           </div>

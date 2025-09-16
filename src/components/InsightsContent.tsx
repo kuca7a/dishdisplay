@@ -220,7 +220,7 @@ export default function InsightsContent() {
               )}
 
               {/* Key Metrics */}
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" data-onboarding="overview-metrics">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
@@ -420,7 +420,7 @@ export default function InsightsContent() {
                 </div>
                 
                 {/* Right Column - Menu Performance Score */}
-                <div data-onboarding="menu-performance">
+                <div>
                   <EnhancedMenuPerformance data={enhancedMenuPerformance} loading={loadingAnalytics} />
                 </div>
               </div>
@@ -483,7 +483,7 @@ export default function InsightsContent() {
 
             {/* Export Analytics Section */}
             {restaurant && !loadingRestaurant && (
-              <div className="col-span-1 lg:col-span-2" data-onboarding="export-analytics">
+              <div className="col-span-1 lg:col-span-2">
                 <ExportAnalytics 
                   restaurantId={restaurant.id} 
                   restaurantName={restaurant.name} 
@@ -493,7 +493,7 @@ export default function InsightsContent() {
 
             {/* Month Comparison Section */}
             {restaurant && (
-              <div className="col-span-1 lg:col-span-2" data-onboarding="peak-hours">
+              <div className="col-span-1 lg:col-span-2">
                 <MonthComparison restaurantId={restaurant.id} />
               </div>
             )}

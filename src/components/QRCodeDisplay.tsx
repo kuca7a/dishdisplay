@@ -205,12 +205,33 @@ export function QRCodeDisplay({
         {/* QR Code Display */}
         <div className="flex justify-center">
           <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
-            {qrDataUrl && (
+            {loading ? (
+              <div 
+                className="flex items-center justify-center bg-gray-100 rounded"
+                style={{ width: options.size, height: options.size }}
+              >
+                <ThreeDotsLoader size="md" />
+              </div>
+            ) : qrDataUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={qrDataUrl}
                 alt={`QR Code for ${restaurant.name} menu`}
                 className="block"
+                width={options.size}
+                height={options.size}
+                style={{ width: options.size, height: options.size }}
+              />
+            ) : error ? (
+              <div 
+                className="flex items-center justify-center bg-red-50 rounded text-red-600 text-sm"
+                style={{ width: options.size, height: options.size }}
+              >
+                Failed to generate QR code
+              </div>
+            ) : (
+              <div 
+                className="flex items-center justify-center bg-gray-100 rounded"
                 style={{ width: options.size, height: options.size }}
               />
             )}
