@@ -5,7 +5,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/navigation";
 import { Rubik } from "next/font/google";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
 import { DinerSidebar } from "@/components/diner-sidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
@@ -224,7 +223,7 @@ export default function DinerProfileContent() {
   if (!isAuthenticated || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <ThreeDotsLoader size="lg" color="#5F7161" />
+        <ThreeDotsLoader size="md" />
       </div>
     );
   }
@@ -232,10 +231,10 @@ export default function DinerProfileContent() {
   if (loading) {
     return (
       <SidebarProvider>
-        <AppSidebar />
+        <DinerSidebar />
         <SidebarInset className={rubik.className}>
           <div className="flex items-center justify-center min-h-screen">
-            <ThreeDotsLoader size="lg" color="#5F7161" />
+            <ThreeDotsLoader size="md" />
           </div>
         </SidebarInset>
       </SidebarProvider>

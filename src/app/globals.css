@@ -146,3 +146,45 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Prevent layout shift optimizations */
+img {
+  height: auto;
+  max-width: 100%;
+}
+
+/* Ensure consistent font metrics to prevent font-swap layout shift */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prevent bounce animation layout shifts */
+.animate-bounce {
+  animation: bounce-no-layout 1s infinite;
+}
+
+@keyframes bounce-no-layout {
+  0%, 100% {
+    transform: translateY(-25%) scale(0.9);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0) scale(1);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Ensure minimal layout shift on mobile */
+@media (max-width: 768px) {
+  * {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+  
+  /* Prevent bounce causing layout issues on mobile */
+  .animate-bounce {
+    will-change: transform;
+  }
+}

@@ -270,7 +270,7 @@ export default function SubscriptionContent() {
         className={`min-h-screen flex items-center justify-center ${rubik.className}`}
       >
         <div className="text-center">
-          <ThreeDotsLoader size="lg" color="#5F7161" className="mb-4" />
+          <ThreeDotsLoader size="md" className="mb-4" />
           <p>Loading...</p>
         </div>
       </div>
@@ -321,7 +321,7 @@ export default function SubscriptionContent() {
 
             {subscription.loading ? (
               <div className="flex items-center justify-center py-12">
-                <ThreeDotsLoader size="lg" color="#5F7161" />
+                <ThreeDotsLoader size="md" />
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2">

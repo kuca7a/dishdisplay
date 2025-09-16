@@ -10,6 +10,7 @@ import ActionMenu from "./ActionMenu";
 import VisitDialog from "./VisitDialog";
 import ReviewDialog from "./ReviewDialog";
 import EarnPointsModal from "./EarnPointsModal";
+import { ThreeDotsLoader } from "@/components/ui/three-dots-loader";
 
 interface DinerMenuInteractionsProps {
   restaurant: Restaurant;
@@ -53,8 +54,9 @@ export default function DinerMenuInteractions({
   // Show loading state
   if (isLoading) {
     return (
-      <div className="flex justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5F7161]"></div>
+      <div className="flex flex-col items-center justify-center py-8">
+        <ThreeDotsLoader size="md" />
+        <p className="mt-2 text-gray-600">Loading...</p>
       </div>
     );
   }
