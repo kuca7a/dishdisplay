@@ -103,6 +103,7 @@ export default function GoogleMap({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<GoogleMap | null>(null);
   const markersRef = useRef<GoogleMarker[]>([]);
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   const initializeMap = useCallback(() => {
     if (!mapRef.current || !window.google) return;
@@ -273,14 +274,27 @@ export default function GoogleMap({
   }, [restaurants, zoom, onRestaurantSelect, selectedRestaurant?.id]);
 
   useEffect(() => {
-    console.log('GoogleMap component mounted');
-    console.log('API Key:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
-    console.log('Restaurants:', restaurants.length);
+    // Validate API key before proceeding
+    if (!apiKey) {
+      console.error('❌ Google Maps API key is missing!');
+      console.error('Make sure NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is set in your environment variables');
+      console.error('For production, add this environment variable to your deployment platform');
+      return;
+    }
+    
+    if (apiKey === 'undefined' || apiKey === 'null') {
+      console.error('❌ Google Maps API key is invalid:', apiKey);
+      return;
+    }
+    
+    if (apiKey.length < 30) {
+      console.error('❌ Google Maps API key seems invalid - too short:', apiKey.length, 'characters');
+      return;
+    }
     
     const loadGoogleMaps = async () => {
       // Check if Google Maps is already loaded
       if ((window as GoogleMapsWindow).google?.maps) {
-        console.log('Google Maps already loaded, initializing map...');
         initializeMap();
         return;
       }
@@ -288,7 +302,6 @@ export default function GoogleMap({
       // Check if script is already being loaded
       const existingScript = document.querySelector('#google-maps-script');
       if (existingScript) {
-        console.log('Google Maps script already exists, waiting...');
         // Wait for existing script to finish loading
         const checkLoaded = setInterval(() => {
           if ((window as GoogleMapsWindow).google?.maps) {
@@ -299,21 +312,28 @@ export default function GoogleMap({
         return;
       }
 
-      // Load Google Maps script
-      console.log('Loading Google Maps script...');
+      // Load Google Maps script with comprehensive error handling
       const script = document.createElement('script');
       script.id = 'google-maps-script';
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
       script.async = true;
       script.defer = true;
       
       script.onload = () => {
-        console.log('Google Maps script loaded successfully');
-        initializeMap();
+        if ((window as GoogleMapsWindow).google?.maps) {
+          initializeMap();
+        } else {
+          console.error('❌ Google Maps API failed to load properly');
+        }
       };
       
       script.onerror = (error) => {
-        console.error('Failed to load Google Maps script:', error);
+        console.error('❌ Failed to load Google Maps script:', error);
+        console.error('This could be due to:');
+        console.error('1. Invalid API key');
+        console.error('2. API key restrictions (check domain allowlist in Google Cloud Console)');
+        console.error('3. Network connectivity issues');
+        console.error('4. Billing not enabled for the Google Cloud project');
       };
       
       document.head.appendChild(script);
@@ -330,7 +350,7 @@ export default function GoogleMap({
       });
       markersRef.current = [];
     };
-  }, [initializeMap, restaurants.length]);
+  }, [initializeMap, restaurants.length, apiKey]);
 
   useEffect(() => {
     // Update selected restaurant marker - just center, don't zoom too much
@@ -350,6 +370,26 @@ export default function GoogleMap({
       initializeMap();
     }
   }, [selectedRestaurant, initializeMap]);
+
+  // Show error UI if no API key
+  if (!apiKey) {
+    return (
+      <div 
+        style={{ width: '100%', height }}
+        className="w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center"
+      >
+        <div className="text-center p-6">
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Map Unavailable</h3>
+          <p className="text-gray-500 text-sm mb-4">
+            Google Maps API key is not configured.
+          </p>
+          <p className="text-xs text-gray-400">
+            Administrator: Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in environment variables.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 
